@@ -36,7 +36,8 @@ def check_production_email_backend(app_configs, **kwargs):
         if backend in _DEV_EMAIL_BACKENDS:
             errors.append(
                 Warning(
-                    f"EMAIL_BACKEND is set to '{backend}', which does not send real email.",
+                    f"DEBUG=False (production mode) but EMAIL_BACKEND is '{backend}', "
+                    "a dev-only backend that does not deliver email.",
                     hint=(
                         "Set EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend "
                         "and configure EMAIL_HOST, EMAIL_PORT, EMAIL_USE_TLS, "
