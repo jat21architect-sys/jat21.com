@@ -50,8 +50,8 @@ def contact_view(request):
             if project_type in valid_types:
                 initial["project_type"] = project_type
         form = ContactForm(initial=initial)
-    return render(request, "contact.html", {"form": form})
+    return render(request, "portfolio/contact.html", {"form": form})
 
 
 def contact_success_view(request):
-    return render(request, "contact_success.html")
+    return render(request, "portfolio/contact_success.html")
