@@ -1,0 +1,17 @@
+# Railway deployment configuration.
+#
+# NOTE: The `releaseCommand` key (for running migrate/collectstatic separately
+# from the web process) is *not* used here intentionally for the first deploy.
+# Migrations and collectstatic are inlined in the Procfile web command instead,
+# which is unambiguous and has no Railway-specific syntax risk.
+#
+# After the first deploy is verified working, consider switching to a proper
+# releaseCommand here to decouple the release phase from boot. At that point
+# verify the exact Railway releaseCommand behaviour against their current docs:
+# https://docs.railway.com/reference/config-as-code
+#
+# This file currently exists only to ensure Railway picks up the Procfile
+# and sets DJANGO_SETTINGS_MODULE correctly via environment (set in dashboard).
+
+[build]
+builder = "nixpacks"
