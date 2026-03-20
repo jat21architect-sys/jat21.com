@@ -17,7 +17,8 @@ A professional, content-driven portfolio platform built with Django.
 | Dependency management | [uv](https://docs.astral.sh/uv/) |
 | Linting / formatting | [Ruff](https://docs.astral.sh/ruff/) |
 | Type checking | mypy + django-stubs |
-| Testing | pytest + pytest-django |
+| Testing | pytest + pytest-django + pytest-cov |
+| CI | GitHub Actions |
 | Git hooks | pre-commit |
 
 ---
@@ -122,11 +123,31 @@ uv run mypy .
 
 ### Tests
 
+Test files live in `tests/` and cover the full application stack:
+
+| File | What it covers |
+| --- | --- |
+| `test_checks.py` | `portfolio.W001` system check (email backend guard) |
+| `test_forms.py` | Form validation, contact POST, email-failure resilience |
+| `test_models.py` | Model unit tests, singleton behaviour, field logic |
+| `test_templatetags.py` | `portfolio_tags` template filter |
+| `test_views.py` | All page routes, context, sitemap, robots.txt |
+
 ```bash
 uv run pytest                # all tests
 uv run pytest -x             # stop on first failure
 uv run pytest tests/test_views.py   # one file
 ```
+
+### Coverage
+
+```bash
+make coverage
+# or: uv run pytest --cov --cov-report=term-missing
+```
+
+Current baseline: **97 % coverage** (455 statements, 15 missed).
+Coverage is also reported in CI on every push.
 
 ### pre-commit hooks
 
@@ -152,6 +173,7 @@ Hooks configured:
 ### Makefile shortcuts
 
 ```bash
+# Development
 make run           # start dev server
 make migrate       # apply migrations
 make migrations    # create new migrations
@@ -159,7 +181,16 @@ make superuser     # create admin user interactively
 make seed          # seed demo content
 make collectstatic # collect static files
 make tree          # print project tree
-make clean         # remove __pycache__, staticfiles artefacts
+
+# Code quality
+make lint          # ruff check (no fix)
+make fmt           # ruff check --fix + ruff format
+make typecheck     # mypy
+make test          # pytest
+make coverage      # pytest --cov --cov-report=term-missing
+make check-deploy  # manage.py check --deploy (prod settings)
+
+# Clean
 make clean-db      # delete db.sqlite3 (prompts for confirmation)
 make clean-media   # delete media/ uploads (prompts for confirmation)
 make clean-all     # everything (prompts for confirmation)
@@ -171,39 +202,79 @@ make clean-all     # everything (prompts for confirmation)
 
 ```text
 jeannote/
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # GitHub Actions CI
 ├── config/
 │   ├── settings/
-│   │   ├── base.py        # shared settings
-│   │   ├── dev.py         # development
-│   │   └── prod.py        # production
+│   │   ├── base.py            # shared settings
+│   │   ├── dev.py             # development overrides
+│   │   └── prod.py            # production hardening
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
-├── portfolio/             # main application
-│   ├── models.py          # all data models
-│   ├── admin.py           # content management
-│   ├── views.py           # page views
-│   ├── urls.py            # URL routing
-│   ├── forms.py           # contact form
+├── portfolio/                 # main application
+│   ├── admin/                 # admin classes per domain
+│   ├── models/                # data models per domain
+│   ├── views/                 # views per domain
+│   ├── templates/
+│   │   └── portfolio/         # app-owned reusable templates
+│   ├── templatetags/
+│   │   └── portfolio_tags.py
+│   ├── management/commands/
+│   │   └── seed_demo.py
+│   ├── migrations/
+│   ├── checks.py              # portfolio.W001 — email backend guard
 │   ├── context_processors.py
-│   └── management/commands/seed_demo.py
-├── templates/             # HTML templates
+│   ├── forms.py
+│   ├── sitemaps.py
+│   └── urls.py
+├── templates/                 # project-level shell / branding templates
+│   ├── base.html
+│   ├── home.html
+│   ├── about.html
+│   ├── services.html
+│   ├── robots.txt
+│   └── includes/
+│       ├── nav.html
+│       └── footer.html
 ├── static/
-│   ├── css/main.css       # complete design system (CSS custom properties)
-│   └── js/main.js         # minimal vanilla JS
+│   ├── css/main.css           # design system (CSS custom properties)
+│   ├── js/main.js
+│   └── images/
 ├── tests/
-│   ├── conftest.py        # shared fixtures
-│   ├── test_views.py      # page / route tests
-│   ├── test_models.py     # model unit tests
-│   └── test_forms.py      # form validation + contact POST
-├── scripts/tree.py        # repository tree printer
-├── pyproject.toml         # dependencies and tool configuration (source of truth)
-├── uv.lock                # locked dependency graph (source of truth)
-├── requirements.txt       # generated for compatibility (do not edit by hand — run: uv export --no-dev --no-hashes -o requirements.txt)
-├── .python-version        # Python version pin
+│   ├── conftest.py
+│   ├── test_checks.py
+│   ├── test_forms.py
+│   ├── test_models.py
+│   ├── test_templatetags.py
+│   └── test_views.py
+├── scripts/
+│   ├── smoke_check.py
+│   └── tree.py
+├── media/                     # local uploaded files (gitignored)
+├── pyproject.toml             # dependencies and tool config (source of truth)
+├── uv.lock                    # locked dependency graph
+├── requirements.txt           # generated for compatibility
+├── Makefile
+├── Procfile                   # gunicorn entry point
+├── railway.toml               # Railway deployment config
 ├── .pre-commit-config.yaml
 └── .env.example
 ```
+
+---
+
+## Template layout
+
+Templates are split across two locations with distinct ownership:
+
+| Location | Owns | Purpose |
+| --- | --- | --- |
+| `templates/` | Project level | Shell, branding, site composition — `base.html`, `home.html`, `about.html`, `services.html`, nav, footer |
+| `portfolio/templates/portfolio/` | App level | Reusable portfolio features — project list/detail, contact form, contact success |
+
+This boundary keeps the structural chrome of the site (layout, navigation, brand) separate from the reusable application features. Neither location overrides the other — Django's template loader finds both.
 
 ---
 
@@ -265,6 +336,8 @@ the complete annotated list.
 
 ## Production deployment
 
+> **Status:** deployment files are in place (`Procfile`, `railway.toml`). The first deploy to Railway is the next operational step and has not yet been completed. Persistent media storage and real SMTP are phase-2 items — see below.
+
 ### 1. Activate production settings
 
 Set in your hosting platform's environment:
@@ -306,9 +379,10 @@ Recommended providers: SendGrid, Mailgun, Postmark, Amazon SES.
 
 ### 4. Media file persistence — must resolve before uploading real content ⚠️
 
-> On ephemeral platforms (Heroku, Render, Fly.io, Railway) uploaded files are
-> deleted on every deploy. The default local-filesystem storage is not
-> suitable for production use.
+> On ephemeral platforms (Railway and similar) uploaded files are deleted on
+> every deploy. The default local-filesystem storage is not suitable for
+> production use. **This must be resolved before any real images are uploaded
+> to a live environment.**
 
 **Integration point:** look for `# MEDIA_STORAGE_INTEGRATION_POINT` in
 [`config/settings/base.py`](config/settings/base.py). To switch to S3:
@@ -374,6 +448,21 @@ make test
 - [ ] Site Settings completed (email, phone, location, social links)
 - [ ] Demo testimonials replaced with real client quotes (or clearly marked)
 - [ ] `make check-deploy` returns only the expected SECRET_KEY warning (no others)
+
+---
+
+## Continuous integration
+
+A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push and pull request:
+
+| Step | Command |
+| --- | --- |
+| Lint | `uv run ruff check .` |
+| Type check | `uv run mypy .` |
+| Tests + coverage | `uv run pytest --cov --cov-report=term-missing` |
+| Django system check | `uv run python manage.py check` |
+
+CI uses `config.settings.dev` (SQLite, console email) with a dummy `SECRET_KEY`. No deployment step is wired — deploys are manual by design until the production media and SMTP configuration is confirmed.
 
 ---
 
