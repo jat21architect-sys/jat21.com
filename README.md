@@ -146,7 +146,8 @@ make coverage
 # or: uv run pytest --cov --cov-report=term-missing
 ```
 
-Current baseline: **97 % coverage** (455 statements, 15 missed).
+Current baseline (at time of writing): **97 % coverage** (455 statements, 15 missed).
+The number may shift as features are added; run `make coverage` to see the current figure.
 Coverage is also reported in CI on every push.
 
 ### pre-commit hooks
@@ -254,8 +255,8 @@ jeannote/
 │   └── tree.py
 ├── media/                     # local uploaded files (gitignored)
 ├── pyproject.toml             # dependencies and tool config (source of truth)
-├── uv.lock                    # locked dependency graph
-├── requirements.txt           # generated for compatibility
+├── uv.lock                    # locked dependency graph (do not edit by hand)
+├── requirements.txt           # generated export — do not edit; pyproject.toml + uv.lock are the source of truth
 ├── Makefile
 ├── Procfile                   # gunicorn entry point
 ├── railway.toml               # Railway deployment config
@@ -337,7 +338,7 @@ the complete annotated list.
 
 ## Production deployment
 
-> **Status:** deployment files are in place (`Procfile`, `railway.toml`). The first deploy to Railway is the next operational step and has not yet been completed. Persistent media storage and real SMTP are phase-2 items — see below.
+> **Status:** Railway is the first deployment target. The `Procfile` (gunicorn) and `railway.toml` are committed and ready. The first deploy is manual and has not yet been completed. Persistent media storage and real SMTP are intentional phase-2 items — they must be resolved before real content is uploaded or the contact form is relied upon in production. See sections 3 and 4 below.
 
 ### 1. Activate production settings
 
@@ -433,6 +434,12 @@ make check-deploy
 make test
 ```
 
+**`portfolio.W001` — email backend guard:**
+If `EMAIL_BACKEND` is still set to a dev-only backend (console, dummy, locmem)
+when `DEBUG=False`, Django will emit a `portfolio.W001` warning. This is expected
+until real SMTP is configured. It must be resolved — not silenced — before go-live.
+See section 3 (Email) above.
+
 ### 8. Deployment checklist
 
 - [ ] `DJANGO_SETTINGS_MODULE=config.settings.prod`
@@ -448,7 +455,8 @@ make test
 - [ ] Real portrait and OG image uploaded in admin
 - [ ] Site Settings completed (email, phone, location, social links)
 - [ ] Demo testimonials replaced with real client quotes (or clearly marked)
-- [ ] `make check-deploy` returns only the expected SECRET_KEY warning (no others)
+- [ ] `make check-deploy` returns only the expected `security.W009` SECRET_KEY warning (no others)
+- [ ] `portfolio.W001` email backend warning is gone (real SMTP backend is active)
 
 ---
 
