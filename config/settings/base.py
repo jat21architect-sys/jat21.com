@@ -77,7 +77,7 @@ ASGI_APPLICATION = "config.asgi.application"
 # Database — SQLite by default; set DATABASE_URL in environment for Postgres
 # ---------------------------------------------------------------------------
 
-_db_url = env("DATABASE_URL", default=None)
+_db_url = env.str("DATABASE_URL", default="")
 if _db_url:
     DATABASES = {"default": env.db("DATABASE_URL")}
 else:
@@ -132,9 +132,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Email (environment-driven; environments override as needed)
 # ---------------------------------------------------------------------------
 
-EMAIL_BACKEND = env(
+EMAIL_BACKEND = env.str(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
 )
-CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@jeannot-tsirenge.com")
+CONTACT_EMAIL = env.str("CONTACT_EMAIL", default="contact@jeannot-tsirenge.com")
 DEFAULT_FROM_EMAIL = CONTACT_EMAIL
