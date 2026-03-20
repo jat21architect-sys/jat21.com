@@ -34,7 +34,7 @@ X_FRAME_OPTIONS = "DENY"
 
 # Trust the forwarded-proto header so CSRF and redirects work behind HTTPS proxies.
 # List your domain(s) in CSRF_TRUSTED_ORIGINS when deploying.
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # pyright: ignore[reportArgumentType]
 
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 

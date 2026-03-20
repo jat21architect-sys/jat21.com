@@ -7,7 +7,7 @@ A professional, content-driven portfolio platform built with Django.
 ## Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Framework | Django 5.2 LTS |
 | Language | Python 3.13 |
 | Database | SQLite (dev) · PostgreSQL (prod) |
@@ -85,14 +85,14 @@ uv run python manage.py runserver
 # or: make run
 ```
 
-- Site: **http://127.0.0.1:8000**
-- Admin: **http://127.0.0.1:8000/admin**
+- Site: **<http://127.0.0.1:8000>**
+- Admin: **<http://127.0.0.1:8000/admin>**
 
 ---
 
 ## Settings structure
 
-```
+```text
 config/settings/
 ├── base.py     # Shared settings for all environments
 ├── dev.py      # Development overrides (DEBUG=True, console email)
@@ -143,6 +143,7 @@ uv run pre-commit run --all-files
 ```
 
 Hooks configured:
+
 - `trailing-whitespace`, `end-of-file-fixer`, `check-yaml`, `check-toml`
 - `check-merge-conflict`, `check-added-large-files`, `debug-statements`
 - `no-commit-to-branch` (protects `main`)
@@ -168,7 +169,7 @@ make clean-all     # everything (prompts for confirmation)
 
 ## Project structure
 
-```
+```text
 jeannote/
 ├── config/
 │   ├── settings/
@@ -209,7 +210,7 @@ jeannote/
 ## Data models
 
 | Model | Purpose |
-|---|---|
+| --- | --- |
 | `SiteSettings` | Global metadata: name, tagline, contact, social links, SEO, analytics |
 | `AboutProfile` | About page: biography, philosophy, portrait, CV file |
 | `Service` | Service offering with description, deliverables, and ordering |
@@ -225,7 +226,7 @@ jeannote/
 ## Pages
 
 | URL | View | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `/` | `HomeView` | Hero, featured projects, philosophy, services, trust, CTA |
 | `/projects/` | `ProjectListView` | Paginated listing with category filter |
 | `/projects/<slug>/` | `ProjectDetailView` | Full project case study with gallery |
@@ -244,7 +245,7 @@ or injected by your hosting platform in production). See `.env.example` for
 the complete annotated list.
 
 | Variable | Required | Default | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `SECRET_KEY` | **Yes** | — | Generate with Django's `get_random_secret_key()` |
 | `DEBUG` | No | `True` | Always `False` in production |
 | `ALLOWED_HOSTS` | **Prod** | `localhost,127.0.0.1` | Comma-separated hostname list |
@@ -268,7 +269,7 @@ the complete annotated list.
 
 Set in your hosting platform's environment:
 
-```
+```text
 DJANGO_SETTINGS_MODULE=config.settings.prod
 ```
 
