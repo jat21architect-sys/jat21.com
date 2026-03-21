@@ -14,7 +14,7 @@ A professional, content-driven portfolio platform built with Django.
 | Images | Pillow |
 | Config | django-environ |
 | Static files | whitenoise |
-| Dependency management | [uv](https://docs.astral.sh/uv/) |
+| Dependency management | [uv](https://docs.astral.sh/uv/) (pyproject.toml + uv.lock) |
 | Linting / formatting | [Ruff](https://docs.astral.sh/ruff/) |
 | Type checking | mypy + django-stubs |
 | Testing | pytest + pytest-django + pytest-cov |
@@ -91,6 +91,31 @@ uv run python manage.py runserver
 
 ---
 
+## Dependency management
+
+| File | Role | Edit by hand? |
+| --- | --- | --- |
+| `pyproject.toml` | Authoring source — declares all runtime and dev dependencies | **Yes** |
+| `uv.lock` | Full locked dependency graph for reproducible installs | No |
+| `requirements.txt` | Generated export for Railway/nixpacks deployment | **No** — run `make reqs` |
+
+Workflow when adding or changing a dependency:
+
+```bash
+# 1. Edit pyproject.toml (add/remove from [project].dependencies or [dependency-groups].dev)
+# 2. Sync the lockfile and virtualenv
+uv sync --group dev
+# 3. Regenerate the deployment export
+make reqs
+# 4. Commit all three files together
+git add pyproject.toml uv.lock requirements.txt
+```
+
+CI enforces that `requirements.txt` matches the declared dependencies (`make check-reqs`).
+If you see a CI failure on that step, run `make reqs` and commit the result.
+
+---
+
 ## Settings structure
 
 ```text
@@ -127,10 +152,10 @@ Test files live in `tests/` and cover the full application stack:
 
 | File | What it covers |
 | --- | --- |
-| `test_checks.py` | `portfolio.W001` system check (email backend guard) |
+| `test_checks.py` | `core.W001` system check (email backend guard) |
 | `test_forms.py` | Form validation, contact POST, email-failure resilience |
 | `test_models.py` | Model unit tests, singleton behaviour, field logic |
-| `test_templatetags.py` | `portfolio_tags` template filter |
+| `test_templatetags.py` | `core_tags` template filter (`first_paragraph`) |
 | `test_views.py` | All page routes, context, sitemap, robots.txt |
 
 ```bash
@@ -190,6 +215,8 @@ make typecheck     # mypy
 make test          # pytest
 make coverage      # pytest --cov --cov-report=term-missing
 make check-deploy  # manage.py check --deploy (prod settings)
+make check-reqs   # verify requirements.txt matches pyproject.toml
+make reqs         # regenerate requirements.txt after dep changes
 
 # Clean
 make clean-db      # delete db.sqlite3 (prompts for confirmation)
@@ -214,27 +241,51 @@ jeannote/
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
-├── portfolio/                 # main application
-│   ├── admin/                 # admin classes per domain
-│   ├── models/                # data models per domain
-│   ├── views/                 # views per domain
+├── core/                      # site-wide glue: settings models, page views, checks, context processor
+│   ├── admin/
+│   ├── models/                # SiteSettings, AboutProfile (singletons)
+│   ├── views/                 # HomeView, AboutView
 │   ├── templates/
-│   │   └── portfolio/         # app-owned reusable templates
+│   │   └── core/
 │   ├── templatetags/
-│   │   └── portfolio_tags.py
+│   │   └── core_tags.py       # first_paragraph filter
 │   ├── management/commands/
 │   │   └── seed_demo.py
 │   ├── migrations/
-│   ├── checks.py              # portfolio.W001 — email backend guard
+│   ├── checks.py              # core.W001 — email backend guard
 │   ├── context_processors.py
-│   ├── forms.py
 │   ├── sitemaps.py
 │   └── urls.py
-├── templates/                 # project-level shell / branding templates
+├── projects/                  # portfolio projects domain
+│   ├── admin.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── projects/
+│   ├── management/commands/
+│   │   └── import_project_images.py
+│   ├── migrations/
+│   ├── sitemaps.py
+│   └── urls.py
+├── contact/                   # contact form domain
+│   ├── admin.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── contact/
+│   ├── migrations/
+│   └── urls.py
+├── services/                  # services listing domain
+│   ├── admin.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── services/
+│   ├── migrations/
+│   └── urls.py
+├── templates/                 # project-level shell templates (base, nav, footer)
 │   ├── base.html
-│   ├── home.html
-│   ├── about.html
-│   ├── services.html
 │   ├── robots.txt
 │   └── includes/
 │       ├── nav.html
@@ -243,7 +294,7 @@ jeannote/
 │   ├── css/main.css           # design system (CSS custom properties)
 │   ├── js/main.js
 │   └── images/
-├── tests/
+├── tests/                     # cross-app test suite
 │   ├── conftest.py
 │   ├── test_checks.py
 │   ├── test_forms.py
@@ -254,9 +305,9 @@ jeannote/
 │   ├── smoke_check.py
 │   └── tree.py
 ├── media/                     # local uploaded files (gitignored)
-├── pyproject.toml             # dependencies and tool config (source of truth)
+├── pyproject.toml             # authoring source for all dependencies
 ├── uv.lock                    # locked dependency graph (do not edit by hand)
-├── requirements.txt           # generated export — do not edit; pyproject.toml + uv.lock are the source of truth
+├── requirements.txt           # generated deployment export — run: make reqs
 ├── Makefile
 ├── Procfile                   # gunicorn entry point
 ├── railway.toml               # Railway deployment config
@@ -273,10 +324,13 @@ Templates are split across two locations with distinct ownership:
 
 | Location | Owns | Purpose |
 | --- | --- | --- |
-| `templates/` | Project level | Shell, branding, site composition — `base.html`, `home.html`, `about.html`, `services.html`, nav, footer |
-| `portfolio/templates/portfolio/` | App level | Reusable portfolio features — project list/detail, contact form, contact success |
+| `templates/` | Project level | Shell and global chrome — `base.html`, nav, footer, `robots.txt` |
+| `core/templates/core/` | `core` app | Home and about page templates |
+| `projects/templates/projects/` | `projects` app | Project list and detail |
+| `contact/templates/contact/` | `contact` app | Contact form and success page |
+| `services/templates/services/` | `services` app | Services listing |
 
-This boundary keeps the structural chrome of the site (layout, navigation, brand) separate from the reusable application features. Neither location overrides the other — Django's template loader finds both.
+Django's `APP_DIRS=True` loader finds app-level templates automatically. The project-level `templates/` directory holds only the structural chrome (layout, navigation, brand) shared across all apps.
 
 ---
 
@@ -434,9 +488,9 @@ make check-deploy
 make test
 ```
 
-**`portfolio.W001` — email backend guard:**
+**`core.W001` — email backend guard:**
 If `EMAIL_BACKEND` is still set to a dev-only backend (console, dummy, locmem)
-when `DEBUG=False`, Django will emit a `portfolio.W001` warning. This is expected
+when `DEBUG=False`, Django will emit a `core.W001` warning. This is expected
 until real SMTP is configured. It must be resolved — not silenced — before go-live.
 See section 3 (Email) above.
 
@@ -456,7 +510,7 @@ See section 3 (Email) above.
 - [ ] Site Settings completed (email, phone, location, social links)
 - [ ] Demo testimonials replaced with real client quotes (or clearly marked)
 - [ ] `make check-deploy` returns only the expected `security.W009` SECRET_KEY warning (no others)
-- [ ] `portfolio.W001` email backend warning is gone (real SMTP backend is active)
+- [ ] `core.W001` email backend warning is gone (real SMTP backend is active)
 
 ---
 
@@ -470,6 +524,7 @@ A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | Type check | `uv run mypy .` |
 | Tests + coverage | `uv run pytest --cov --cov-report=term-missing` |
 | Django system check | `uv run python manage.py check` |
+| Dep drift check | `uv export --no-dev --no-hashes \| diff - requirements.txt` |
 
 CI uses `config.settings.dev` (SQLite, console email) with a dummy `SECRET_KEY`. No deployment step is wired — deploys are manual by design until the production media and SMTP configuration is confirmed.
 

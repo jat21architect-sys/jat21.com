@@ -1,6 +1,6 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
         lint fmt typecheck test check-deploy \
-        reqs \
+        reqs check-reqs \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
 
 # Print repository tree (excludes venv, caches, build artefacts)
@@ -39,6 +39,15 @@ collectstatic:
 # Run this after any change to [project].dependencies in pyproject.toml.
 reqs:
 	uv export --no-dev --no-hashes -o requirements.txt
+
+# Check that requirements.txt is in sync with pyproject.toml / uv.lock.
+# Exits non-zero if requirements.txt would change — use in CI to catch drift.
+check-reqs:
+	@uv export --no-dev --no-hashes 2>/dev/null | grep -v '^#' > /tmp/_reqs_fresh.txt; \
+	grep -v '^#' requirements.txt > /tmp/_reqs_committed.txt; \
+	diff /tmp/_reqs_fresh.txt /tmp/_reqs_committed.txt > /dev/null \
+		&& echo "requirements.txt is up to date" \
+		|| (echo "ERROR: requirements.txt is out of sync. Run: make reqs" && exit 1)
 
 # ---------------------------------------------------------------------------
 # Code quality

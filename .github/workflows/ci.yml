@@ -42,3 +42,9 @@ jobs:
 
       - name: Django system check
         run: uv run python manage.py check
+
+      - name: Check requirements.txt is in sync
+        run: |
+          uv export --no-dev --no-hashes 2>/dev/null | grep -v '^#' > /tmp/reqs_fresh.txt
+          grep -v '^#' requirements.txt > /tmp/reqs_committed.txt
+          diff /tmp/reqs_fresh.txt /tmp/reqs_committed.txt || (echo "requirements.txt is out of sync — run: make reqs" && exit 1)
