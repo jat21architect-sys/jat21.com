@@ -1,7 +1,6 @@
 from django.views.generic import DetailView, ListView
 
 from .models import Project
-from portfolio.models import SiteSettings
 
 # ---------------------------------------------------------------------------
 # Project list
@@ -51,8 +50,4 @@ class ProjectDetailView(DetailView):
         ctx["testimonials"] = project.testimonials.filter(active=True)
         if project.cover_image:
             ctx["og_image"] = project.cover_image.url
-        else:
-            site = SiteSettings.load()
-            if site.og_image:
-                ctx["og_image"] = site.og_image.url
         return ctx

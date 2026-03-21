@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static portfolio_tags %}
+{% load portfolio_tags %}
 
 {% block full_title %}{{ site_settings.site_name }} — Architect{% endblock %}
 {% block body_class %}home{% endblock %}
@@ -74,7 +74,7 @@
     <blockquote class="philosophy">
       <p>{{ about.philosophy|first_paragraph }}</p>
     </blockquote>
-    <a href="{% url 'portfolio:about' %}" class="btn btn--ghost-light">About Jeannot</a>
+    <a href="{% url 'portfolio:about' %}" class="btn btn--ghost-light">About {{ site_settings.site_name }}</a>
   </div>
 </section>
 {% endif %}

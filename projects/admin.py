@@ -14,9 +14,6 @@ class ProjectImageInline(admin.TabularInline):
     fields = ("image", "image_type", "caption", "alt_text", "order")
     ordering = ("order",)
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("project")
-
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):

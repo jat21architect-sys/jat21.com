@@ -201,10 +201,9 @@ def test_project_detail_query_count(client, site_settings, project, django_asser
       5. drawings images (select_related)
       6. related projects
       7. testimonials
-      8. SiteSettings.load() og_image fallback (no cover_image)
     """
     url = reverse("projects:detail", kwargs={"slug": project.slug})
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(7):
         client.get(url)
 
 

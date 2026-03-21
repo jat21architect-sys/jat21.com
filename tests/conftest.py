@@ -3,16 +3,10 @@ Shared pytest fixtures for the jeannote test suite.
 """
 
 import pytest
-from django.test import Client
 
 from portfolio.models import SiteSettings
 from projects.models import Project
 from services.models import Service
-
-
-@pytest.fixture
-def client():
-    return Client()
 
 
 @pytest.fixture

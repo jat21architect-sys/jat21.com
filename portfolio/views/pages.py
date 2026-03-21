@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from projects.models import Project, Testimonial
 from services.models import Service
 
-from ..models import AboutProfile, SiteSettings
+from ..models import AboutProfile
 
 # ---------------------------------------------------------------------------
 # Home
@@ -21,9 +21,6 @@ class HomeView(TemplateView):
         ctx["services"] = Service.objects.filter(active=True)
         ctx["testimonials"] = Testimonial.objects.filter(active=True)
         ctx["about"] = AboutProfile.load()
-        site = SiteSettings.load()
-        if site.og_image:
-            ctx["og_image"] = site.og_image.url
         return ctx
 
 
@@ -38,7 +35,4 @@ class AboutView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["profile"] = AboutProfile.load()
-        site = SiteSettings.load()
-        if site.og_image:
-            ctx["og_image"] = site.og_image.url
         return ctx

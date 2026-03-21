@@ -14,16 +14,17 @@
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
   {% if og_image %}
-  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image }}">
+  {# Cloudinary and local URLs: build_absolute_uri handles both cases correctly. #}
+  <meta property="og:image" content="{% if og_image|slice:':4' == 'http' %}{{ og_image }}{% else %}{{ request.build_absolute_uri }}{{ og_image }}{% endif %}">
   {% elif site_settings.og_image %}
-  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.og_image.url }}">
+  <meta property="og:image" content="{% if site_settings.og_image.url|slice:':4' == 'http' %}{{ site_settings.og_image.url }}{% else %}{{ request.build_absolute_uri }}{{ site_settings.og_image.url }}{% endif %}">
   {% endif %}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% block twitter_title %}{{ site_settings.site_name }}{% endblock %}">
   {% if og_image %}
-  <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image }}">
+  <meta name="twitter:image" content="{% if og_image|slice:':4' == 'http' %}{{ og_image }}{% else %}{{ request.build_absolute_uri }}{{ og_image }}{% endif %}">
   {% elif site_settings.og_image %}
-  <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.og_image.url }}">
+  <meta name="twitter:image" content="{% if site_settings.og_image.url|slice:':4' == 'http' %}{{ site_settings.og_image.url }}{% else %}{{ request.build_absolute_uri }}{{ site_settings.og_image.url }}{% endif %}">
   {% endif %}
   {% endblock %}
 

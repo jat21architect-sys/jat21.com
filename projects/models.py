@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 # ---------------------------------------------------------------------------
@@ -95,8 +96,6 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        from django.urls import reverse
-
         return reverse("projects:detail", kwargs={"slug": self.slug})
 
     def get_seo_title(self):
