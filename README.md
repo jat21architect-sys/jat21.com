@@ -148,20 +148,33 @@ uv run mypy .
 
 ### Tests
 
-Test files live in `tests/` and cover the full application stack:
+Tests live in `tests/` organised by domain, mirroring the `apps/` layout:
 
-| File | What it covers |
-| --- | --- |
-| `test_checks.py` | `core.W001` system check (email backend guard) |
-| `test_forms.py` | Form validation, contact POST, email-failure resilience |
-| `test_models.py` | Model unit tests, singleton behaviour, field logic |
-| `test_templatetags.py` | `core_tags` template filter (`first_paragraph`) |
-| `test_views.py` | All page routes, context, sitemap, robots.txt |
+```text
+tests/
+  conftest.py          # shared fixtures (site_settings, project, service)
+  core/
+    test_checks.py     # core.W001 system check (email backend guard)
+    test_models.py     # SiteSettings and AboutProfile singletons
+    test_templatetags.py  # first_paragraph filter
+    test_views.py      # home, about, admin, sitemap, robots.txt
+  contact/
+    test_forms.py      # form validation, POST, email-failure resilience
+    test_models.py     # ContactInquiry default status
+    test_views.py      # contact GET, success page, query param prefill
+  projects/
+    test_models.py     # Project, ProjectImage, Testimonial
+    test_views.py      # list, detail, context, query count, og_image fallback
+  services/
+    test_models.py     # Service str, slug, deliverables
+    test_views.py      # services page
+```
 
 ```bash
-uv run pytest                # all tests
-uv run pytest -x             # stop on first failure
-uv run pytest tests/test_views.py   # one file
+uv run pytest                       # all tests
+uv run pytest -x                    # stop on first failure
+uv run pytest tests/projects/       # one domain
+uv run pytest tests/contact/test_forms.py  # one file
 ```
 
 ### Coverage
@@ -241,49 +254,48 @@ jeannote/
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
-├── core/                      # site-wide glue: settings models, page views, checks, context processor
-│   ├── admin/
-│   ├── models/                # SiteSettings, AboutProfile (singletons)
-│   ├── views/                 # HomeView, AboutView
-│   ├── templates/
-│   │   └── core/
-│   ├── templatetags/
-│   │   └── core_tags.py       # first_paragraph filter
-│   ├── management/commands/
-│   │   └── seed_demo.py
-│   ├── migrations/
-│   ├── checks.py              # core.W001 — email backend guard
-│   ├── context_processors.py
-│   ├── sitemaps.py
-│   └── urls.py
-├── projects/                  # portfolio projects domain
-│   ├── admin.py
-│   ├── models.py
-│   ├── views.py
-│   ├── templates/
-│   │   └── projects/
-│   ├── management/commands/
-│   │   └── import_project_images.py
-│   ├── migrations/
-│   ├── sitemaps.py
-│   └── urls.py
-├── contact/                   # contact form domain
-│   ├── admin.py
-│   ├── forms.py
-│   ├── models.py
-│   ├── views.py
-│   ├── templates/
-│   │   └── contact/
-│   ├── migrations/
-│   └── urls.py
-├── services/                  # services listing domain
-│   ├── admin.py
-│   ├── models.py
-│   ├── views.py
-│   ├── templates/
-│   │   └── services/
-│   ├── migrations/
-│   └── urls.py
+├── apps/                      # all first-party Django apps
+│   ├── core/                  # site-wide glue: settings models, page views, checks, context processor
+│   │   ├── admin/
+│   │   ├── models/            # SiteSettings, AboutProfile (singletons)
+│   │   ├── views/             # HomeView, AboutView
+│   │   ├── templates/
+│   │   │   └── core/
+│   │   ├── templatetags/
+│   │   │   └── core_tags.py   # first_paragraph filter
+│   │   ├── management/commands/
+│   │   │   └── seed_demo.py
+│   │   ├── migrations/
+│   │   ├── checks.py          # core.W001 — email backend guard
+│   │   ├── context_processors.py
+│   │   ├── sitemaps.py
+│   │   └── urls.py
+│   ├── projects/              # portfolio projects domain
+│   │   ├── admin.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── templates/
+│   │   │   └── projects/
+│   │   ├── migrations/
+│   │   ├── sitemaps.py
+│   │   └── urls.py
+│   ├── contact/               # contact form domain
+│   │   ├── admin.py
+│   │   ├── forms.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── templates/
+│   │   │   └── contact/
+│   │   ├── migrations/
+│   │   └── urls.py
+│   └── services/              # services listing domain
+│       ├── admin.py
+│       ├── models.py
+│       ├── views.py
+│       ├── templates/
+│       │   └── services/
+│       ├── migrations/
+│       └── urls.py
 ├── templates/                 # project-level shell templates (base, nav, footer)
 │   ├── base.html
 │   ├── robots.txt
@@ -294,13 +306,12 @@ jeannote/
 │   ├── css/main.css           # design system (CSS custom properties)
 │   ├── js/main.js
 │   └── images/
-├── tests/                     # cross-app test suite
+├── tests/                     # domain-structured test suite (mirrors apps/)
 │   ├── conftest.py
-│   ├── test_checks.py
-│   ├── test_forms.py
-│   ├── test_models.py
-│   ├── test_templatetags.py
-│   └── test_views.py
+│   ├── core/
+│   ├── contact/
+│   ├── projects/
+│   └── services/
 ├── scripts/
 │   ├── smoke_check.py
 │   └── tree.py
@@ -325,10 +336,10 @@ Templates are split across two locations with distinct ownership:
 | Location | Owns | Purpose |
 | --- | --- | --- |
 | `templates/` | Project level | Shell and global chrome — `base.html`, nav, footer, `robots.txt` |
-| `core/templates/core/` | `core` app | Home and about page templates |
-| `projects/templates/projects/` | `projects` app | Project list and detail |
-| `contact/templates/contact/` | `contact` app | Contact form and success page |
-| `services/templates/services/` | `services` app | Services listing |
+| `apps/core/templates/core/` | `core` app | Home and about page templates |
+| `apps/projects/templates/projects/` | `projects` app | Project list and detail |
+| `apps/contact/templates/contact/` | `contact` app | Contact form and success page |
+| `apps/services/templates/services/` | `services` app | Services listing |
 
 Django's `APP_DIRS=True` loader finds app-level templates automatically. The project-level `templates/` directory holds only the structural chrome (layout, navigation, brand) shared across all apps.
 
