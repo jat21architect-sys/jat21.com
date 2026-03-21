@@ -1,6 +1,6 @@
-"""Tests for custom template filters in core/templatetags/portfolio_tags.py."""
+"""Tests for custom template filters in core/templatetags/core_tags.py."""
 
-from core.templatetags.portfolio_tags import first_paragraph
+from core.templatetags.core_tags import first_paragraph
 
 
 def test_first_paragraph_single_block():
