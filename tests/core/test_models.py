@@ -56,3 +56,15 @@ def test_site_settings_new_social_fields_default_blank():
     assert s.behance_url == ""
     assert s.issuu_url == ""
     assert s.og_image.name is None or s.og_image.name == ""
+
+
+@pytest.mark.django_db
+def test_site_settings_str():
+    s = SiteSettings.load()
+    assert str(s) == "Site Settings"
+
+
+@pytest.mark.django_db
+def test_about_profile_str():
+    a = AboutProfile.load()
+    assert str(a) == "About Profile"

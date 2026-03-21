@@ -83,3 +83,12 @@ def test_contact_form_saves_inquiry_even_when_email_send_fails(client, site_sett
     assert response.status_code == 302
     assert response["Location"] == reverse("contact:success")
     assert ContactInquiry.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_contact_form_short_name_rejected(client, site_settings):
+    """A single-character name is too short and should fail clean_name validation."""
+    payload = {**VALID_PAYLOAD, "name": "A"}
+    response = client.post(reverse("contact:contact"), data=payload)
+    assert response.status_code == 200
+    assert ContactInquiry.objects.count() == 0

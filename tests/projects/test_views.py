@@ -2,10 +2,12 @@
 View tests for apps.projects: list and detail pages.
 """
 
+from unittest.mock import MagicMock, PropertyMock, patch
+
 import pytest
 from django.urls import reverse
 
-from apps.projects.models import Testimonial
+from apps.projects.models import Project, Testimonial
 
 
 @pytest.mark.django_db
@@ -119,3 +121,16 @@ def test_project_detail_og_image_falls_back_to_site_settings(client, site_settin
     response = client.get(url)
     assert response.status_code == 200
     assert "og_image" not in response.context
+
+
+@pytest.mark.django_db
+def test_project_detail_og_image_set_when_cover_exists(client, site_settings, project):
+    """og_image is added to context when the project has a cover_image."""
+    mock_file = MagicMock()
+    mock_file.url = "/media/projects/cover.jpg"
+    with patch.object(Project, "cover_image", new_callable=PropertyMock) as mock_cover:
+        mock_cover.return_value = mock_file
+        url = reverse("projects:detail", kwargs={"slug": project.slug})
+        response = client.get(url)
+    assert response.status_code == 200
+    assert response.context["og_image"] == "/media/projects/cover.jpg"

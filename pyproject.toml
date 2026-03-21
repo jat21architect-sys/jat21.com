@@ -89,6 +89,7 @@ omit = [
     "*/migrations/*",
     "*/management/commands/seed_demo.py",
     "*/management/commands/import_project_images.py",
+    "*/management/commands/bootstrap_project.py",
     "config/asgi.py",
     "config/wsgi.py",
     "config/settings/prod.py",

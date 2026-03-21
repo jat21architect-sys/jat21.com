@@ -131,3 +131,9 @@ def test_project_updated_at_changes_on_resave(project):
     project.save()
     project.refresh_from_db()
     assert project.updated_at >= first
+
+
+@pytest.mark.django_db
+def test_project_image_str(project):
+    img = ProjectImage.objects.create(project=project, order=5, caption="Roof terrace")
+    assert str(img) == "Test House — image 5"
