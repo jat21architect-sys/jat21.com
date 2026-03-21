@@ -1,5 +1,6 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
         lint fmt typecheck test check-deploy \
+        reqs \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
 
 # Print repository tree (excludes venv, caches, build artefacts)
@@ -29,6 +30,15 @@ seed:
 # Collect static files
 collectstatic:
 	uv run python manage.py collectstatic --noinput
+
+# ---------------------------------------------------------------------------
+# Dependency management
+# ---------------------------------------------------------------------------
+
+# Regenerate requirements.txt from pyproject.toml (used by Railway/nixpacks).
+# Run this after any change to [project].dependencies in pyproject.toml.
+reqs:
+	uv export --no-dev --no-hashes -o requirements.txt
 
 # ---------------------------------------------------------------------------
 # Code quality
