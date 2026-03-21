@@ -39,9 +39,9 @@ class ProjectDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        project = self.get_object()
-        ctx["gallery"] = project.images.filter(image_type="gallery")
-        ctx["drawings"] = project.images.exclude(image_type="gallery")
+        project = self.object
+        ctx["gallery"] = project.images.filter(image_type="gallery").select_related("project")
+        ctx["drawings"] = project.images.exclude(image_type="gallery").select_related("project")
         ctx["related"] = (
             Project.objects.filter(category=project.category)
             .exclude(pk=project.pk)
