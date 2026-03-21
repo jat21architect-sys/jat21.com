@@ -97,7 +97,7 @@ class Project(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
 
-        return reverse("project_detail", kwargs={"slug": self.slug})
+        return reverse("portfolio:project_detail", kwargs={"slug": self.slug})
 
     def get_seo_title(self):
         return self.seo_title or self.title

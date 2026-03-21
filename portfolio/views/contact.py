@@ -41,7 +41,7 @@ def contact_view(request):
                 msg.send()
             except Exception:
                 logger.exception("Contact email failed for inquiry pk=%s", inquiry.pk)
-            return redirect("contact_success")
+            return redirect("portfolio:contact_success")
     else:
         initial: dict[str, str] = {}
         project_type = request.GET.get("project_type", "").strip()

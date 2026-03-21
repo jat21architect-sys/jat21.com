@@ -59,7 +59,7 @@
           {% endif %}
         </div>
 
-        <a href="{% url 'contact' %}?project_type={{ service.title|urlencode }}" class="btn btn--outline">Enquire about this service</a>
+        <a href="{% url 'portfolio:contact' %}?project_type={{ service.title|urlencode }}" class="btn btn--outline">Enquire about this service</a>
       </div>
     </article>
     {% if not forloop.last %}<hr class="divider">{% endif %}
@@ -73,7 +73,7 @@
   <div class="container container--narrow cta-section__inner">
     <h2 class="cta-section__title">Not sure which service fits your project?</h2>
     <p class="cta-section__body">Send a message and let's talk through what you need. No commitment required.</p>
-    <a href="{% url 'contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
+    <a href="{% url 'portfolio:contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
   </div>
 </section>
 

@@ -20,7 +20,7 @@
   {% endif %}
   <div class="project-hero__content container">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="{% url 'project_list' %}">Projects</a>
+      <a href="{% url 'portfolio:project_list' %}">Projects</a>
       <span aria-hidden="true">›</span>
       <span aria-current="page">{{ project.title }}</span>
     </nav>
@@ -163,8 +163,8 @@
 
 <!-- Project navigation -->
 <div class="project-nav container">
-  <a href="{% url 'project_list' %}" class="project-nav__back">← All Projects</a>
-  <a href="{% url 'contact' %}" class="btn btn--primary">Discuss a Similar Project</a>
+  <a href="{% url 'portfolio:project_list' %}" class="project-nav__back">← All Projects</a>
+  <a href="{% url 'portfolio:contact' %}" class="btn btn--primary">Discuss a Similar Project</a>
 </div>
 
 {% if testimonials %}

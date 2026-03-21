@@ -20,10 +20,10 @@ VALID_PAYLOAD = {
 @pytest.mark.django_db
 def test_contact_form_valid_post_creates_inquiry(client, site_settings):
     assert ContactInquiry.objects.count() == 0
-    response = client.post(reverse("contact"), data=VALID_PAYLOAD, follow=False)
+    response = client.post(reverse("portfolio:contact"), data=VALID_PAYLOAD, follow=False)
     # Should redirect to the thank-you page
     assert response.status_code == 302
-    assert response["Location"] == reverse("contact_success")
+    assert response["Location"] == reverse("portfolio:contact_success")
     assert ContactInquiry.objects.count() == 1
 
     inquiry = ContactInquiry.objects.get(email="alice@example.com")
@@ -34,7 +34,7 @@ def test_contact_form_valid_post_creates_inquiry(client, site_settings):
 
 @pytest.mark.django_db
 def test_contact_form_missing_required_fields_stays_on_page(client, site_settings):
-    response = client.post(reverse("contact"), data={"name": "", "email": "", "message": ""})
+    response = client.post(reverse("portfolio:contact"), data={"name": "", "email": "", "message": ""})
     assert response.status_code == 200
     assert ContactInquiry.objects.count() == 0
 
@@ -42,7 +42,7 @@ def test_contact_form_missing_required_fields_stays_on_page(client, site_setting
 @pytest.mark.django_db
 def test_contact_form_invalid_email(client, site_settings):
     payload = {**VALID_PAYLOAD, "email": "not-an-email"}
-    response = client.post(reverse("contact"), data=payload)
+    response = client.post(reverse("portfolio:contact"), data=payload)
     assert response.status_code == 200
     assert ContactInquiry.objects.count() == 0
 
@@ -51,7 +51,7 @@ def test_contact_form_invalid_email(client, site_settings):
 def test_honeypot_filled_rejects_submission(client, site_settings):
     """A submission with the honeypot field filled should be silently rejected."""
     payload = {**VALID_PAYLOAD, "website": "http://spam.example.com"}
-    response = client.post(reverse("contact"), data=payload)
+    response = client.post(reverse("portfolio:contact"), data=payload)
     assert response.status_code == 200
     assert ContactInquiry.objects.count() == 0
 
@@ -60,7 +60,7 @@ def test_honeypot_filled_rejects_submission(client, site_settings):
 def test_short_message_rejected(client, site_settings):
     """Messages shorter than 20 characters should fail validation."""
     payload = {**VALID_PAYLOAD, "message": "Too short."}
-    response = client.post(reverse("contact"), data=payload)
+    response = client.post(reverse("portfolio:contact"), data=payload)
     assert response.status_code == 200
     assert ContactInquiry.objects.count() == 0
 
@@ -79,7 +79,7 @@ def test_contact_form_saves_inquiry_even_when_email_send_fails(client, site_sett
 
     monkeypatch.setattr(DjangoEmailMessage, "send", _raise)
 
-    response = client.post(reverse("contact"), data=VALID_PAYLOAD, follow=False)
+    response = client.post(reverse("portfolio:contact"), data=VALID_PAYLOAD, follow=False)
     assert response.status_code == 302
-    assert response["Location"] == reverse("contact_success")
+    assert response["Location"] == reverse("portfolio:contact_success")
     assert ContactInquiry.objects.count() == 1

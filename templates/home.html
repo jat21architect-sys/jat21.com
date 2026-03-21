@@ -21,8 +21,8 @@
     <h1 class="hero__title">{{ site_settings.site_name }}</h1>
     <p class="hero__subtitle">{{ site_settings.tagline }}</p>
     <div class="hero__cta">
-      <a href="{% url 'project_list' %}" class="btn btn--primary">View Projects</a>
-      <a href="{% url 'contact' %}" class="btn btn--ghost">Start a Conversation</a>
+      <a href="{% url 'portfolio:project_list' %}" class="btn btn--primary">View Projects</a>
+      <a href="{% url 'portfolio:contact' %}" class="btn btn--ghost">Start a Conversation</a>
     </div>
   </div>
   <a href="#featured" class="hero__scroll" aria-label="Scroll to featured work">
@@ -60,7 +60,7 @@
       {% endfor %}
     </div>
     <div class="section__footer">
-      <a href="{% url 'project_list' %}" class="btn btn--outline">All Projects</a>
+      <a href="{% url 'portfolio:project_list' %}" class="btn btn--outline">All Projects</a>
     </div>
   </div>
 </section>
@@ -74,7 +74,7 @@
     <blockquote class="philosophy">
       <p>{{ about.philosophy|first_paragraph }}</p>
     </blockquote>
-    <a href="{% url 'about' %}" class="btn btn--ghost-light">About Jeannot</a>
+    <a href="{% url 'portfolio:about' %}" class="btn btn--ghost-light">About Jeannot</a>
   </div>
 </section>
 {% endif %}
@@ -90,7 +90,7 @@
     <ul class="services-list">
       {% for service in services %}
       <li class="service-item">
-        <a href="{% url 'services' %}#{{ service.slug }}" class="service-item__link">
+        <a href="{% url 'portfolio:services' %}#{{ service.slug }}" class="service-item__link">
           <h3 class="service-item__title">{{ service.title }}</h3>
           <p class="service-item__summary">{{ service.summary }}</p>
           <span class="service-item__arrow" aria-hidden="true">→</span>
@@ -99,7 +99,7 @@
       {% endfor %}
     </ul>
     <div class="section__footer">
-      <a href="{% url 'services' %}" class="btn btn--outline">All Services</a>
+      <a href="{% url 'portfolio:services' %}" class="btn btn--outline">All Services</a>
     </div>
   </div>
 </section>
@@ -195,7 +195,7 @@
   <div class="container container--narrow cta-section__inner">
     <h2 class="cta-section__title">Planning a project or looking for a design partner?</h2>
     <p class="cta-section__body">Architecture begins with a conversation. Get in touch and let's discuss your vision.</p>
-    <a href="{% url 'contact' %}" class="btn btn--primary btn--large">Start a Conversation</a>
+    <a href="{% url 'portfolio:contact' %}" class="btn btn--primary btn--large">Start a Conversation</a>
   </div>
 </section>
 

@@ -23,7 +23,7 @@
       <!-- Form -->
       <div class="contact-form-col">
         <h2 class="contact-form-col__heading">Send an enquiry</h2>
-        <form method="post" action="{% url 'contact' %}" class="contact-form" novalidate>
+        <form method="post" action="{% url 'portfolio:contact' %}" class="contact-form" novalidate>
           {% csrf_token %}
 
           <div class="form-row form-row--2">

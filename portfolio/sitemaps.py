@@ -26,4 +26,4 @@ class StaticViewSitemap(Sitemap):
         return ["home", "project_list", "about", "services", "contact"]
 
     def location(self, item: str) -> str:
-        return reverse(item)
+        return reverse(f"portfolio:{item}")

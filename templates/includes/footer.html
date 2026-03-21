@@ -1,7 +1,7 @@
 <footer class="site-footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <a href="{% url 'home' %}" class="footer__name">{{ site_settings.site_name }}</a>
+      <a href="{% url 'portfolio:home' %}" class="footer__name">{{ site_settings.site_name }}</a>
       {% if site_settings.tagline %}
       <p class="footer__tagline">{{ site_settings.tagline }}</p>
       {% endif %}
@@ -9,10 +9,10 @@
 
     <nav class="footer__nav" aria-label="Footer navigation">
       <ul>
-        <li><a href="{% url 'project_list' %}">Projects</a></li>
-        <li><a href="{% url 'about' %}">About</a></li>
-        <li><a href="{% url 'services' %}">Services</a></li>
-        <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="{% url 'portfolio:project_list' %}">Projects</a></li>
+        <li><a href="{% url 'portfolio:about' %}">About</a></li>
+        <li><a href="{% url 'portfolio:services' %}">Services</a></li>
+        <li><a href="{% url 'portfolio:contact' %}">Contact</a></li>
       </ul>
     </nav>
 

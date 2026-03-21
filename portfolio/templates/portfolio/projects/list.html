@@ -21,7 +21,7 @@
 <div class="filter-bar">
   <div class="container">
     <nav class="filter-bar__nav" aria-label="Filter projects by category">
-      <a href="{% url 'project_list' %}" class="filter-btn {% if not active_category %}filter-btn--active{% endif %}" {% if not active_category %}aria-current="page"{% endif %}>All</a>
+      <a href="{% url 'portfolio:project_list' %}" class="filter-btn {% if not active_category %}filter-btn--active{% endif %}" {% if not active_category %}aria-current="page"{% endif %}>All</a>
       {% for value, label in categories %}
       <a href="?category={{ value }}" class="filter-btn {% if active_category == value %}filter-btn--active{% endif %}" {% if active_category == value %}aria-current="page"{% endif %}>{{ label }}</a>
       {% endfor %}
