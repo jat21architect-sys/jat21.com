@@ -10,7 +10,7 @@
   <div class="container">
     <p class="page-hero__label">Capabilities</p>
     <h1 class="page-hero__title">Services</h1>
-    <p class="page-hero__subtitle">From first sketch to finished building — a complete design service shaped to your project's needs.</p>
+    <p class="page-hero__subtitle">Architectural services for homes, interiors, renovations, and selected cultural or commercial work — from early concept through developed design.</p>
   </div>
 </section>
 
@@ -63,7 +63,11 @@
     </article>
     {% if not forloop.last %}<hr class="divider">{% endif %}
     {% empty %}
-    <p class="empty-state">Services information coming soon.</p>
+    <div class="prose">
+      <p>I work with clients at different stages of a project, from first ideas and feasibility discussions to design development and project documentation.</p>
+      <p>Depending on the brief, services may include residential design, renovation and adaptive reuse, interior architecture, early-stage concept design, and help shaping a clear, buildable direction for the project.</p>
+      <p>If you already know what you need, I can help define the right scope. If you are still figuring it out, that is also a good place to begin.</p>
+    </div>
     {% endfor %}
   </div>
 </section>
@@ -71,7 +75,7 @@
 <section class="section cta-section">
   <div class="container container--narrow cta-section__inner">
     <h2 class="cta-section__title">Not sure which service fits your project?</h2>
-    <p class="cta-section__body">Send a message and let's talk through what you need. No commitment required.</p>
+    <p class="cta-section__body">Whether you already have a brief or are still working through the first questions, get in touch and tell me a little about the project. I’ll help you clarify the next step.</p>
     <a href="{% url 'contact:contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
   </div>
 </section>
