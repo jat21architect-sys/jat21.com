@@ -2,6 +2,8 @@
 
 A professional, content-driven portfolio platform for architecture practices, built with Django.
 
+> **New here?** See [SETUP.md](SETUP.md) for the buyer-facing setup and customisation checklist.
+
 ---
 
 ## Stack
