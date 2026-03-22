@@ -40,6 +40,12 @@ jobs:
       - name: Pytest (with coverage)
         run: uv run pytest --cov --cov-report=term-missing
 
+      - name: Install Playwright browser
+        run: uv run playwright install --with-deps chromium
+
+      - name: Pytest e2e (Chromium)
+        run: uv run pytest tests/e2e --override-ini="addopts=-v --tb=short" -m e2e --browser chromium
+
       - name: Django system check
         run: uv run python manage.py check
 

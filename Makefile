@@ -1,5 +1,5 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
-        lint fmt typecheck test health smoke smoke-prod check-deploy \
+        lint fmt typecheck test test-e2e health smoke smoke-prod check-deploy \
         reqs check-reqs \
         docker-up docker-down docker-test \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
@@ -88,6 +88,10 @@ typecheck:
 # Run test suite
 test:
 	uv run pytest
+
+# Run browser-based end-to-end tests (Chromium only)
+test-e2e:
+	uv run pytest tests/e2e --override-ini="addopts=-v --tb=short" -m e2e --browser chromium
 
 # Run the standard repo health gate used before commits / in CI.
 health:

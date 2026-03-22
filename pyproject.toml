@@ -22,8 +22,10 @@ dev = [
     "django-stubs>=5.1",
     "pytest>=8.3",
     "pytest-django>=4.9",
+    "playwright>=1.49",
     "pre-commit>=4.0",
     "pytest-cov>=7.0.0",
+    "pytest-playwright>=0.5",
 ]
 
 # ---------------------------------------------------------------------------
@@ -76,7 +78,10 @@ DJANGO_SETTINGS_MODULE = "config.settings.dev"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -m \"not e2e\""
+markers = [
+    "e2e: browser end-to-end tests",
+]
 filterwarnings = [
     # pytest sees imported Django model classes (e.g. Testimonial); harmless
     "ignore::pytest.PytestCollectionWarning",

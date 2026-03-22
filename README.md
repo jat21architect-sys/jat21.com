@@ -259,6 +259,13 @@ tests/
     test_forms.py      # form validation, POST, email-failure resilience
     test_models.py     # ContactInquiry default status
     test_views.py      # contact GET, success page, query param prefill
+  e2e/
+    conftest.py        # live server + browser fixtures
+    test_contact.py    # contact submit/success flow
+    test_homepage.py   # homepage smoke
+    test_navigation.py # mobile navigation
+    test_projects.py   # project list usability
+    test_services.py   # services seeded-content flow
   pages/
     test_views.py      # home/about pages and featured-project exclusion
   projects/
@@ -271,10 +278,12 @@ tests/
 ```
 
 ```bash
-uv run pytest                       # all tests
+uv run pytest                       # fast pytest suite (excludes e2e by default)
 uv run pytest -x                    # stop on first failure
 uv run pytest tests/projects/       # one domain
 uv run pytest tests/contact/test_forms.py  # one file
+uv run playwright install chromium  # install the browser once locally
+uv run pytest tests/e2e --override-ini="addopts=-v --tb=short" -m e2e --browser chromium
 ```
 
 ### Coverage
@@ -325,7 +334,8 @@ make tree          # print project tree
 make lint          # ruff check (no fix)
 make fmt           # ruff check --fix + ruff format
 make typecheck     # mypy
-make test          # pytest
+make test          # pytest (excludes e2e by default)
+make test-e2e      # Playwright browser tests in Chromium
 make health        # ruff + mypy + pytest + Django checks + dep drift
 make coverage      # pytest --cov --cov-report=term-missing
 make check-deploy  # manage.py check --deploy (prod settings)
