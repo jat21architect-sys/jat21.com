@@ -1,5 +1,5 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
-        lint fmt typecheck test health smoke check-deploy \
+        lint fmt typecheck test health smoke smoke-prod check-deploy \
         reqs check-reqs \
         docker-up docker-down docker-test \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
@@ -105,6 +105,13 @@ coverage:
 # Smoke-check a running instance (local dev server or deployed URL).
 smoke:
 	uv run python scripts/smoke_check.py --base-url "$(SMOKE_BASE_URL)"
+
+# Smoke-check the live production URL.
+# Usage: DEPLOY_URL=https://your-domain.com make smoke-prod
+# Requires DEPLOY_URL to be set in the environment (or as a Make variable).
+smoke-prod:
+	@test -n "$(DEPLOY_URL)" || (echo "ERROR: DEPLOY_URL is not set. Usage: DEPLOY_URL=https://... make smoke-prod" && exit 1)
+	uv run python scripts/smoke_check.py --base-url "$(DEPLOY_URL)"
 
 # Django deployment security check — always runs against production settings.
 # Uses explicit dummy values for all production-only env vars so the check can

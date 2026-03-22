@@ -1,4 +1,14 @@
-"""HTTP smoke check for a running Jeannote instance."""
+"""HTTP smoke check for a running Jeannote instance.
+
+Checks status codes, key page content, and post-deploy specifics
+(branded 404, admin reachability).
+
+Usage:
+    python scripts/smoke_check.py --base-url https://your-domain.com
+
+Exit code 0 = all checks passed.
+Exit code 1 = one or more checks failed.
+"""
 import argparse
 import sys
 import urllib.error
@@ -74,6 +84,46 @@ def main() -> int:
         print(f"{sym} {label}")
         if not found:
             failures.append(label)
+
+    # ------------------------------------------------------------------
+    # Post-deploy checks: branded 404 and admin reachability
+    # ------------------------------------------------------------------
+    print()
+    print("Post-deploy checks:")
+
+    # Branded 404 — confirm custom template is served, not Django's default
+    _404_url = base_url + "/smoke-check-deliberate-404-xyz-9q7r/"
+    try:
+        _status, _body = fetch(_404_url, timeout=args.timeout)
+    except urllib.error.HTTPError as exc:
+        _status, _body = exc.code, exc.read()
+    except Exception as exc:  # noqa: BLE001
+        _status, _body = 0, b""
+        print(f"FAIL error branded 404: {exc}")
+        failures.append(f"branded 404 request failed: {exc}")
+    if _status != 0:
+        branded = _status == 404 and b"Page not found" in _body and b"Back to home" in _body
+        sym = "OK  " if branded else "FAIL"
+        print(f"{sym} {_status} branded 404 template")
+        if not branded:
+            failures.append(f"branded 404 check failed (status={_status}, template={'OK' if b'Page not found' in _body else 'MISSING'})")
+
+    # Admin reachable — expect 200 (login page) or 302 (redirect to login)
+    _admin_url = base_url + "/admin/login/"
+    try:
+        _status, _ = fetch(_admin_url, timeout=args.timeout)
+    except urllib.error.HTTPError as exc:
+        _status = exc.code
+    except Exception as exc:  # noqa: BLE001
+        _status = 0
+        print(f"FAIL error admin reachability: {exc}")
+        failures.append(f"admin reachability failed: {exc}")
+    if _status != 0:
+        admin_ok = _status in (200, 302)
+        sym = "OK  " if admin_ok else "FAIL"
+        print(f"{sym} {_status} admin login page reachable")
+        if not admin_ok:
+            failures.append(f"admin login page returned {_status}")
 
     print()
     if failures:
