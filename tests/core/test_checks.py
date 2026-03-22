@@ -6,6 +6,7 @@ a dev-only email backend being active in production-like mode (DEBUG=False).
 from django.test import override_settings
 
 from apps.core.checks import (
+    check_contact_email_default,
     check_production_csrf_trusted_origins,
     check_production_email_backend,
     check_production_media_storage_credentials,
@@ -115,4 +116,33 @@ def test_check_warns_when_sentry_dsn_missing():
 @override_settings(DEBUG=False, SENTRY_DSN="https://examplePublicKey@o0.ingest.sentry.io/0")
 def test_check_silent_when_sentry_dsn_present():
     errors = check_production_sentry_dsn(None)
+    assert errors == []
+
+
+# ---------------------------------------------------------------------------
+# core.W006 — CONTACT_EMAIL still the template default
+# ---------------------------------------------------------------------------
+
+_TEMPLATE_EMAIL = "contact@jeannote-tsirenge.com"
+
+
+@override_settings(DEBUG=False, CONTACT_EMAIL=_TEMPLATE_EMAIL)
+def test_check_warns_when_contact_email_is_template_default():
+    """W006 fires in production when CONTACT_EMAIL was never changed."""
+    errors = check_contact_email_default(None)
+    assert len(errors) == 1
+    assert errors[0].id == "core.W006"
+    assert _TEMPLATE_EMAIL in errors[0].msg
+
+
+@override_settings(DEBUG=False, CONTACT_EMAIL="contact@myarchitecture.com")
+def test_check_silent_when_contact_email_is_custom():
+    errors = check_contact_email_default(None)
+    assert errors == []
+
+
+@override_settings(DEBUG=True, CONTACT_EMAIL=_TEMPLATE_EMAIL)
+def test_check_contact_email_silent_in_dev_mode():
+    """W006 is suppressed in dev — template email is expected during local setup."""
+    errors = check_contact_email_default(None)
     assert errors == []

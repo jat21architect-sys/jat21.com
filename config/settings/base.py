@@ -157,5 +157,8 @@ EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
 EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
 EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
-CONTACT_EMAIL = env.str("CONTACT_EMAIL", default="contact@jeannot-tsirenge.com")
+CONTACT_EMAIL = env.str("CONTACT_EMAIL", default="contact@jeannote-tsirenge.com")
+# Falls back to CONTACT_EMAIL so a single env var is enough in most deployments.
+# Set DEFAULT_FROM_EMAIL explicitly to use a 'noreply@' sender instead.
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default=CONTACT_EMAIL)
 DEFAULT_FROM_EMAIL = CONTACT_EMAIL

@@ -354,7 +354,7 @@ make clean-all     # everything (prompts for confirmation)
 
 ## Management commands
 
-Five custom commands handle content bootstrap and media import.
+Six custom commands handle content bootstrap, media import, and readiness checking.
 
 | Command | Use for | Safe on production | Idempotent | Key flags |
 | --- | --- | --- | --- | --- |
@@ -363,6 +363,7 @@ Five custom commands handle content bootstrap and media import.
 | `seed_services` | `Service` records | Yes | Yes — skips non-blank fields | `--reset` deletes and reinitialises all |
 | `bootstrap_project` | Create one project from local files | Yes | No — creates a new record each run | **`--dry-run` required first** |
 | `import_project_images` | Attach images to an existing project | Yes | Yes — deduplicates by filename | **`--dry-run` required first** |
+| `check_content_readiness` | Pre-launch content audit | Yes | Yes (read-only) | — |
 
 ### Safe production bootstrap order
 

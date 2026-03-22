@@ -1,5 +1,5 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
-        lint fmt typecheck test test-e2e health smoke smoke-prod check-deploy \
+        lint fmt typecheck test test-e2e health check-content smoke smoke-prod check-deploy \
         reqs check-reqs \
         docker-up docker-down docker-test \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
@@ -101,6 +101,11 @@ health:
 	uv run python manage.py check
 	uv run python manage.py makemigrations --check --dry-run
 	$(MAKE) check-reqs
+
+# Pre-launch content readiness audit (requires a populated database).
+# Run this before going live; not part of 'health' because CI has an empty DB.
+check-content:
+	uv run python manage.py check_content_readiness
 
 # Run test suite with coverage report
 coverage:

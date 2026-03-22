@@ -165,3 +165,35 @@ def check_production_sentry_dsn(app_configs, **kwargs):
             )
         )
     return errors
+
+
+_TEMPLATE_CONTACT_EMAIL = "contact@jeannote-tsirenge.com"
+
+
+@register()
+def check_contact_email_default(app_configs, **kwargs):
+    """
+    Warn when CONTACT_EMAIL is still the template default in production.
+
+    If this setting is never changed from the repo default, every contact form
+    submission sends a notification to the template author's inbox rather than
+    the live site owner's.
+    """
+    errors: list[Warning] = []
+    if settings.DEBUG:
+        return errors
+
+    contact_email = getattr(settings, "CONTACT_EMAIL", "")
+    if contact_email == _TEMPLATE_CONTACT_EMAIL:
+        errors.append(
+            Warning(
+                f"CONTACT_EMAIL is still the template default ('{_TEMPLATE_CONTACT_EMAIL}').",
+                hint=(
+                    "Set CONTACT_EMAIL to your real inbox in the production environment. "
+                    "Without this, contact form notifications go to the template "
+                    "author's email address."
+                ),
+                id="core.W006",
+            )
+        )
+    return errors
