@@ -1465,6 +1465,13 @@ h1, h2, h3, h4, h5 {
   color: #b94040;
 }
 
+.form-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 0.4rem;
+}
+
 .contact-info-col {
   display: flex;
   flex-direction: column;

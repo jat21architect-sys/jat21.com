@@ -49,7 +49,7 @@
 
     {% if profile.philosophy %}
     <div class="about-philosophy">
-      <h2>Design Philosophy</h2>
+      <h2>Approach</h2>
       <div class="prose">
         {{ profile.philosophy|linebreaks }}
       </div>
@@ -90,10 +90,10 @@
 <!-- CTA -->
 <section class="section cta-section">
   <div class="container container--narrow cta-section__inner">
-    <h2 class="cta-section__title">Interested in working together?</h2>
-    <p class="cta-section__body">Every project begins with a conversation. I'd be glad to hear about yours.</p>
+    <h2 class="cta-section__title">Have a project in mind?</h2>
+    <p class="cta-section__body">The earlier we talk, the more useful that conversation tends to be — whether you already have a clear brief or are still working through the first questions.</p>
     <div class="cta-section__actions">
-      <a href="{% url 'contact:contact' %}" class="btn btn--primary btn--large">Contact {{ site_settings.site_name }}</a>
+      <a href="{% url 'contact:contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
       <a href="{% url 'projects:list' %}" class="btn btn--outline btn--large">View Projects</a>
     </div>
   </div>

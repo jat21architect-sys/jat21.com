@@ -78,7 +78,7 @@ class ContactForm(forms.ModelForm):
             "message": forms.Textarea(
                 attrs={
                     "rows": 6,
-                    "placeholder": "Briefly describe your project or enquiry…",
+                    "placeholder": "Describe your project…",
                     "aria-describedby": "id_message_error",
                 }
             ),
