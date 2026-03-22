@@ -15,6 +15,13 @@ class ProjectImageInline(admin.TabularInline):
     ordering = ("order",)
 
 
+class TestimonialInline(admin.StackedInline):
+    model = Testimonial
+    extra = 0
+    fields = ("name", "role", "company", "quote", "order", "active")
+    ordering = ("order",)
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
@@ -32,7 +39,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ("category", "status", "featured")
     search_fields = ("title", "location", "client")
     prepopulated_fields = {"slug": ("title",)}
-    inlines = [ProjectImageInline]
+    inlines = [ProjectImageInline, TestimonialInline]
     fieldsets = (
         ("Identity", {"fields": ("title", "slug", "short_description", "cover_image")}),
         ("Classification", {"fields": ("category", "status", "featured", "order")}),
@@ -58,7 +65,11 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
-    list_display = ("name", "role", "company", "project", "order", "active")
+    list_display = ("name", "role", "company", "project", "quote_preview", "order", "active")
     list_editable = ("order", "active")
     list_filter = ("active",)
     search_fields = ("name", "quote", "company")
+
+    @admin.display(description="Quote")
+    def quote_preview(self, obj):
+        return obj.quote[:80] + "…" if len(obj.quote) > 80 else obj.quote
