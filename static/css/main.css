@@ -1187,6 +1187,7 @@ h1, h2, h3, h4, h5 {
   gap: var(--space-sm);
   position: sticky;
   top: 5.5rem;
+  max-width: 300px;
 }
 
 .about-intro {
