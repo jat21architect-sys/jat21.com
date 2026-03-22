@@ -1,0 +1,19 @@
+# Local development compose file — NOT for production.
+# See README.md for usage instructions.
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    # Mount the repo into the container for live code reloading.
+    # /opt/venv (the virtualenv) lives outside /app, so it is not shadowed.
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    # Run migrations automatically, then start the dev server.
+    # Both commands are idempotent — safe to run on every `docker compose up`.
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"

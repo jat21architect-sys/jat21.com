@@ -61,7 +61,7 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
-        "core": {
+        "apps.core": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,

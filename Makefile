@@ -1,6 +1,7 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
         lint fmt typecheck test check-deploy \
         reqs check-reqs \
+        docker-up docker-down docker-test \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
 
 # Print repository tree (excludes venv, caches, build artefacts)
@@ -30,6 +31,22 @@ seed:
 # Collect static files
 collectstatic:
 	uv run python manage.py collectstatic --noinput
+
+# ---------------------------------------------------------------------------
+# Docker — local development only (not Railway deployment)
+# ---------------------------------------------------------------------------
+
+# Build image and start the dev server (runs migrate automatically)
+docker-up:
+	docker compose up --build
+
+# Stop and remove containers
+docker-down:
+	docker compose down
+
+# Run the test suite inside the running container
+docker-test:
+	docker compose exec web pytest
 
 # ---------------------------------------------------------------------------
 # Dependency management

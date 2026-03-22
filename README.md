@@ -91,6 +91,83 @@ uv run python manage.py runserver
 
 ---
 
+## Run locally with Docker
+
+An alternative to the `uv` setup above. Useful for reproducible local start-up
+across macOS and Windows without installing Python or uv on the host.
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (macOS / Windows)
+  or Docker Engine + Compose plugin (Linux)
+
+### 1. Copy the env file — **required before first run**
+
+```bash
+cp .env.example .env
+```
+
+Then open `.env` and set `SECRET_KEY`. Everything else works as-is for local dev.
+`docker compose up` will fail immediately if `.env` does not exist.
+
+### 2. Build and start
+
+```bash
+docker compose up --build
+# or: make docker-up
+```
+
+The container runs `python manage.py migrate --noinput` before the dev server
+starts, so the database is always up to date on each run.
+
+- Site: **<http://localhost:8000>**
+- Admin: **<http://localhost:8000/admin>**
+
+### 3. Stop
+
+```bash
+docker compose down
+# or: make docker-down
+```
+
+### 4. Useful one-off commands
+
+```bash
+# Open a shell inside the running container
+docker compose exec web sh
+
+# Run migrations manually (also runs automatically on `up`)
+docker compose exec web python manage.py migrate
+
+# Create an admin user
+docker compose exec web python manage.py createsuperuser
+
+# Seed demo content
+docker compose exec web python manage.py seed_demo
+
+# Run the test suite
+docker compose exec web pytest
+# or: make docker-test
+
+# Run a single test file
+docker compose exec web pytest tests/projects/test_views.py
+```
+
+### Notes
+
+- The repo is bind-mounted into the container at `/app`. Code changes on the
+  host are reflected immediately — Django's auto-reloader works as normal.
+- The SQLite database (`db.sqlite3`) is also on the bind mount, so data
+  persists between `docker compose down / up` cycles.
+- The virtualenv lives at `/opt/venv` inside the image, outside the bind
+  mount, so it is never shadowed when you start the container.
+- This setup uses `config.settings.dev` (the default). It is **not** wired
+  to Railway or any production config.
+- If you prefer the `uv` workflow, see the [Local setup](#local-setup) section
+  above. Both approaches are fully supported.
+
+---
+
 ## Dependency management
 
 | File | Role | Edit by hand? |
@@ -327,6 +404,9 @@ jeannote/
 ├── pyproject.toml             # authoring source for all dependencies
 ├── uv.lock                    # locked dependency graph (do not edit by hand)
 ├── requirements.txt           # generated deployment export — run: make reqs
+├── Dockerfile                 # local dev container (not for production)
+├── compose.yml                # docker compose for local dev
+├── .dockerignore
 ├── Makefile
 ├── Procfile                   # gunicorn entry point
 ├── railway.toml               # Railway deployment config
