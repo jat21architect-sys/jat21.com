@@ -24,7 +24,10 @@ media/
 Thumbs.db
 
 # IDEs
-.vscode/settings.json
+# .vscode/settings.json is committed — it sets workspace-level defaults
+# (e.g. excluding .venv from Pylance analysis) that benefit anyone working
+# on this repo. Add personal/machine-specific overrides to
+# .vscode/*.code-workspace or your global VS Code settings instead.
 .idea/
 *.swp
 *.swo

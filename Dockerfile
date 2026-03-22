@@ -1,7 +1,17 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------------
-# Local development Dockerfile — NOT for production deployment.
-# Production is handled by Railway via Procfile + railway.toml.
+# LOCAL DEVELOPMENT ONLY — do not use this image for production.
+#
+# Production deployment: Railway reads Procfile + railway.toml directly.
+# This Dockerfile exists solely to give a reproducible local environment
+# without installing Python or uv on the host machine.
+#
+# Because this image never runs in production, Docker security best-practices
+# that only apply to production images (HEALTHCHECK, non-root USER) are
+# intentionally omitted. The suppressions below are honest, not lazy.
+# checkov:skip=CKV_DOCKER_2:dev-only image, HEALTHCHECK not needed
+# checkov:skip=CKV_DOCKER_3:dev-only image, non-root user not required
+# checkov:skip=CKV2_DOCKER_3:dev-only image, non-root user not required
 # ---------------------------------------------------------------------------
 
 FROM python:3.13-slim

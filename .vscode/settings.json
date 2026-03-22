@@ -1,0 +1,20 @@
+{
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.useLibraryCodeForTypes": true,
+  // Exclude the virtualenv from Pylance analysis — it is not project code.
+  // Without this, Django internal type errors in .venv surface in the Problems
+  // panel and obscure real issues in the actual codebase.
+  "python.analysis.exclude": [
+    ".venv/**"
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingModuleSource": "none",
+    "reportUnknownMemberType": "none",
+    "reportUnknownVariableType": "none",
+    "reportUnknownArgumentType": "none",
+    "reportUnknownParameterType": "none",
+    "reportMissingTypeArgument": "none",
+    "reportMissingParameterType": "none",
+    "reportConstantRedefinition": "none"
+  }
+}

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
@@ -103,6 +107,12 @@ class Project(models.Model):
 
     def get_seo_description(self):
         return self.seo_description or self.short_description
+
+    if TYPE_CHECKING:
+        from django.db.models import Manager
+
+        images: Manager[ProjectImage]
+        testimonials: Manager[Testimonial]
 
 
 # ---------------------------------------------------------------------------

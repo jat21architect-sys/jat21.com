@@ -163,6 +163,9 @@ docker compose exec web pytest tests/projects/test_views.py
   mount, so it is never shadowed when you start the container.
 - This setup uses `config.settings.dev` (the default). It is **not** wired
   to Railway or any production config.
+- **Production is not served from this Dockerfile.** Railway builds directly
+  from `Procfile` + `railway.toml` via nixpacks — the `Dockerfile` and
+  `compose.yml` are never used in that environment.
 - If you prefer the `uv` workflow, see the [Local setup](#local-setup) section
   above. Both approaches are fully supported.
 
