@@ -63,6 +63,12 @@
         <dd>{{ project.client }}</dd>
       </div>
       {% endif %}
+      {% if project.services_provided %}
+      <div class="project-meta-item">
+        <dt>Services</dt>
+        <dd>{{ project.services_provided|linebreaksbr }}</dd>
+      </div>
+      {% endif %}
     </dl>
   </div>
 </section>
@@ -160,12 +166,6 @@
 
 </article>
 
-<!-- Project navigation -->
-<div class="project-nav container">
-  <a href="{% url 'projects:list' %}" class="project-nav__back">← All Projects</a>
-  <a href="{% url 'contact:contact' %}" class="btn btn--primary">Discuss a Similar Project</a>
-</div>
-
 {% if testimonials %}
 <section class="section testimonials-section">
   <div class="container">
@@ -188,6 +188,12 @@
   </div>
 </section>
 {% endif %}
+
+<!-- Project navigation -->
+<div class="project-nav container">
+  <a href="{% url 'projects:list' %}" class="project-nav__back">← All Projects</a>
+  <a href="{% url 'contact:contact' %}" class="btn btn--primary">Discuss a Similar Project</a>
+</div>
 
 <!-- Related projects -->
 {% if related %}
