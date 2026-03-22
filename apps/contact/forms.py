@@ -1,4 +1,8 @@
+import time
+
 from django import forms
+from django.conf import settings
+from django.core import signing
 
 from .models import ContactInquiry
 
@@ -42,6 +46,9 @@ class ContactForm(forms.ModelForm):
 
     # Honeypot anti-spam field
     website = forms.CharField(required=False, widget=forms.HiddenInput())
+    submission_token = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    _token_signer = signing.TimestampSigner(salt="contact-form")
 
     class Meta:
         model = ContactInquiry
@@ -77,11 +84,37 @@ class ContactForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_bound:
+            issued_at = int(time.time())
+            self.initial.setdefault("submission_token", self._token_signer.sign(str(issued_at)))
+
     def clean_website(self) -> str:
         value = self.cleaned_data.get("website", "")
         if value:
             raise forms.ValidationError("Invalid submission.")
         return ""
+
+    def clean(self):
+        cleaned_data = super().clean() or {}
+        token = cleaned_data.get("submission_token", "")
+        if not token:
+            raise forms.ValidationError("Invalid submission.")
+
+        max_age = getattr(settings, "CONTACT_FORM_TOKEN_MAX_AGE_SECONDS", 86_400)
+        min_age = getattr(settings, "CONTACT_FORM_MIN_AGE_SECONDS", 3)
+
+        try:
+            issued_at = int(self._token_signer.unsign(token, max_age=max_age))
+        except (signing.BadSignature, ValueError):
+            raise forms.ValidationError("Invalid submission.") from None
+
+        age = int(time.time()) - issued_at
+        if age < min_age:
+            raise forms.ValidationError("Please wait a moment and try again.")
+
+        return cleaned_data
 
     def clean_name(self) -> str:
         name = self.cleaned_data.get("name", "").strip()

@@ -6,7 +6,6 @@ import pytest
 
 from apps.core.models import AboutProfile, SiteSettings
 
-
 # ---------------------------------------------------------------------------
 # SiteSettings singleton
 # ---------------------------------------------------------------------------

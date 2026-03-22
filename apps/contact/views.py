@@ -14,13 +14,22 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
+def _client_ip(request) -> str:
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "")
+
+
 def contact_view(request):
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
             inquiry = form.save()
+            client_ip = _client_ip(request) or "unknown"
             # Notify site owner — failure is non-fatal (form already saved to DB).
             # Reply-To is set so the architect can reply directly from their email client.
+            email_delivery = "sent"
             try:
                 msg = EmailMessage(
                     subject=f"New enquiry from {inquiry.name}",
@@ -40,8 +49,25 @@ def contact_view(request):
                 )
                 msg.send()
             except Exception:
+                email_delivery = "failed"
                 logger.exception("Contact email failed for inquiry pk=%s", inquiry.pk)
+            logger.info(
+                "Contact inquiry saved pk=%s email=%s ip=%s email_delivery=%s",
+                inquiry.pk,
+                inquiry.email,
+                client_ip,
+                email_delivery,
+            )
             return redirect("contact:success")
+        client_ip = _client_ip(request) or "unknown"
+        if request.POST.get("website"):
+            logger.warning("Contact form honeypot triggered ip=%s", client_ip)
+        elif form.non_field_errors():
+            logger.warning(
+                "Contact form anti-bot token rejected ip=%s errors=%s",
+                client_ip,
+                "; ".join(str(error) for error in form.non_field_errors()),
+            )
     else:
         initial: dict[str, str] = {}
         project_type = request.GET.get("project_type", "").strip()

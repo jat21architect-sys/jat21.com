@@ -223,6 +223,21 @@ uv run ruff format .         # format
 uv run mypy .
 ```
 
+### One-command health gate
+
+```bash
+make health
+```
+
+This runs the standard repo guardrails in one pass:
+
+- `ruff`
+- `mypy`
+- `pytest`
+- `python manage.py check`
+- `python manage.py makemigrations --check --dry-run`
+- `make check-reqs`
+
 ### Tests
 
 Tests live in `tests/` organised by domain, mirroring the `apps/` layout:
@@ -308,8 +323,10 @@ make lint          # ruff check (no fix)
 make fmt           # ruff check --fix + ruff format
 make typecheck     # mypy
 make test          # pytest
+make health        # ruff + mypy + pytest + Django checks + dep drift
 make coverage      # pytest --cov --cov-report=term-missing
 make check-deploy  # manage.py check --deploy (prod settings)
+make smoke         # smoke-check a running instance via SMOKE_BASE_URL
 make check-reqs   # verify requirements.txt matches pyproject.toml
 make reqs         # regenerate requirements.txt after dep changes
 
@@ -491,7 +508,7 @@ the complete annotated list.
 
 ## Production deployment
 
-> **Status:** Railway is the first deployment target. The `Procfile` (gunicorn) and `railway.toml` are committed and ready. The first deploy is manual and has not yet been completed. Persistent media storage and real SMTP are intentional phase-2 items — they must be resolved before real content is uploaded or the contact form is relied upon in production. See sections 3 and 4 below.
+> **Status:** Railway is the first deployment target. The `Procfile` (gunicorn) and `railway.toml` are committed and ready. The first deploy is manual. Production media is already wired to Cloudinary in `prod.py`, but the required Cloudinary credentials and real SMTP settings must be present in the deployment environment before launch.
 
 ### 1. Activate production settings
 
@@ -539,22 +556,22 @@ Recommended providers: SendGrid, Mailgun, Postmark, Amazon SES.
 > production use. **This must be resolved before any real images are uploaded
 > to a live environment.**
 
-**Integration point:** look for `# MEDIA_STORAGE_INTEGRATION_POINT` in
-[`config/settings/base.py`](config/settings/base.py). To switch to S3:
+This repo already resolves that in production by setting:
 
-```bash
-uv add "django-storages[s3]"
+```python
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 ```
+
+To make uploads durable in production, set these three environment variables:
 
 ```dotenv
-DEFAULT_FILE_STORAGE=storages.backends.s3boto3.S3Boto3Storage
-AWS_STORAGE_BUCKET_NAME=your-bucket
-AWS_S3_REGION_NAME=af-south-1
-AWS_ACCESS_KEY_ID=your-key
-AWS_SECRET_ACCESS_KEY=your-secret
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-Safe to defer only if the initial deployment uses no uploaded (real) images.
+If those are missing, admin-managed uploads will fail at runtime. Static files
+are a separate concern and continue to be served by Whitenoise.
 
 ### 5. Static files
 
@@ -579,19 +596,19 @@ Then log in to `/admin/` to configure Site Settings, upload images, and replace 
 ### 7. Pre-launch verification
 
 ```bash
-# Security audit against production settings.
-# Expects exactly one security.W009 warning (dummy SECRET_KEY used locally).
-# Any other warnings are real issues that must be fixed before launch.
+# Repo health gate
+make health
+
+# Production security/config audit (should pass cleanly)
 make check-deploy
 
-make test
+# Smoke-check a running instance after deploy
+SMOKE_BASE_URL=https://yourdomain.com make smoke
 ```
 
-**`core.W001` — email backend guard:**
-If `EMAIL_BACKEND` is still set to a dev-only backend (console, dummy, locmem)
-when `DEBUG=False`, Django will emit a `core.W001` warning. This is expected
-until real SMTP is configured. It must be resolved — not silenced — before go-live.
-See section 3 (Email) above.
+`make check-deploy` now injects dummy-but-valid values for production-only
+environment variables so that warnings are real misconfigurations, not noise
+from the local shell. If it warns, fix the underlying production setting.
 
 ### 8. Deployment checklist
 
@@ -602,14 +619,14 @@ See section 3 (Email) above.
 - [ ] `CSRF_TRUSTED_ORIGINS` set
 - [ ] SMTP email backend configured and tested
 - [ ] `CONTACT_EMAIL` set to a monitored inbox
-- [ ] Media storage strategy resolved (local volume or S3)
+- [ ] Cloudinary credentials set for production media uploads
 - [ ] `collectstatic` and `migrate` run
 - [ ] Admin superuser created
 - [ ] Real portrait and OG image uploaded in admin
 - [ ] Site Settings completed (email, phone, location, social links)
 - [ ] Demo testimonials replaced with real client quotes (or clearly marked)
-- [ ] `make check-deploy` returns only the expected `security.W009` SECRET_KEY warning (no others)
-- [ ] `core.W001` email backend warning is gone (real SMTP backend is active)
+- [ ] `make check-deploy` passes cleanly
+- [ ] `SMOKE_BASE_URL=https://yourdomain.com make smoke` passes after deploy
 
 ---
 
@@ -623,7 +640,9 @@ A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | Type check | `uv run mypy .` |
 | Tests + coverage | `uv run pytest --cov --cov-report=term-missing` |
 | Django system check | `uv run python manage.py check` |
-| Dep drift check | `uv export --no-dev --no-hashes \| diff - requirements.txt` |
+| Migration drift check | `uv run python manage.py makemigrations --check --dry-run` |
+| Deploy check | `make check-deploy` |
+| Dep drift check | `make check-reqs` |
 
 CI uses `config.settings.dev` (SQLite, console email) with a dummy `SECRET_KEY`. No deployment step is wired — deploys are manual by design until the production media and SMTP configuration is confirmed.
 

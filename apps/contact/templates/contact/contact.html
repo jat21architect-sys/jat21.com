@@ -24,6 +24,13 @@
         <h2 class="contact-form-col__heading">Send an enquiry</h2>
         <form method="post" action="{% url 'contact:contact' %}" class="contact-form" novalidate>
           {% csrf_token %}
+          {% if form.non_field_errors %}
+          <div class="form-row">
+            <div class="form-field has-error">
+              <span class="form-error">{{ form.non_field_errors.0 }}</span>
+            </div>
+          </div>
+          {% endif %}
 
           <div class="form-row form-row--2">
             <div class="form-field {% if form.name.errors %}has-error{% endif %}">
@@ -76,6 +83,7 @@
           </div>
 
           {{ form.website }}
+          {{ form.submission_token }}
           <button type="submit" class="btn btn--primary btn--large">Send Enquiry</button>
         </form>
       </div>

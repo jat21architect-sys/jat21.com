@@ -1,8 +1,10 @@
 .PHONY: tree run migrate migrations superuser seed collectstatic \
-        lint fmt typecheck test check-deploy \
+        lint fmt typecheck test health smoke check-deploy \
         reqs check-reqs \
         docker-up docker-down docker-test \
         clean clean-pyc clean-static clean-test clean-media clean-db clean-all
+
+SMOKE_BASE_URL ?= http://127.0.0.1:8000
 
 # Print repository tree (excludes venv, caches, build artefacts)
 tree:
@@ -87,21 +89,41 @@ typecheck:
 test:
 	uv run pytest
 
+# Run the standard repo health gate used before commits / in CI.
+health:
+	uv run ruff check .
+	uv run mypy .
+	uv run pytest
+	uv run python manage.py check
+	uv run python manage.py makemigrations --check --dry-run
+	$(MAKE) check-reqs
+
 # Run test suite with coverage report
 coverage:
 	uv run pytest --cov --cov-report=term-missing
 
+# Smoke-check a running instance (local dev server or deployed URL).
+smoke:
+	uv run python scripts/smoke_check.py --base-url "$(SMOKE_BASE_URL)"
+
 # Django deployment security check — always runs against production settings.
-# Injects a dummy SECRET_KEY so Django can start; this produces one expected
-# security.W009 warning about key strength. That warning is normal and can
-# be ignored when running this target locally.
-# Any OTHER warnings are genuine production misconfigurations and must be fixed.
+# Uses explicit dummy values for all production-only env vars so the check can
+# pass cleanly and only fail on real misconfigurations in prod.py or custom checks.
 check-deploy:
 	@echo "Running manage.py check --deploy against config.settings.prod..."
-	@echo "(one security.W009 SECRET_KEY warning is expected — all others are real issues)"
 	DJANGO_SETTINGS_MODULE=config.settings.prod \
-	  SECRET_KEY=dummy-key-for-check \
+	  SECRET_KEY=deploy-check-secret-ThisIsLongEnough1234567890!@#ABCDEF \
 	  ALLOWED_HOSTS=example.com \
+	  CSRF_TRUSTED_ORIGINS=https://example.com \
+	  EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
+	  EMAIL_HOST=smtp.example.com \
+	  EMAIL_PORT=587 \
+	  EMAIL_USE_TLS=True \
+	  EMAIL_HOST_USER=dummy-user \
+	  EMAIL_HOST_PASSWORD=dummy-password \
+	  CLOUDINARY_CLOUD_NAME=dummy-cloud \
+	  CLOUDINARY_API_KEY=dummy-key \
+	  CLOUDINARY_API_SECRET=dummy-secret \
 	  uv run python manage.py check --deploy
 
 # ---------------------------------------------------------------------------
