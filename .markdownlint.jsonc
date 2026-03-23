@@ -1,8 +1,13 @@
 {
-  // MD029: allow sequential source numbering (1. 2. 3.) in ordered lists.
-  // The default "1/1/1" style requires every item to start with "1." which
-  // harms source readability when lists are split by code blocks.
-  "MD029": { "style": "ordered" },
+  // MD013: 80-char line limit is impractical for technical documentation,
+  // especially markdown tables where cell content cannot be wrapped.
+  "MD013": false,
+
+  // MD029: markdownlint treats code blocks as list-breakers, causing
+  // continuation items (e.g. step 4 after a code block example in step 3)
+  // to always look like a "new" list starting at the wrong number. The
+  // numbering is intentional and correct for human readers.
+  "MD029": false,
 
   // MD060: use compact table style — cells do not need to be padded to equal
   // widths. Aligned-style enforcement fights with tables whose content is

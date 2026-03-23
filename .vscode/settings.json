@@ -1,4 +1,13 @@
 {
+  // CSS browser-compatibility warnings from VS Code's built-in CSS language
+  // service use MDN data that lags behind real browser support. Properties
+  // like text-size-adjust and scrollbar-width are intentional progressive-
+  // enhancement patterns paired with vendor-prefixed fallbacks. Without a
+  // standalone CSS linter in this project, disabling built-in CSS validation
+  // avoids noise while losing nothing — ruff/pre-commit covers the Python
+  // side and the CSS is not authored by tooling that would introduce errors.
+  "css.validate": false,
+
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.useLibraryCodeForTypes": true,
   // Exclude the virtualenv from Pylance analysis — it is not project code.
