@@ -1,6 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
 
+CONTACT_PROJECT_TYPE_MAP = {
+    "residential-design": "Residential Design",
+    "renovation-adaptive-reuse": "Renovation / Adaptive Reuse",
+    "interior-architecture": "Interior Architecture",
+    "concept-design": "Concept Development",
+}
+
 
 class Service(models.Model):
     title = models.CharField(max_length=120)
@@ -33,6 +40,10 @@ class Service(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    @property
+    def contact_project_type(self) -> str:
+        return CONTACT_PROJECT_TYPE_MAP.get(self.slug, "Other")
 
     def deliverables_list(self):
         return [d.strip() for d in self.deliverables.splitlines() if d.strip()]

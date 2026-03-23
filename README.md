@@ -62,7 +62,7 @@ Full Django admin for every model — no custom frontend needed to manage conten
 - **SEO fields** — per-page meta description and OG image on every model
 - **Google Analytics** — GA4 measurement ID managed in admin, no code changes
 - **SMTP email** — configurable email backend; contact form emails on every submission
-- **Content readiness check** — management command flags uncustomised fields before launch
+- **Content readiness check** — management command flags blank or starter/demo content before launch
 - **Whitenoise static serving** — no CDN required for static files
 
 ### Developer ergonomics
@@ -470,8 +470,9 @@ Six custom commands handle content bootstrap, media import, and readiness checki
 
 > `seed_demo` is idempotent and uses generic placeholder copy — it is safe to run on
 > a fresh production database to get the site rendering immediately.
-> It will update existing records if re-run, so avoid running it
-> after you have replaced starter copy with your own real content.
+> `check_content_readiness` will continue to flag that starter content until you replace it.
+> It will update existing records if re-run, so avoid running it after you have replaced
+> starter copy with your own real content.
 
 ---
 
@@ -680,6 +681,12 @@ SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0
 > a contact form is submitted. Enquiries are saved to the database but arrive
 > silently.
 
+This template intentionally separates:
+
+- the public email shown on the site: `Site Settings.contact_email`
+- the inbox that receives contact-form notifications: `CONTACT_EMAIL`
+- the sender shown on outgoing emails: `DEFAULT_FROM_EMAIL`
+
 ```dotenv
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.sendgrid.net
@@ -803,4 +810,3 @@ A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | Dep drift check | `make check-reqs` |
 
 CI uses `config.settings.dev` (SQLite, console email) with a dummy `SECRET_KEY`. No deployment step is wired — deploys are manual by design until the production media and SMTP configuration is confirmed.
-

@@ -56,7 +56,7 @@ Replace every placeholder with your real information.
 | --- | --- | --- |
 | `site_name` | Your practice name | e.g. "Studio Rossi Architecture" |
 | `tagline` | One-line positioning statement | Shown in header and meta |
-| `contact_email` | Your monitored inbox | Receives contact form notifications |
+| `contact_email` | Public email shown on the site | Shown in the footer and contact page. Contact-form notifications are configured separately via `CONTACT_EMAIL` |
 | `phone` | Your contact number | Optional — leave blank to hide |
 | `location` | City, Country | Displayed in footer and contact page |
 | `address` | Full postal address | Optional — for footer or contact use |
@@ -193,11 +193,22 @@ Each project can have testimonials attached. Add author, role, text, and optiona
 ### Adding many projects from local files
 
 The `bootstrap_project` and `import_project_images` commands can create projects and
-attach gallery images from local directories. Always run `--dry-run` first:
+attach gallery images from local files. Both commands require absolute file paths.
+Always run `--dry-run` first:
 
 ```bash
-uv run python manage.py bootstrap_project --dry-run --title "House Aldea" --dir path/to/files
-uv run python manage.py import_project_images --dry-run --project-slug house-aldea --dir path/to/images
+uv run python manage.py bootstrap_project \
+  --dry-run \
+  --title "House Aldea" \
+  --category residential \
+  --short-description "Private residence on a constrained urban site." \
+  --cover /absolute/path/to/cover.jpg \
+  --gallery /absolute/path/to/gallery-01.jpg /absolute/path/to/gallery-02.jpg
+
+uv run python manage.py import_project_images \
+  --dry-run \
+  --project house-aldea \
+  --gallery /absolute/path/to/gallery-03.jpg /absolute/path/to/gallery-04.jpg
 ```
 
 ---
@@ -206,6 +217,12 @@ uv run python manage.py import_project_images --dry-run --project-slug house-ald
 
 Contact form submissions are always saved to the database. To also receive email
 notifications, configure an SMTP backend before going live.
+
+There are three separate email roles in this template:
+
+- `Site Settings.contact_email`: the public email shown on the site
+- `CONTACT_EMAIL`: the inbox that receives contact-form notification emails
+- `DEFAULT_FROM_EMAIL`: the sender shown on outgoing notification emails
 
 Open `.env` (or your production environment variables) and set:
 
@@ -232,7 +249,7 @@ Verify by submitting the contact form locally and checking that you receive the 
 ## Phase 7 — Content readiness check
 
 Run this before deploying. It scans your database for required fields that are still blank
-or at placeholder values:
+or still set to starter/demo values:
 
 ```bash
 uv run python manage.py check_content_readiness

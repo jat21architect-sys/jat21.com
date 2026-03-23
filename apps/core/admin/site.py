@@ -17,7 +17,17 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "description": "og_image is the default image used when sharing any page on social media.",
             },
         ),
-        ("Contact", {"fields": ("contact_email", "phone", "location", "address")}),
+        (
+            "Contact",
+            {
+                "fields": ("contact_email", "phone", "location", "address"),
+                "description": (
+                    "contact_email is shown publicly on the site. "
+                    "Contact-form notification delivery is configured separately "
+                    "via the CONTACT_EMAIL environment variable."
+                ),
+            },
+        ),
         (
             "Social",
             {

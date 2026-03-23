@@ -29,3 +29,32 @@ def test_service_deliverables_list(db):
     items = s.deliverables_list()
     assert len(items) == 3
     assert "Item one" in items
+
+
+@pytest.mark.django_db
+def test_service_contact_project_type_mapping():
+    concept = Service.objects.create(
+        title="Concept Design",
+        slug="concept-design",
+        summary="Early-stage design thinking.",
+        order=1,
+        active=True,
+    )
+    renovation = Service.objects.create(
+        title="Renovation & Adaptive Reuse",
+        slug="renovation-adaptive-reuse",
+        summary="Existing building work.",
+        order=2,
+        active=True,
+    )
+    custom = Service.objects.create(
+        title="Feasibility Review",
+        slug="feasibility-review",
+        summary="A custom service.",
+        order=3,
+        active=True,
+    )
+
+    assert concept.contact_project_type == "Concept Development"
+    assert renovation.contact_project_type == "Renovation / Adaptive Reuse"
+    assert custom.contact_project_type == "Other"

@@ -27,8 +27,8 @@ def contact_view(request):
         if form.is_valid():
             inquiry = form.save()
             client_ip = _client_ip(request) or "unknown"
-            # Notify site owner — failure is non-fatal (form already saved to DB).
-            # Reply-To is set so the architect can reply directly from their email client.
+            # Notify the configured inbox — failure is non-fatal (form already saved to DB).
+            # Reply-To is set so the recipient can reply directly from their email client.
             email_delivery = "sent"
             try:
                 msg = EmailMessage(

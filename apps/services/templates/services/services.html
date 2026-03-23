@@ -58,7 +58,7 @@
           {% endif %}
         </div>
 
-        <a href="{% url 'contact:contact' %}?project_type={{ service.title|urlencode }}" class="btn btn--outline">Enquire about this service</a>
+        <a href="{% url 'contact:contact' %}?project_type={{ service.contact_project_type|urlencode }}" class="btn btn--outline">Enquire about this service</a>
       </div>
     </article>
     {% if not forloop.last %}<hr class="divider">{% endif %}
