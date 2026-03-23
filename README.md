@@ -3,6 +3,12 @@
 A professional, content-driven portfolio platform for architecture practices, built with Django.
 
 > **New here?** See [SETUP.md](SETUP.md) for the buyer-facing setup and customisation checklist.
+>
+> **Current stable version:** `v1.0.0`  
+> **Status:** Stable  
+> **Stack:** Python `3.13` · Django `5.2 LTS`  
+> **Docs:** [SETUP.md](SETUP.md) · [DEMO.md](DEMO.md) · [CHANGELOG.md](CHANGELOG.md) · [LICENSE.md](LICENSE.md)  
+> **Maintainers:** [RELEASE.md](RELEASE.md)
 
 ---
 
@@ -66,7 +72,7 @@ Full Django admin for every model — no custom frontend needed to manage conten
 - **Whitenoise static serving** — no CDN required for static files
 
 ### Developer ergonomics
-- **98-test suite** covering all models, views, forms, and admin
+- **100+ automated tests** across pytest, pytest-django, and Playwright
 - **Playwright e2e tests** for the contact form and key user journeys
 - **GitHub Actions CI** — lint, type-check, tests, migration check, deploy check on every push
 - **pre-commit hooks** — ruff, trailing whitespace, merge conflict detection
@@ -479,7 +485,7 @@ Six custom commands handle content bootstrap, media import, and readiness checki
 ## Project structure
 
 ```text
-jeannote/
+<repo-root>/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml             # GitHub Actions CI

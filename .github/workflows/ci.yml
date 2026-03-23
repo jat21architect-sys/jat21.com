@@ -61,7 +61,7 @@ jobs:
   # ---------------------------------------------------------------------------
   # Post-deploy smoke check
   # Runs only when DEPLOY_URL is set as a repository secret.
-  # Set DEPLOY_URL (e.g. https://jeannote.up.railway.app) in:
+  # Set DEPLOY_URL (e.g. https://your-demo.up.railway.app) in:
   #   GitHub → Settings → Secrets and variables → Actions → Repository secrets
   # Skipped automatically on all other runs — no action needed to disable it.
   # ---------------------------------------------------------------------------

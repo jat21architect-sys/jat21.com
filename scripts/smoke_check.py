@@ -1,4 +1,4 @@
-"""HTTP smoke check for a running Jeannote instance.
+"""HTTP smoke check for a running Architecture Portfolio deployment.
 
 Checks status codes, key page content, and post-deploy specifics
 (branded 404, admin reachability).
@@ -28,7 +28,9 @@ ROUTES = [
 
 
 def fetch(url: str, timeout: float) -> tuple[int, bytes]:
-    request = urllib.request.Request(url, headers={"User-Agent": "jeannote-smoke/1.0"})
+    request = urllib.request.Request(
+        url, headers={"User-Agent": "architecture-portfolio-smoke/1.0.0"}
+    )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return response.getcode(), response.read()
 

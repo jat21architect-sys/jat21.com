@@ -11,30 +11,30 @@ charset-normalizer==3.4.6
     # via requests
 cloudinary==1.44.1
     # via
+    #   architecture-portfolio
     #   django-cloudinary-storage
-    #   jeannote
 django==5.2.12
-    # via jeannote
+    # via architecture-portfolio
 django-cloudinary-storage==0.3.0
-    # via jeannote
+    # via architecture-portfolio
 django-environ==0.13.0
-    # via jeannote
+    # via architecture-portfolio
 gunicorn==25.1.0
-    # via jeannote
+    # via architecture-portfolio
 idna==3.11
     # via requests
 packaging==26.0
     # via gunicorn
 pillow==12.1.1
-    # via jeannote
+    # via architecture-portfolio
 psycopg==3.3.3
-    # via jeannote
+    # via architecture-portfolio
 psycopg-binary==3.3.3 ; implementation_name != 'pypy'
     # via psycopg
 requests==2.32.5
     # via django-cloudinary-storage
 sentry-sdk==2.55.0
-    # via jeannote
+    # via architecture-portfolio
 six==1.17.0
     # via cloudinary
 sqlparse==0.5.5
@@ -49,4 +49,4 @@ urllib3==2.6.3
     #   requests
     #   sentry-sdk
 whitenoise==6.12.0
-    # via jeannote
+    # via architecture-portfolio

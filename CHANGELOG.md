@@ -52,12 +52,12 @@ Initial release of the Architecture Portfolio Django Template.
 - `check_content_readiness` — pre-launch audit; exits 1 if required fields are missing or at placeholder values
 
 **Launch safety**
-- `check_content_readiness` covers: site name, contact email, meta description, OG image, about headline, experience years, portrait, active services, portfolio projects
+- `check_content_readiness` flags blank and starter/demo content across site settings, About copy, services, projects, and testimonials
 - System check `core.W001` — warns in development if email backend is still the console backend
 - System check `core.W006` — warns if `CONTACT_EMAIL` is blank
 
 **Developer tooling**
-- 98-test suite (pytest + pytest-django) covering all models, views, forms, admin, and system checks
+- 100+ automated tests across pytest, pytest-django, and Playwright
 - Playwright e2e tests for contact form submission, homepage, navigation, projects, and services
 - GitHub Actions CI — lint, type-check, tests, Django system check, migration drift check, deploy check, dependency drift check
 - pre-commit hooks (ruff, formatting, common file checks, branch protection)

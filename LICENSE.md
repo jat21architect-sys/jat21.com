@@ -1,6 +1,6 @@
 # Commercial License — Architecture Portfolio Django Template
 
-**Version 1.0 · Effective date: 2026-03-22**
+**Version 1.0.0 · Effective date: 2026-03-22**
 
 Please read this license carefully before purchasing or using this template.
 By purchasing, downloading, or using this template you agree to the terms below.

@@ -137,6 +137,7 @@ check-deploy:
 	  EMAIL_USE_TLS=True \
 	  EMAIL_HOST_USER=dummy-user \
 	  EMAIL_HOST_PASSWORD=dummy-password \
+	  CONTACT_EMAIL=alerts@example.com \
 	  CLOUDINARY_CLOUD_NAME=dummy-cloud \
 	  CLOUDINARY_API_KEY=dummy-key \
 	  CLOUDINARY_API_SECRET=dummy-secret \
