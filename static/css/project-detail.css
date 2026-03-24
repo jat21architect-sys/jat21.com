@@ -11,12 +11,20 @@
   overflow: hidden;
 }
 
-/* No cover image state: dark surface, compact height, top-anchored */
+/* No cover image state: dark surface, compact height, top-anchored.
+ * The full-image state lets .project-hero__content push itself down with
+ * padding-block-start:7rem because the section fills 78svh from the bottom.
+ * Here we handle all vertical rhythm at section level (matching page-hero--short)
+ * and cancel the inner content padding so they don't double-stack. */
 .project-hero--no-image {
   min-height: 0;
   align-items: flex-start;
   background-color: var(--c-black);
-  padding-block: var(--space-xl) var(--space-lg);
+  padding-block: calc(4.5rem + var(--space-lg)) var(--space-lg);
+}
+
+.project-hero--no-image .project-hero__content {
+  padding-block-start: 0;
 }
 
 .project-hero__media {
