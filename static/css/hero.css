@@ -150,3 +150,12 @@
   gap: 1rem;
   margin-block-start: var(--space-md);
 }
+
+/* On very narrow phones (≤480px) the standard page-hero has 11.5rem of top
+   padding, which consumes ~33% of the viewport before any content renders.
+   Match the page-hero--short rhythm at this size. */
+@media (max-width: 480px) {
+  .page-hero:not(.page-hero--short) {
+    padding-block: calc(4.5rem + var(--space-lg)) var(--space-lg);
+  }
+}

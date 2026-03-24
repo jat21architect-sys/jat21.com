@@ -160,6 +160,7 @@
 @media (max-width: 960px) {
   .contact-grid {
     grid-template-columns: 1fr 260px;
+    gap: var(--space-lg); /* tighten column gap — sidebar narrows, 7rem gap would crush form fields */
   }
 }
 
