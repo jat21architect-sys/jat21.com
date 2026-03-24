@@ -8,14 +8,67 @@ This is your starting point — use it to see a working site, then replace
 content with your own via the admin. All copy uses generic placeholders;
 nothing is specific to any individual or region.
 
-Idempotent — safe to re-run (uses get_or_create / update).
+Idempotent — safe to re-run (uses get_or_create / update, duplicate detection
+for cover images and gallery images).
+
+Optional flag
+-------------
+  --media-dir PATH   Attach demo media from a local folder.
+
+Expected layout under PATH
+--------------------------
+  portrait.*
+  covers/
+    house-on-the-hillside.*
+    commercial-office-conversion.*
+  gallery/
+    community-library-pavilion/
+      01.*  02.*  03.*
+    commercial-office-conversion/
+      01.*  02.*  03.*
+
+Supported extensions: .jpg .jpeg .png .webp (case-insensitive).
+Missing individual files warn and continue; an invalid PATH errors immediately.
 """
 
-from django.core.management.base import BaseCommand
+import os
+import re
+from pathlib import Path
+
+from django.core.files import File
+from django.core.management.base import BaseCommand, CommandError
 
 from apps.core.models import AboutProfile, SiteSettings
-from apps.projects.models import Project, Testimonial
+from apps.projects.models import Project, ProjectImage, Testimonial
 from apps.services.models import Service
+
+_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
+
+# Strips Django collision-avoidance suffixes, e.g. "cover_vFlUiiN" → "cover"
+_DJANGO_SUFFIX_RE = re.compile(r"_[A-Za-z0-9]{7}$")
+
+
+def _stem_clean(name: str) -> str:
+    stem = Path(name).stem
+    return _DJANGO_SUFFIX_RE.sub("", stem)
+
+
+def _find_file(directory: Path, stem: str) -> Path | None:
+    """Return the first file in *directory* whose stem matches *stem* (any supported ext)."""
+    for ext in _IMAGE_EXTS:
+        candidate = directory / f"{stem}{ext}"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _list_images(directory: Path) -> list[Path]:
+    """Return sorted image files in *directory* (non-recursive)."""
+    found = sorted(
+        p for p in directory.iterdir()
+        if p.is_file() and p.suffix.lower() in _IMAGE_EXTS
+    )
+    return found
 
 SERVICES = [
     {
@@ -241,13 +294,61 @@ class Command(BaseCommand):
         "content via admin. Idempotent — safe to re-run."
     )
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--media-dir",
+            metavar="PATH",
+            default=None,
+            help=(
+                "Attach demo media from this directory. "
+                "Expected layout: portrait.*, covers/<slug>.*, gallery/<slug>/*.* "
+                "Supported extensions: .jpg .jpeg .png .webp"
+            ),
+        )
+
     def handle(self, *args, **options):
+        media_dir: Path | None = None
+        if options["media_dir"]:
+            media_dir = Path(options["media_dir"]).resolve()
+            if not media_dir.is_dir():
+                raise CommandError(f"--media-dir does not exist or is not a directory: {media_dir}")
+
         self._seed_settings()
         self._seed_about()
         self._seed_services()
         self._seed_projects()
         self._seed_testimonials()
-        self.stdout.write(self.style.SUCCESS("Starter content seeded successfully."))
+
+        # ---------- media attachment ----------
+        portrait_attached = False
+        covers_attached = 0
+        gallery_attached = 0
+        warnings_count = 0
+
+        if media_dir:
+            portrait_attached, portrait_warns = self._attach_portrait(media_dir)
+            warnings_count += portrait_warns
+
+            c, c_warns = self._attach_covers(media_dir)
+            covers_attached = c
+            warnings_count += c_warns
+
+            g, g_warns = self._attach_galleries(media_dir)
+            gallery_attached = g
+            warnings_count += g_warns
+
+            self.stdout.write("")
+            self.stdout.write(self.style.MIGRATE_HEADING("Media summary:"))
+            self.stdout.write(f"  portrait attached : {'yes' if portrait_attached else 'no'}")
+            self.stdout.write(f"  covers attached   : {covers_attached}")
+            self.stdout.write(f"  gallery images    : {gallery_attached}")
+            self.stdout.write(f"  warnings          : {warnings_count}")
+
+        self.stdout.write(self.style.SUCCESS("\nStarter content seeded successfully."))
+
+    # ------------------------------------------------------------------
+    # Text content seeders
+    # ------------------------------------------------------------------
 
     def _seed_settings(self):
         settings, created = SiteSettings.objects.get_or_create(pk=1)
@@ -268,36 +369,37 @@ class Command(BaseCommand):
         profile, created = AboutProfile.objects.get_or_create(pk=1)
         profile.headline = "An architect whose work is shaped by context, clarity, and care."
         profile.intro = (
-            "[Your Name] is an architect whose work combines spatial clarity, "
+            "Demo Architecture Studio is a practice whose work combines spatial clarity, "
             "contextual sensitivity, and thoughtful design to create places with identity, "
             "purpose, and lasting value."
         )
         profile.biography = (
-            "[Your Name] is a registered architect with a practice spanning residential, "
-            "cultural, and commercial projects. Their work is characterised "
-            "by a commitment to design quality, material honesty, and a genuine engagement with "
-            "the specific conditions of each site and brief.\n\n"
-            "After completing their studies in architecture, they worked with several "
-            "award-winning practices before establishing an independent practice. Their work "
-            "has been recognised in a number of regional competitions and exhibited at "
-            "professional venues."
+            "Demo Architecture Studio is a registered architectural practice with a portfolio "
+            "spanning residential, cultural, and commercial projects. The studio's work is "
+            "characterised by a commitment to design quality, material honesty, and a genuine "
+            "engagement with the specific conditions of each site and brief.\n\n"
+            "Founded after a decade working with several award-winning practices, the studio "
+            "operates as a focused team that takes a small number of projects at any one time — "
+            "ensuring each receives the attention it deserves. Work has been recognised in "
+            "regional design awards and exhibited at professional venues."
         )
         profile.philosophy = (
             "Architecture is not primarily about buildings. It is about the relationship between "
             "people and space — the way a room makes you feel when you enter it, the quality of "
             "light on a surface at a particular time of day, the sequence through which a building "
             "reveals itself. These are the things that make architecture matter.\n\n"
-            "I believe in design that is specific — to its place, its programme, and the people "
+            "We believe in design that is specific — to its place, its programme, and the people "
             "who will use it. This specificity is what distinguishes a good building from a generic one, "
             "and what gives architecture its capacity to create genuine value in the world."
         )
         profile.credentials = (
             "Bachelor of Architecture (Professional)\n"
-            "Registered Architect — [Your Local Professional Body]\n"
-            "Member — [Your Professional Institute]"
+            "Master of Architecture\n"
+            "Registered Architect\n"
+            "Member — Royal Institute of Architects"
         )
-        profile.experience_years = 0
-        profile.location = "Your City"
+        profile.experience_years = 12
+        profile.location = "Demo City"
         profile.save()
         action = "Created" if created else "Updated"
         self.stdout.write(f"  {action} AboutProfile")
@@ -313,29 +415,153 @@ class Command(BaseCommand):
             self.stdout.write(f"  {action} Service: {obj.title}")
 
     def _seed_projects(self):
+        from django.utils.text import slugify
+
         for data in PROJECTS:
-            obj, created = Project.objects.get_or_create(title=data["title"])
+            slug = slugify(data["title"])
+            obj, created = Project.objects.get_or_create(slug=slug, defaults={"title": data["title"]})
             for key, value in data.items():
                 if key != "title":
                     setattr(obj, key, value)
+            # Always ensure title stays in sync
+            obj.title = data["title"]
             obj.save()
             action = "Created" if created else "Updated"
-            self.stdout.write(f"  {action} Project: {obj.title}")
+            self.stdout.write(f"  {action} Project: {obj.title} (slug={obj.slug})")
 
     def _seed_testimonials(self):
         for data in TESTIMONIALS:
+            project_title = data.get("project_title")
             project = None
-            project_title = data.pop("project_title", None)
             if project_title:
-                project = Project.objects.filter(title=project_title).first()
+                from django.utils.text import slugify
+                project = Project.objects.filter(slug=slugify(project_title)).first()
             obj, created = Testimonial.objects.get_or_create(
                 name=data["name"],
                 defaults={"project": project},
             )
             for key, value in data.items():
-                if key != "name":
+                if key not in ("name", "project_title"):
                     setattr(obj, key, value)
             obj.project = project
             obj.save()
             action = "Created" if created else "Updated"
             self.stdout.write(f"  {action} Testimonial: {obj.name}")
+
+    # ------------------------------------------------------------------
+    # Media attachment helpers
+    # ------------------------------------------------------------------
+
+    def _warn(self, msg: str) -> int:
+        self.stdout.write(self.style.WARNING(f"  WARNING: {msg}"))
+        return 1
+
+    def _attach_portrait(self, media_dir: Path) -> tuple[bool, int]:
+        """Attach portrait.* to AboutProfile. Returns (attached, warning_count)."""
+        portrait_file = _find_file(media_dir, "portrait")
+        if not portrait_file:
+            w = self._warn(f"portrait.* not found in {media_dir}")
+            return False, w
+
+        profile = AboutProfile.objects.get_or_create(pk=1)[0]
+        # Skip if same file already attached
+        if profile.portrait and _stem_clean(profile.portrait.name) == _stem_clean(portrait_file.name):
+            self.stdout.write(f"  SKIP portrait (already attached): {portrait_file.name}")
+            return True, 0
+
+        with portrait_file.open("rb") as fh:
+            profile.portrait.save(portrait_file.name, File(fh), save=True)
+        self.stdout.write(f"  Attached portrait → {profile.portrait.name}")
+        return True, 0
+
+    def _attach_covers(self, media_dir: Path) -> tuple[int, int]:
+        """Attach covers for the projects that should have one.
+        Returns (count_attached_or_skipped, warning_count)."""
+        covers_dir = media_dir / "covers"
+        attached = 0
+        warnings = 0
+        cover_slugs = ["house-on-the-hillside", "commercial-office-conversion"]
+
+        for slug in cover_slugs:
+            cover_file = _find_file(covers_dir, slug) if covers_dir.is_dir() else None
+            if cover_file is None:
+                path_hint = covers_dir / slug
+                warnings += self._warn(f"cover not found: {path_hint}.*")
+                continue
+
+            try:
+                project = Project.objects.get(slug=slug)
+            except Project.DoesNotExist:
+                warnings += self._warn(f"Project with slug '{slug}' not found — skipping cover")
+                continue
+
+            # Skip if same file already attached
+            if (
+                project.cover_image
+                and _stem_clean(project.cover_image.name) == _stem_clean(cover_file.name)
+            ):
+                self.stdout.write(f"  SKIP cover for '{slug}' (already attached): {cover_file.name}")
+                attached += 1
+                continue
+
+            with cover_file.open("rb") as fh:
+                project.cover_image.save(cover_file.name, File(fh), save=True)
+            self.stdout.write(f"  Attached cover for '{slug}' → {project.cover_image.name}")
+            attached += 1
+
+        return attached, warnings
+
+    def _attach_galleries(self, media_dir: Path) -> tuple[int, int]:
+        """Attach gallery images for the projects that should have them.
+        Returns (count_new_images_added, warning_count)."""
+        gallery_dir = media_dir / "gallery"
+        total_added = 0
+        warnings = 0
+        gallery_slugs = ["community-library-pavilion", "commercial-office-conversion"]
+
+        for slug in gallery_slugs:
+            project_gallery_dir = gallery_dir / slug if gallery_dir.is_dir() else Path("/nonexistent")
+            if not project_gallery_dir.is_dir():
+                warnings += self._warn(f"gallery directory not found: {project_gallery_dir}")
+                continue
+
+            image_files = _list_images(project_gallery_dir)
+            if not image_files:
+                warnings += self._warn(f"no images found in {project_gallery_dir}")
+                continue
+
+            try:
+                project = Project.objects.get(slug=slug)
+            except Project.DoesNotExist:
+                warnings += self._warn(f"Project with slug '{slug}' not found — skipping gallery")
+                continue
+
+            # Build set of already-stored stems for duplicate detection
+            existing_stems = {
+                _stem_clean(os.path.basename(img.image.name))
+                for img in project.images.all()
+                if img.image.name
+            }
+            next_order = (
+                project.images.order_by("-order").values_list("order", flat=True).first() or 0
+            ) + 1
+
+            added = 0
+            for img_path in image_files:
+                if _stem_clean(img_path.name) in existing_stems:
+                    self.stdout.write(f"  SKIP gallery image (duplicate): {img_path.name}")
+                    continue
+                with img_path.open("rb") as fh:
+                    img_obj = ProjectImage(
+                        project=project,
+                        order=next_order,
+                        image_type="gallery",
+                    )
+                    img_obj.image.save(img_path.name, File(fh), save=True)
+                next_order += 1
+                added += 1
+                self.stdout.write(f"  Attached gallery image for '{slug}': {img_path.name}")
+
+            total_added += added
+
+        return total_added, warnings
