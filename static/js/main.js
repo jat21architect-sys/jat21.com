@@ -35,6 +35,9 @@
       toggle.classList.add('is-open');
       toggle.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      // Disable backdrop-filter on header so the fixed overlay fills the
+      // viewport on Safari/iOS (backdrop-filter containment bug)
+      header?.classList.add('nav-open');
       navLinks.querySelector('a')?.focus();
       document.addEventListener('keydown', onEscape);
     };
@@ -44,6 +47,7 @@
       toggle.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      header?.classList.remove('nav-open');
       document.removeEventListener('keydown', onEscape);
     };
 

@@ -126,6 +126,18 @@
 .home .site-header:not(.scrolled) .nav__toggle span { background-color: var(--c-white); }
 
 @media (max-width: 768px) {
+  /*
+   * Safari/iOS: backdrop-filter creates a stacking context that clips
+   * fixed-position descendants to the header height instead of the viewport.
+   * When the menu is open we swap to a solid background and kill the filter
+   * so .nav__links can fill the full screen.
+   */
+  .site-header.nav-open {
+    background-color: rgba(250, 250, 248, 0.98);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .nav__toggle {
     display: flex;
     position: relative;
