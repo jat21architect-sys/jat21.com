@@ -133,10 +133,14 @@
    * so .nav__links can fill the full screen.
    */
   .site-header.nav-open {
-    background-color: rgba(250, 250, 248, 0.98);
+    background-color: var(--c-black); /* join the overlay — removes light/dark seam */
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+    box-shadow: none; /* suppress scrolled box-shadow if present */
   }
+
+  /* Brand name must be white on the dark open-state header */
+  .site-header.nav-open .nav__name { color: var(--c-white); }
 
   .nav__toggle {
     display: flex;
