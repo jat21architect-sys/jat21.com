@@ -94,8 +94,8 @@
   .footer__bottom { flex-direction: column; align-items: center; text-align: center; }
 }
 
-@media (max-width: 380px) {
-  /* Narrow phone: long email can't share a column — stack nav and contact full width */
+@media (max-width: 480px) {
+  /* Phone portrait: long email can't share a column — stack nav and contact full width */
   .footer__inner { grid-template-columns: 1fr; }
   .footer__brand { grid-column: auto; }
 }
