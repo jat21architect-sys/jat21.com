@@ -6,6 +6,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
+from apps.core.models import AboutProfile
 from apps.projects.models import Project, ProjectImage
 
 
@@ -19,6 +20,92 @@ def test_home_page(client, site_settings):
 def test_about_page(client, site_settings):
     response = client.get(reverse("pages:about"))
     assert response.status_code == 200
+
+
+def _populate_minimum_about(site_settings, **overrides):
+    site_settings.location = overrides.pop("site_location", "Reykjavik, Iceland")
+    site_settings.contact_email = overrides.pop("site_email", "studio@example.com")
+    site_settings.save()
+
+    profile = AboutProfile.load()
+    defaults = {
+        "identity_mode": AboutProfile.IdentityMode.STUDIO,
+        "practice_structure": "Small studio",
+        "one_line_practice_description": "Architecture for housing, civic, and workplace projects.",
+        "practice_summary": "A practice working across public and private projects.",
+        "project_leadership": "Projects are led directly with specialist consultants brought in as needed.",
+        "professional_standing": "Registered architectural practice",
+        "education": "Master of Architecture",
+        "supporting_facts": "",
+        "experience_years": 12,
+        "approach": "The work prioritises clarity, durability, and legible project decision-making.",
+        "closing_invitation": "Get in touch to discuss a housing, civic, or workplace project.",
+        "portrait_mode": AboutProfile.PortraitMode.TEXT_ONLY,
+    }
+    defaults.update(overrides)
+    for field, value in defaults.items():
+        setattr(profile, field, value)
+    profile.save()
+    return profile
+
+
+@pytest.mark.django_db
+def test_about_page_uses_person_led_identity_fields(client, site_settings):
+    _populate_minimum_about(
+        site_settings,
+        identity_mode=AboutProfile.IdentityMode.PERSON,
+        principal_name="Avery Strand",
+        principal_title="Founder and Registered Architect",
+    )
+
+    response = client.get(reverse("pages:about"))
+
+    assert response.status_code == 200
+    assert b"Avery Strand" in response.content
+    assert b"Founder and Registered Architect, Test Site" in response.content
+
+
+@pytest.mark.django_db
+def test_about_page_hides_portrait_block_in_text_only_mode(client, site_settings):
+    _populate_minimum_about(site_settings)
+
+    response = client.get(reverse("pages:about"))
+
+    assert response.status_code == 200
+    assert b"about-layout--text-only" in response.content
+    assert b"about-portrait" not in response.content
+    assert b"about-portrait__placeholder" not in response.content
+
+
+@pytest.mark.django_db
+def test_about_page_hides_professional_profile_without_minimum_fact_set(client, site_settings):
+    _populate_minimum_about(
+        site_settings,
+        education="",
+        supporting_facts="",
+    )
+
+    response = client.get(reverse("pages:about"))
+
+    assert response.status_code == 200
+    assert b"Professional Profile" not in response.content
+
+
+@pytest.mark.django_db
+def test_about_page_shows_professional_profile_with_minimum_fact_set(client, site_settings):
+    _populate_minimum_about(
+        site_settings,
+        supporting_facts="Housing and civic project experience",
+    )
+
+    response = client.get(reverse("pages:about"))
+
+    assert response.status_code == 200
+    assert b"Professional Profile" in response.content
+    assert b"Based in Reykjavik, Iceland" in response.content
+    assert b"Registered architectural practice" in response.content
+    assert b"12+ years in practice" in response.content
+    assert b"Housing and civic project experience" in response.content
 
 
 @pytest.mark.django_db

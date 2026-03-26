@@ -97,22 +97,80 @@ class SiteSettings(SingletonModel):
 
 
 class AboutProfile(SingletonModel):
-    headline = models.CharField(max_length=200, blank=True)
-    intro = models.TextField(
-        blank=True,
-        help_text="Short intro paragraph shown at the top of the About page.",
+    class IdentityMode(models.TextChoices):
+        PERSON = "person", "Person-led practice"
+        STUDIO = "studio", "Studio-led practice"
+
+    class PortraitMode(models.TextChoices):
+        PORTRAIT = "portrait", "Show portrait"
+        TEXT_ONLY = "text_only", "Text only"
+
+    identity_mode = models.CharField(
+        max_length=20,
+        choices=IdentityMode.choices,
+        default=IdentityMode.STUDIO,
+        help_text="Choose whether the About page should introduce a named principal or the studio as a whole.",
     )
-    biography = models.TextField(blank=True)
-    philosophy = models.TextField(blank=True)
-    credentials = models.TextField(
+    principal_name = models.CharField(
+        max_length=120,
         blank=True,
-        help_text="Education, certifications, memberships — one per line.",
+        help_text="Required for person-led practices. Leave blank for studio-led practices.",
+    )
+    principal_title = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text="Examples: Founder and Registered Architect, Principal Architect.",
+    )
+    practice_structure = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text="A short truthful descriptor such as 'Solo practice' or 'Small studio'.",
+    )
+    one_line_practice_description = models.CharField(
+        max_length=220,
+        blank=True,
+        help_text="Short public description shown in the hero.",
+    )
+    practice_summary = models.TextField(
+        blank=True,
+        help_text="Short factual summary of what the practice does, where it is based, and the kind of work it takes on.",
+    )
+    project_leadership = models.TextField(
+        blank=True,
+        help_text="Explain how projects are led and how consultants or collaborators are involved.",
+    )
+    professional_standing = models.CharField(
+        max_length=220,
+        blank=True,
+        help_text="Registration or professional standing shown publicly on the About page.",
+    )
+    education = models.TextField(
+        blank=True,
+        help_text="Education details — one per line.",
+    )
+    supporting_facts = models.TextField(
+        blank=True,
+        help_text="Concrete supporting facts — one per line. Use factual proof, not positioning language.",
+    )
+    approach = models.TextField(
+        blank=True,
+        help_text="Keep this practical and brief — ideally 2 to 3 sentences.",
     )
     experience_years = models.PositiveIntegerField(
         default=0,
         help_text="Years of professional experience. This value renders publicly — 0 is a placeholder; enter the real figure.",
     )
-    location = models.CharField(max_length=120, blank=True)
+    closing_invitation = models.CharField(
+        max_length=220,
+        blank=True,
+        help_text="Short closing invitation shown above the contact CTA.",
+    )
+    portrait_mode = models.CharField(
+        max_length=20,
+        choices=PortraitMode.choices,
+        default=PortraitMode.TEXT_ONLY,
+        help_text="Use text-only mode until a real portrait is ready. Public gray placeholders are intentionally disabled.",
+    )
     portrait = models.ImageField(upload_to="about/", blank=True, null=True)
     cv_file = models.FileField(upload_to="about/cv/", blank=True, null=True)
 
@@ -122,3 +180,19 @@ class AboutProfile(SingletonModel):
 
     def __str__(self):
         return "About Profile"
+
+    @staticmethod
+    def _lines(value: str) -> list[str]:
+        return [line.strip() for line in value.splitlines() if line.strip()]
+
+    @property
+    def education_lines(self) -> list[str]:
+        return self._lines(self.education)
+
+    @property
+    def supporting_fact_lines(self) -> list[str]:
+        return self._lines(self.supporting_facts)
+
+    @property
+    def has_concrete_supporting_fact(self) -> bool:
+        return bool(self.education_lines or self.supporting_fact_lines)

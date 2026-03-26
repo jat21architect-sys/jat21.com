@@ -371,39 +371,49 @@ class Command(BaseCommand):
 
     def _seed_about(self):
         profile, created = AboutProfile.objects.get_or_create(pk=1)
-        profile.headline = "An architect whose work is shaped by context, clarity, and care."
-        profile.intro = (
-            "Demo Architecture Studio is a practice whose work combines spatial clarity, "
-            "contextual sensitivity, and thoughtful design to create places with identity, "
-            "purpose, and lasting value."
+        profile.identity_mode = AboutProfile.IdentityMode.STUDIO
+        profile.principal_name = ""
+        profile.principal_title = ""
+        profile.practice_structure = "Independent architecture studio"
+        profile.one_line_practice_description = (
+            "Architecture shaped by context, use, and urban climate."
         )
-        profile.biography = (
-            "Demo Architecture Studio is a registered architectural practice with a portfolio "
-            "spanning residential, cultural, and commercial projects. The studio's work is "
-            "characterised by a commitment to design quality, material honesty, and a genuine "
-            "engagement with the specific conditions of each site and brief.\n\n"
-            "Founded after a decade working with several award-winning practices, the studio "
-            "operates as a focused team that takes a small number of projects at any one time — "
-            "ensuring each receives the attention it deserves. Work has been recognised in "
-            "regional design awards and exhibited at professional venues."
+        profile.practice_summary = (
+            "Demo Architecture Studio is a practice working across housing, civic buildings, "
+            "and workplace projects in northern urban settings. The work is defined by clear "
+            "massing, durable materials, careful daylighting, and legible circulation.\n\n"
+            "The studio works on projects that sit between everyday infrastructure and long-term "
+            "city-making: housing blocks, public buildings, workplaces, and mixed-use urban sites. "
+            "Rather than treating architecture as image-making, the emphasis is on performance, "
+            "clarity, and how buildings hold up over time."
         )
-        profile.philosophy = (
-            "Architecture is not primarily about buildings. It is about the relationship between "
-            "people and space — the way a room makes you feel when you enter it, the quality of "
-            "light on a surface at a particular time of day, the sequence through which a building "
-            "reveals itself. These are the things that make architecture matter.\n\n"
-            "We believe in design that is specific — to its place, its programme, and the people "
-            "who will use it. This specificity is what distinguishes a good building from a generic one, "
-            "and what gives architecture its capacity to create genuine value in the world."
+        profile.project_leadership = (
+            "Projects are led by a compact studio team, with specialist consultants involved as "
+            "needed for structure, building services, and planning coordination."
         )
-        profile.credentials = (
+        profile.professional_standing = "Registered architectural practice"
+        profile.education = (
             "Bachelor of Architecture (Professional)\n"
-            "Master of Architecture\n"
-            "Registered Architect\n"
-            "Member — Royal Institute of Architects"
+            "Master of Architecture"
+        )
+        profile.supporting_facts = (
+            "Housing, civic, and workplace project experience\n"
+            "Planning, technical design, and consultant coordination\n"
+            "New-build and urban infill commissions"
+        )
+        profile.approach = (
+            "Buildings in northern settings need to manage weather, frame daylight carefully, "
+            "and make circulation feel intuitive in difficult conditions.\n\n"
+            "The work focuses on fit rather than spectacle: how a building sits in context, "
+            "how structure and envelope reinforce one another, and how public or shared spaces "
+            "are made legible through proportion and movement."
         )
         profile.experience_years = 12
-        profile.location = "Demo City"
+        profile.closing_invitation = (
+            "Get in touch with a short outline of your project, whether the brief is developed "
+            "or still taking shape."
+        )
+        profile.portrait_mode = AboutProfile.PortraitMode.TEXT_ONLY
         profile.save()
         action = "Created" if created else "Updated"
         self.stdout.write(f"  {action} AboutProfile")
@@ -470,6 +480,8 @@ class Command(BaseCommand):
 
         with portrait_file.open("rb") as fh:
             profile.portrait.save(portrait_file.name, File(fh), save=True)
+        profile.portrait_mode = AboutProfile.PortraitMode.PORTRAIT
+        profile.save(update_fields=["portrait_mode"])
         self.stdout.write(f"  Attached portrait → {profile.portrait.name}")
         return True, 0
 

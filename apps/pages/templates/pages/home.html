@@ -68,12 +68,12 @@
 {% endif %}
 
 <!-- ===== PHILOSOPHY ===== -->
-{% if about.philosophy %}
+{% if about.approach %}
 <section class="section section--dark">
   <div class="container container--narrow">
     <span class="section__label section__label--muted">Design thinking</span>
     <blockquote class="philosophy">
-      <p>{{ about.philosophy|first_paragraph }}</p>
+      <p>{{ about.approach|first_paragraph }}</p>
     </blockquote>
     <a href="{% url 'pages:about' %}" class="btn btn--ghost-light">About {{ site_settings.site_name }}</a>
   </div>

@@ -1,7 +1,7 @@
 """
 Management command: seed_about
 -------------------------------
-Populates the AboutProfile singleton with real, client-facing content.
+Populates the AboutProfile singleton with buyer-safe starter prompts.
 
 By default, only fills fields that are currently blank — so admin edits
 made after the first run are preserved.
@@ -11,10 +11,13 @@ Usage:
     uv run python manage.py seed_about --force    # overwrite all text fields
 
 Fields NOT set by this command (must be set in admin):
-    - experience_years  (enter your real number)
-    - portrait          (upload file)
-    - cv_file           (upload file)
-    - location          (set to city/region as appropriate)
+    - identity_mode      (choose person-led or studio-led if the default is wrong)
+    - principal_name     (required for person-led practices)
+    - principal_title    (required for person-led practices)
+    - experience_years   (enter your real number)
+    - portrait           (upload file if using portrait mode)
+    - cv_file            (upload file if genuinely useful)
+    - site location      (set in admin → Site Settings)
 
 Run on production via Railway:
     railway run python manage.py seed_about
@@ -25,46 +28,32 @@ from django.core.management.base import BaseCommand
 from apps.core.models import AboutProfile
 
 CONTENT = {
-    "headline": (
-        "Architect working across residential design, renovation, and interior architecture."
+    "practice_structure": (
+        "[Add a truthful practice structure, for example 'Solo practice' or 'Small studio']"
     ),
-    "intro": (
-        "[Your Name] is a registered architect working with private clients on "
-        "residential projects, renovations, and interior architecture. "
-        "The practice focuses on work that is grounded in site, brief, and budget — "
-        "designed with enough specificity to build well. "
-        "Whether the project is a new home, an existing building being restructured, "
-        "or an interior resolved from first principles, the approach is the same: "
-        "understand the problem clearly before proposing the answer."
+    "one_line_practice_description": (
+        "[Add a one-line public description of the practice]"
     ),
-    "biography": (
-        "I work with clients who want to build something considered — not necessarily "
-        "complex or expensive, but designed with real attention to the particulars of "
-        "the site, the programme, and the people using the space.\n\n"
-        "Most of my work is residential: new homes, extensions, alterations, and "
-        "interior architecture for private clients. I also take on selected renovation "
-        "and adaptive reuse projects where the existing building offers something "
-        "worth working with.\n\n"
-        "My approach to each project begins with questions before it begins with "
-        "drawings — understanding the site, the constraints, and what the client "
-        "actually needs, rather than what a brief initially says. A client who has "
-        "already thought through the practical questions of their project will find "
-        "the process moves quickly and reduces waste. A client who is still working "
-        "through the first questions will find the same process helps them shape "
-        "a clearer brief."
+    "practice_summary": (
+        "[Describe what the practice does, where it is based, and the kinds of projects it takes on.]"
     ),
-    "philosophy": (
-        "Good architecture is specific. It responds to the actual conditions of the "
-        "site, the way people use space, and the budget available — not to a general "
-        "theory about what buildings should look like.\n\n"
-        "My process starts with constraints, not precedents. Before anything goes on "
-        "paper, I want to understand the boundaries we are working within: planning "
-        "rules, structural realities, budget, construction sequence. Those constraints "
-        "are not problems to be overcome — they are the material the design is made from.\n\n"
-        "I work closely with clients through each stage, keeping the process legible "
-        "and decisions explicit. The goal is that nothing on site surprises anyone — "
-        "and that the client understands why each decision was made, not just what "
-        "was decided."
+    "project_leadership": (
+        "[Explain how projects are led and how consultants or collaborators are involved.]"
+    ),
+    "professional_standing": (
+        "[Add registration or professional standing]"
+    ),
+    "education": (
+        "[Add education details, one per line]"
+    ),
+    "supporting_facts": (
+        "[Add at least one concrete supporting fact, one per line]"
+    ),
+    "approach": (
+        "[Add a short practical approach statement in 2 to 3 sentences.]"
+    ),
+    "closing_invitation": (
+        "[Add a short closing invitation for the contact CTA]"
     ),
 }
 
@@ -72,7 +61,7 @@ TEXT_FIELDS = list(CONTENT.keys())
 
 
 class Command(BaseCommand):
-    help = "Seed AboutProfile with client-facing content (blank fields only by default)."
+    help = "Seed AboutProfile with buyer-safe starter prompts (blank fields only by default)."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -107,6 +96,7 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.WARNING(
-                "\nRemember to set in admin: experience_years, location, portrait, cv_file"
+                "\nRemember to set in admin: identity_mode, principal_name/title if needed, "
+                "experience_years, portrait_mode, portrait, cv_file, and Site Settings location"
             )
         )

@@ -8,22 +8,25 @@
 
 <section class="page-hero">
   <div class="container">
-    <p class="page-hero__label">Architect</p>
-    <h1 class="page-hero__title">{{ profile.headline|default:"About" }}</h1>
+    <p class="page-hero__label">About</p>
+    <h1 class="page-hero__title">{{ about_hero_title }}</h1>
+    {% if about_hero_meta %}
+    <p class="about-hero__meta">{{ about_hero_meta }}</p>
+    {% endif %}
+    {% if profile.one_line_practice_description %}
+    <p class="page-hero__subtitle">{{ profile.one_line_practice_description }}</p>
+    {% endif %}
   </div>
 </section>
 
-<section class="about-layout container">
+<section class="about-layout container{% if not show_about_portrait %} about-layout--text-only{% endif %}">
 
   <!-- Portrait -->
+  {% if show_about_portrait %}
   <div class="about-portrait">
-    {% if profile.portrait %}
     <figure>
-      <img src="{{ profile.portrait.url }}" alt="{{ site_settings.site_name }}" loading="lazy">
+      <img src="{{ profile.portrait.url }}" alt="{{ about_hero_title }}" loading="lazy">
     </figure>
-    {% else %}
-    <div class="about-portrait__placeholder"></div>
-    {% endif %}
 
     {% if profile.cv_file %}
     <a href="{{ profile.cv_file.url }}" class="btn btn--outline" download>Download CV / Profile</a>
@@ -33,54 +36,46 @@
     <a href="mailto:{{ site_settings.contact_email }}" class="btn btn--primary">Get in Touch</a>
     {% endif %}
   </div>
+  {% endif %}
 
   <!-- Bio content -->
   <div class="about-content">
 
-    {% if profile.intro %}
-    <p class="about-intro">{{ profile.intro }}</p>
+    {% if profile.practice_summary %}
+    <div class="prose about-intro">
+      {{ profile.practice_summary|linebreaks }}
+    </div>
     {% endif %}
 
-    {% if profile.biography %}
+    {% if profile.project_leadership %}
     <div class="prose about-bio">
-      {{ profile.biography|linebreaks }}
+      {{ profile.project_leadership|linebreaks }}
     </div>
     {% endif %}
 
-    {% if profile.philosophy %}
-    <div class="about-philosophy">
-      <h2>Approach</h2>
-      <div class="prose">
-        {{ profile.philosophy|linebreaks }}
-      </div>
-    </div>
-    {% endif %}
-
-    {% if profile.credentials %}
-    <div class="about-credentials">
-      <h2>Education &amp; Credentials</h2>
+    {% if show_professional_profile %}
+    <div class="about-profile">
+      <h2>Professional Profile</h2>
       <ul>
-        {% for line in profile.credentials.splitlines %}
-        {% if line.strip %}
+        <li>Based in {{ about_public_location }}</li>
+        <li>{{ profile.professional_standing }}</li>
+        <li>{{ profile.experience_years }}+ years in practice</li>
+        {% for line in profile.education_lines %}
         <li>{{ line }}</li>
-        {% endif %}
+        {% endfor %}
+        {% for line in profile.supporting_fact_lines %}
+        <li>{{ line }}</li>
         {% endfor %}
       </ul>
     </div>
     {% endif %}
 
-    {% if profile.experience_years %}
-    <div class="about-stats">
-      <div class="stat">
-        <span class="stat__number">{{ profile.experience_years }}+</span>
-        <span class="stat__label">Years of practice</span>
+    {% if profile.approach %}
+    <div class="about-philosophy">
+      <h2>Approach</h2>
+      <div class="prose">
+        {{ profile.approach|linebreaks }}
       </div>
-      {% if site_settings.location %}
-      <div class="stat">
-        <span class="stat__number">—</span>
-        <span class="stat__label">Based in {{ site_settings.location }}</span>
-      </div>
-      {% endif %}
     </div>
     {% endif %}
 
@@ -91,7 +86,9 @@
 <section class="section cta-section">
   <div class="container container--narrow cta-section__inner">
     <h2 class="cta-section__title">Have a project in mind?</h2>
-    <p class="cta-section__body">The earlier we talk, the more useful that conversation tends to be — whether you already have a clear brief or are still working through the first questions.</p>
+    {% if profile.closing_invitation %}
+    <p class="cta-section__body">{{ profile.closing_invitation }}</p>
+    {% endif %}
     <div class="cta-section__actions">
       <a href="{% url 'contact:contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
       <a href="{% url 'projects:list' %}" class="btn btn--outline btn--large">View Projects</a>

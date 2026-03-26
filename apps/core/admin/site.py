@@ -84,10 +84,57 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 @admin.register(AboutProfile)
 class AboutProfileAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("Header", {"fields": ("headline", "intro")}),
-        ("Content", {"fields": ("biography", "philosophy", "credentials")}),
-        ("Details", {"fields": ("experience_years", "location")}),
-        ("Files", {"fields": ("portrait", "cv_file")}),
+        (
+            "Identity",
+            {
+                "fields": (
+                    "identity_mode",
+                    "principal_name",
+                    "principal_title",
+                    "practice_structure",
+                    "one_line_practice_description",
+                )
+            },
+        ),
+        (
+            "Content",
+            {
+                "fields": (
+                    "practice_summary",
+                    "project_leadership",
+                    "approach",
+                    "closing_invitation",
+                ),
+                "description": (
+                    "Keep the About page factual. Practice summary explains what the practice "
+                    "does; project leadership explains how work is led and where consultants fit in."
+                ),
+            },
+        ),
+        (
+            "Professional Profile",
+            {
+                "fields": (
+                    "professional_standing",
+                    "education",
+                    "supporting_facts",
+                    "experience_years",
+                ),
+                "description": (
+                    "Use concrete facts only. The public profile renders only when location, "
+                    "professional standing, years in practice, and at least one supporting fact are present."
+                ),
+            },
+        ),
+        (
+            "Files & Display",
+            {
+                "fields": ("portrait_mode", "portrait", "cv_file"),
+                "description": (
+                    "Text-only mode is allowed, but the public page will not show a gray portrait placeholder."
+                ),
+            },
+        ),
     )
 
     def has_add_permission(self, request):

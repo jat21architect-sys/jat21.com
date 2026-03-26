@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from apps.core.models import AboutProfile
+from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, Testimonial
 from apps.services.models import Service
 
@@ -33,7 +33,39 @@ class AboutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["profile"] = AboutProfile.load()
+        profile = AboutProfile.load()
+        site = SiteSettings.load()
+
+        show_portrait = (
+            profile.portrait_mode == AboutProfile.PortraitMode.PORTRAIT and bool(profile.portrait)
+        )
+        hero_title = site.site_name or "About"
+        hero_meta = ""
+
+        if (
+            profile.identity_mode == AboutProfile.IdentityMode.PERSON
+            and profile.principal_name
+        ):
+            hero_title = profile.principal_name
+            hero_meta = ", ".join(
+                part for part in [profile.principal_title, site.site_name] if part
+            )
+        elif profile.practice_structure:
+            hero_meta = profile.practice_structure
+
+        show_professional_profile = bool(
+            site.location
+            and profile.professional_standing
+            and profile.experience_years
+            and profile.has_concrete_supporting_fact
+        )
+
+        ctx["profile"] = profile
+        ctx["about_hero_title"] = hero_title
+        ctx["about_hero_meta"] = hero_meta
+        ctx["show_about_portrait"] = show_portrait
+        ctx["show_professional_profile"] = show_professional_profile
+        ctx["about_public_location"] = site.location
         return ctx
 
 

@@ -6,14 +6,47 @@ Each test runs against a fresh isolated DB (pytest-django default).
 """
 
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.core.management.commands.check_content_readiness import collect_warnings
+from apps.core.management.commands.check_content_readiness import (
+    collect_readiness_issues,
+    collect_warnings,
+)
 from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, Testimonial
 
 # ---------------------------------------------------------------------------
 # SiteSettings checks
 # ---------------------------------------------------------------------------
+
+
+def _populate_minimum_ready_site_and_about():
+    site = SiteSettings.load()
+    site.site_name = "Studio Rossi"
+    site.contact_email = "studio@mypractice.com"
+    site.tagline = "Context-led architecture"
+    site.meta_description = "Independent architectural practice."
+    site.location = "Reykjavik, Iceland"
+    site.og_image = SimpleUploadedFile("og.jpg", b"og-image", content_type="image/jpeg")
+    site.save()
+
+    about = AboutProfile.load()
+    about.identity_mode = AboutProfile.IdentityMode.STUDIO
+    about.practice_structure = "Small studio"
+    about.one_line_practice_description = "Architecture for housing, civic, and workplace projects."
+    about.practice_summary = "A Reykjavik-based practice working across public and private projects."
+    about.project_leadership = (
+        "Projects are led directly with specialist consultants involved as needed."
+    )
+    about.professional_standing = "Registered architectural practice"
+    about.education = "Master of Architecture"
+    about.supporting_facts = ""
+    about.experience_years = 12
+    about.approach = "The work focuses on clarity, durability, and legible project decision-making."
+    about.closing_invitation = "Get in touch to discuss a project."
+    about.portrait_mode = AboutProfile.PortraitMode.TEXT_ONLY
+    about.save()
+    return site, about
 
 
 @pytest.mark.django_db
@@ -97,12 +130,46 @@ def test_warns_when_about_contains_placeholder_markers():
     site.save()
 
     about = AboutProfile.load()
-    about.headline = "About the Practice"
-    about.intro = "[Your Name] is an architect working across residential projects."
+    about.practice_structure = "Small studio"
+    about.one_line_practice_description = "[Add a one-line public description of the practice]"
     about.save()
 
     warnings = collect_warnings()
     assert any("starter placeholder markers" in w for w in warnings)
+
+
+@pytest.mark.django_db
+def test_about_readiness_warns_but_does_not_block_in_text_only_mode(service, project):
+    _populate_minimum_ready_site_and_about()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not any("AboutProfile" in blocker for blocker in blockers)
+    assert any("text-only mode" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+def test_about_readiness_blocks_when_person_led_name_is_missing(service, project):
+    _, about = _populate_minimum_ready_site_and_about()
+    about.identity_mode = AboutProfile.IdentityMode.PERSON
+    about.principal_title = "Founder and Registered Architect"
+    about.save()
+
+    blockers, _ = collect_readiness_issues()
+
+    assert any("principal_name" in blocker for blocker in blockers)
+
+
+@pytest.mark.django_db
+def test_about_readiness_blocks_when_minimum_profile_fact_set_is_missing(service, project):
+    _, about = _populate_minimum_ready_site_and_about()
+    about.education = ""
+    about.supporting_facts = ""
+    about.save()
+
+    blockers, _ = collect_readiness_issues()
+
+    assert any("concrete supporting fact" in blocker for blocker in blockers)
 
 
 # ---------------------------------------------------------------------------

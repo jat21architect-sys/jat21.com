@@ -9,16 +9,23 @@
   align-items: start;
 }
 
+.about-layout--text-only {
+  grid-template-columns: 1fr;
+}
+
+.about-hero__meta {
+  margin-block-start: 1rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
 .about-portrait figure img {
   width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
   display: block;
-}
-
-.about-portrait__placeholder {
-  aspect-ratio: 3/4;
-  background-color: var(--c-warm-grey);
 }
 
 .about-portrait {
@@ -39,6 +46,10 @@
   margin-block-end: var(--space-md);
 }
 
+.about-intro p {
+  margin-block-end: var(--space-md);
+}
+
 .about-bio { margin-block-end: var(--space-lg); }
 
 .about-philosophy {
@@ -49,7 +60,7 @@
 }
 
 .about-philosophy h2,
-.about-credentials h2 {
+.about-profile h2 {
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 500;
@@ -59,53 +70,26 @@
   margin-block-end: 1rem;
 }
 
-.about-credentials { margin-block: var(--space-lg); }
+.about-profile { margin-block: var(--space-lg); }
 
-.about-credentials ul {
+.about-profile ul {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.about-credentials li {
+.about-profile li {
   padding-inline-start: 1.25rem;
   position: relative;
   font-size: 0.9rem;
 }
 
-.about-credentials li::before {
+.about-profile li::before {
   content: '—';
   position: absolute;
   inset-inline-start: 0;
   color: var(--c-accent);
-}
-
-.about-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-lg);
-  margin-block-top: var(--space-lg);
-  padding-block-start: var(--space-lg);
-  border-block-start: 1px solid var(--c-warm-grey);
-}
-
-.stat__number {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 3rem;
-  font-weight: 300;
-  color: var(--c-accent);
-  line-height: 1;
-}
-
-.stat__label {
-  display: block;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--c-mid-grey);
-  margin-block-start: 0.4rem;
 }
 
 @media (max-width: 900px) {
