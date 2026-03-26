@@ -22,7 +22,7 @@
       <!-- Form -->
       <div class="contact-form-col">
         <h2 class="contact-form-col__heading">Send an enquiry</h2>
-        <form method="post" action="{% url 'contact:contact' %}" class="contact-form" novalidate>
+        <form method="post" action="{% url 'contact:contact' %}" class="contact-form" data-submit-pending-label="Sending…" novalidate>
           {% csrf_token %}
           {% if form.non_field_errors %}
           <div class="form-row">
@@ -85,6 +85,7 @@
 
           {{ form.website }}
           {{ form.submission_token }}
+          <p class="contact-form__trust">Your details are used only to respond to your enquiry. After submission, the practice will review your message and follow up by email.</p>
           <button type="submit" class="btn btn--primary btn--large">Send Enquiry</button>
         </form>
       </div>
@@ -129,7 +130,16 @@
         </div>
 
         <div class="contact-note">
-          <p>I typically respond within two working days. For urgent enquiries please call or email directly.</p>
+          <p>
+            The practice typically responds within two working days.
+            {% if site_settings.phone and site_settings.contact_email %}
+            For urgent enquiries, call or email directly.
+            {% elif site_settings.contact_email %}
+            For urgent enquiries, email directly.
+            {% elif site_settings.phone %}
+            For urgent enquiries, call directly.
+            {% endif %}
+          </p>
         </div>
       </aside>
 

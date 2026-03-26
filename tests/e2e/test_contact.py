@@ -19,7 +19,7 @@ def test_contact_form_submit_reaches_success_page(
 
     page.get_by_label(re.compile("^Name")).fill("Alice Architect")
     page.get_by_label(re.compile("^Email")).fill("alice@example.com")
-    page.get_by_label("Project type").select_option(label="Residential Design")
+    page.get_by_label("Project type").select_option(label="Housing")
     page.get_by_label(re.compile("^Message")).fill(
         "I would like to discuss a residential project in more detail."
     )
@@ -27,11 +27,11 @@ def test_contact_form_submit_reaches_success_page(
     page.get_by_role("button", name="Send Enquiry").click()
 
     expect(page).to_have_url(f"{app_url}/contact/thank-you/")
-    expect(page.get_by_role("heading", name="Your message is with me.", level=1)).to_be_visible()
+    expect(page.get_by_role("heading", name="Your enquiry has been received.", level=1)).to_be_visible()
 
     inquiry = ContactInquiry.objects.get(email="alice@example.com")
     assert inquiry.name == "Alice Architect"
-    assert inquiry.project_type == "Residential Design"
+    assert inquiry.project_type == "Housing"
 
 
 def test_contact_form_invalid_submit_prioritizes_field_errors_and_focuses_name(

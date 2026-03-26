@@ -4,7 +4,7 @@ from django.conf import settings as django_settings
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect, render
 
-from .forms import PROJECT_TYPE_CHOICES, ContactForm
+from .forms import LEGACY_PROJECT_TYPE_MAP, PROJECT_TYPE_CHOICES, ContactForm
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,8 @@ def contact_view(request):
             valid_types = {c[0] for c in PROJECT_TYPE_CHOICES if c[0]}
             if project_type in valid_types:
                 initial["project_type"] = project_type
+            elif project_type in LEGACY_PROJECT_TYPE_MAP:
+                initial["project_type"] = LEGACY_PROJECT_TYPE_MAP[project_type]
         form = ContactForm(initial=initial)
     return render(request, "contact/contact.html", {"form": form})
 

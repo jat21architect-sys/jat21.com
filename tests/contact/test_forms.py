@@ -21,7 +21,7 @@ def make_payload(**overrides):
         "name": "Alice Architect",
         "email": "alice@example.com",
         "message": "I would like to discuss a residential project.",
-        "project_type": "Residential Design",
+        "project_type": "Housing",
         "budget_range": "500k – 1M",
         "timeline": "3–6 months",
         "submission_token": valid_submission_token(),

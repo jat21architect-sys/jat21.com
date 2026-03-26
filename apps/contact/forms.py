@@ -8,15 +8,22 @@ from .models import ContactInquiry
 
 PROJECT_TYPE_CHOICES = [
     ("", "Select project type…"),
-    ("Residential Design", "Residential Design"),
-    ("Commercial Design", "Commercial Design"),
-    ("Interior Architecture", "Interior Architecture"),
+    ("Housing", "Housing"),
+    ("Civic", "Civic"),
+    ("Workplace", "Workplace"),
     ("Renovation / Adaptive Reuse", "Renovation / Adaptive Reuse"),
-    ("Concept Development", "Concept Development"),
-    ("3D Visualisation", "3D Visualisation"),
-    ("Planning & Consultation", "Planning & Consultation"),
     ("Other", "Other"),
 ]
+
+LEGACY_PROJECT_TYPE_MAP = {
+    "Residential Design": "Housing",
+    "Commercial Design": "Workplace",
+    "Interior Architecture": "Other",
+    "Concept Development": "Other",
+    "3D Visualisation": "Other",
+    "Planning & Consultation": "Other",
+    "Renovation / Adaptive Reuse": "Renovation / Adaptive Reuse",
+}
 
 BUDGET_CHOICES = [
     ("", "Budget range (optional)…"),

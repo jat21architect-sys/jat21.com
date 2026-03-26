@@ -190,4 +190,21 @@
     }
   }
 
+  // ---------------------------------------------------------
+  // Form submit state
+  // ---------------------------------------------------------
+  document.querySelectorAll('form[data-submit-pending-label]').forEach(form => {
+    form.addEventListener('submit', () => {
+      const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+      if (!submitButton || submitButton.disabled) {
+        return;
+      }
+
+      submitButton.dataset.originalLabel = submitButton.textContent;
+      submitButton.textContent = form.dataset.submitPendingLabel;
+      submitButton.disabled = true;
+      submitButton.setAttribute('aria-disabled', 'true');
+    });
+  });
+
 })();
