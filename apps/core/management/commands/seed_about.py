@@ -25,24 +25,24 @@ Run on production via Railway:
 
 from django.core.management.base import BaseCommand
 
+from apps.core.about_defaults import (
+    CLOSING_INVITATION_DEFAULT,
+    PRACTICE_STRUCTURE_PROMPT,
+    PROFESSIONAL_STANDING_PROMPT,
+    PROJECT_LEADERSHIP_PROMPT,
+)
 from apps.core.models import AboutProfile
 
 CONTENT = {
-    "practice_structure": (
-        "[Add a truthful practice structure, for example 'Solo practice' or 'Small studio']"
-    ),
+    "practice_structure": PRACTICE_STRUCTURE_PROMPT,
     "one_line_practice_description": (
         "[Add a one-line public description of the practice]"
     ),
     "practice_summary": (
         "[Describe what the practice does, where it is based, and the kinds of projects it takes on.]"
     ),
-    "project_leadership": (
-        "[Explain how projects are led and how consultants or collaborators are involved.]"
-    ),
-    "professional_standing": (
-        "[Add registration or professional standing]"
-    ),
+    "project_leadership": PROJECT_LEADERSHIP_PROMPT,
+    "professional_standing": PROFESSIONAL_STANDING_PROMPT,
     "education": (
         "[Add education details, one per line]"
     ),
@@ -52,9 +52,7 @@ CONTENT = {
     "approach": (
         "[Add a short practical approach statement in 2 to 3 sentences.]"
     ),
-    "closing_invitation": (
-        "[Add a short closing invitation for the contact CTA]"
-    ),
+    "closing_invitation": CLOSING_INVITATION_DEFAULT,
 }
 
 TEXT_FIELDS = list(CONTENT.keys())

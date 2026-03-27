@@ -6,8 +6,15 @@ Each test runs against a fresh isolated DB (pytest-django default).
 """
 
 import pytest
+from django.core.management import call_command
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from apps.core.about_defaults import (
+    CLOSING_INVITATION_DEFAULT,
+    PRACTICE_STRUCTURE_PROMPT,
+    PROFESSIONAL_STANDING_PROMPT,
+    PROJECT_LEADERSHIP_PROMPT,
+)
 from apps.core.management.commands.check_content_readiness import (
     collect_readiness_issues,
     collect_warnings,
@@ -149,6 +156,43 @@ def test_about_readiness_warns_but_does_not_block_in_text_only_mode(service, pro
 
 
 @pytest.mark.django_db
+def test_readiness_warns_when_page_specific_meta_descriptions_are_blank(service, project):
+    _populate_minimum_ready_site_and_about()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not any("meta_description is blank" in blocker for blocker in blockers)
+    assert any("about_meta_description is blank" in warning for warning in warnings)
+    assert any("services_meta_description is blank" in warning for warning in warnings)
+    assert any("projects_meta_description is blank" in warning for warning in warnings)
+    assert any("contact_meta_description is blank" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+def test_readiness_warns_when_custom_og_image_is_missing_but_no_longer_blocks(service, project):
+    site, _ = _populate_minimum_ready_site_and_about()
+    site.og_image.delete(save=True)
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not any("SiteSettings.og_image is missing" in blocker for blocker in blockers)
+    assert any("SiteSettings.og_image is missing" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+def test_seed_about_sets_safe_default_invitation_and_truth_prompts():
+    about = AboutProfile.load()
+
+    call_command("seed_about")
+    about.refresh_from_db()
+
+    assert about.practice_structure == PRACTICE_STRUCTURE_PROMPT
+    assert about.project_leadership == PROJECT_LEADERSHIP_PROMPT
+    assert about.professional_standing == PROFESSIONAL_STANDING_PROMPT
+    assert about.closing_invitation == CLOSING_INVITATION_DEFAULT
+
+
+@pytest.mark.django_db
 def test_about_readiness_blocks_when_person_led_name_is_missing(service, project):
     _, about = _populate_minimum_ready_site_and_about()
     about.identity_mode = AboutProfile.IdentityMode.PERSON
@@ -172,6 +216,71 @@ def test_about_readiness_blocks_when_minimum_profile_fact_set_is_missing(service
     assert any("concrete supporting fact" in blocker for blocker in blockers)
 
 
+@pytest.mark.django_db
+def test_about_readiness_blocks_when_optional_proof_fields_contain_only_starter_prompts(service, project):
+    _, about = _populate_minimum_ready_site_and_about()
+    about.education = "[Add education details, one per line]"
+    about.supporting_facts = "[Add at least one concrete supporting fact, one per line]"
+    about.save()
+
+    blockers, _ = collect_readiness_issues()
+
+    assert any("concrete supporting fact" in blocker for blocker in blockers)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("field", "value", "expected_message"),
+    [
+        (
+            "practice_structure",
+            PRACTICE_STRUCTURE_PROMPT,
+            "AboutProfile.practice_structure is still a starter prompt.",
+        ),
+        (
+            "project_leadership",
+            PROJECT_LEADERSHIP_PROMPT,
+            "AboutProfile.project_leadership is still a starter prompt.",
+        ),
+        (
+            "professional_standing",
+            PROFESSIONAL_STANDING_PROMPT,
+            "AboutProfile.professional_standing is still a starter prompt.",
+        ),
+    ],
+)
+def test_about_readiness_blocks_when_truth_fields_are_still_starter_prompts(
+    service,
+    project,
+    field,
+    value,
+    expected_message,
+):
+    _, about = _populate_minimum_ready_site_and_about()
+    setattr(about, field, value)
+    about.closing_invitation = CLOSING_INVITATION_DEFAULT
+    about.save()
+
+    blockers, _ = collect_readiness_issues()
+
+    assert any(expected_message in blocker for blocker in blockers)
+    assert not any("closing_invitation is blank" in blocker for blocker in blockers)
+
+
+@pytest.mark.django_db
+def test_about_readiness_does_not_add_generic_placeholder_blocker_for_optional_proof_prompts(
+    service, project
+):
+    _, about = _populate_minimum_ready_site_and_about()
+    about.education = "[Add education details, one per line]"
+    about.closing_invitation = CLOSING_INVITATION_DEFAULT
+    about.save()
+
+    blockers, _ = collect_readiness_issues()
+
+    assert not any("starter placeholder markers" in blocker for blocker in blockers)
+
+
 # ---------------------------------------------------------------------------
 # Content collection checks
 # ---------------------------------------------------------------------------
@@ -181,28 +290,28 @@ def test_about_readiness_blocks_when_minimum_profile_fact_set_is_missing(service
 def test_warns_when_no_active_services():
     # Fresh DB has no services.
     warnings = collect_warnings()
-    assert any("Service" in w for w in warnings)
+    assert any("No active Service records found" in w for w in warnings)
 
 
 @pytest.mark.django_db
 def test_no_service_warning_when_active_service_exists(service):
     # `service` fixture (conftest) creates one active Service.
     warnings = collect_warnings()
-    assert not any("Service" in w for w in warnings)
+    assert not any("No active Service records found" in w for w in warnings)
 
 
 @pytest.mark.django_db
 def test_warns_when_no_projects():
     # Fresh DB has no projects.
     warnings = collect_warnings()
-    assert any("Project" in w for w in warnings)
+    assert any("No Project records found" in w for w in warnings)
 
 
 @pytest.mark.django_db
 def test_no_project_warning_when_project_exists(project):
     # `project` fixture (conftest) creates one Project.
     warnings = collect_warnings()
-    assert not any("Project" in w for w in warnings)
+    assert not any("No Project records found" in w for w in warnings)
 
 
 @pytest.mark.django_db

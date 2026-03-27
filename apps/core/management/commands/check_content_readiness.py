@@ -20,6 +20,11 @@ import sys
 
 from django.core.management.base import BaseCommand
 
+from apps.core.about_defaults import (
+    PRACTICE_STRUCTURE_PROMPT,
+    PROFESSIONAL_STANDING_PROMPT,
+    PROJECT_LEADERSHIP_PROMPT,
+)
 from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, Testimonial
 from apps.services.models import Service
@@ -47,6 +52,8 @@ _PLACEHOLDER_MARKERS = (
     "[Your Local Professional Body]",
     "[Your Professional Institute]",
     "[Add ",
+    "[Describe ",
+    "[Explain ",
 )
 _DEMO_PROJECT_TITLES = {
     "House on the Hillside",
@@ -63,6 +70,14 @@ _DEMO_TESTIMONIAL_NAMES = {
 
 def _contains_placeholder_marker(*values: str) -> bool:
     return any(marker in value for marker in _PLACEHOLDER_MARKERS for value in values if value)
+
+
+def _concrete_lines(value: str) -> list[str]:
+    return [
+        line.strip()
+        for line in value.splitlines()
+        if line.strip() and not _contains_placeholder_marker(line)
+    ]
 
 
 def collect_readiness_issues() -> tuple[list[str], list[str]]:
@@ -120,9 +135,33 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
         )
 
     if not site.og_image:
-        blockers.append(
+        warnings.append(
             "SiteSettings.og_image is missing. "
-            "Social share cards will have no image."
+            "The site will fall back to the bundled default share image; upload a custom image for branded previews."
+        )
+
+    if not site.about_meta_description:
+        warnings.append(
+            "SiteSettings.about_meta_description is blank. "
+            "The About page will fall back to the homepage meta description."
+        )
+
+    if not site.services_meta_description:
+        warnings.append(
+            "SiteSettings.services_meta_description is blank. "
+            "The Services page will fall back to the homepage meta description."
+        )
+
+    if not site.projects_meta_description:
+        warnings.append(
+            "SiteSettings.projects_meta_description is blank. "
+            "The Projects page will fall back to the homepage meta description."
+        )
+
+    if not site.contact_meta_description:
+        warnings.append(
+            "SiteSettings.contact_meta_description is blank. "
+            "The Contact page will fall back to the homepage meta description."
         )
 
     if not site.location:
@@ -161,6 +200,11 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "AboutProfile.practice_structure is blank. "
             "Add a truthful practice structure such as 'Solo practice' or 'Small studio'."
         )
+    elif about.practice_structure == PRACTICE_STRUCTURE_PROMPT:
+        blockers.append(
+            "AboutProfile.practice_structure is still a starter prompt. "
+            "Replace it with the truthful public practice structure."
+        )
 
     if not about.one_line_practice_description:
         blockers.append(
@@ -189,6 +233,11 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "AboutProfile.project_leadership is blank. "
             "Explain how projects are led and where consultants or collaborators fit in."
         )
+    elif about.project_leadership == PROJECT_LEADERSHIP_PROMPT:
+        blockers.append(
+            "AboutProfile.project_leadership is still a starter prompt. "
+            "Replace it with the real project leadership statement shown on the About page."
+        )
     elif about.project_leadership == _DEMO_ABOUT_PROJECT_LEADERSHIP:
         blockers.append(
             "AboutProfile.project_leadership is still demo/reference copy. "
@@ -199,6 +248,11 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
         blockers.append(
             "AboutProfile.professional_standing is blank. "
             "Add the public registration or professional standing shown on the About page."
+        )
+    elif about.professional_standing == PROFESSIONAL_STANDING_PROMPT:
+        blockers.append(
+            "AboutProfile.professional_standing is still a starter prompt. "
+            "Replace it with the real public registration or professional standing."
         )
 
     if about.experience_years == 0:
@@ -219,7 +273,7 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "Add the short closing invitation shown above the contact CTA."
         )
 
-    if not about.has_concrete_supporting_fact:
+    if not (_concrete_lines(about.education) or _concrete_lines(about.supporting_facts)):
         blockers.append(
             "AboutProfile needs at least one concrete supporting fact. "
             "Add education and/or supporting facts so the public professional profile is grounded in real evidence."
@@ -240,13 +294,8 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
     if _contains_placeholder_marker(
         about.principal_name,
         about.principal_title,
-        about.practice_structure,
         about.one_line_practice_description,
         about.practice_summary,
-        about.project_leadership,
-        about.professional_standing,
-        about.education,
-        about.supporting_facts,
         about.approach,
         about.closing_invitation,
     ):
