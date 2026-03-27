@@ -21,9 +21,12 @@ import sys
 from django.core.management.base import BaseCommand
 
 from apps.core.about_defaults import (
+    PROJECT_LEADERSHIP_PROMPT,
     PRACTICE_STRUCTURE_PROMPT,
     PROFESSIONAL_STANDING_PROMPT,
-    PROJECT_LEADERSHIP_PROMPT,
+    is_placeholder_text,
+    public_lines,
+    public_text,
 )
 from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, Testimonial
@@ -47,14 +50,6 @@ _DEMO_ABOUT_PROJECT_LEADERSHIP = (
     "Projects are led by a compact studio team, with specialist consultants involved as "
     "needed for structure, building services, and planning coordination."
 )
-_PLACEHOLDER_MARKERS = (
-    "[Your Name]",
-    "[Your Local Professional Body]",
-    "[Your Professional Institute]",
-    "[Add ",
-    "[Describe ",
-    "[Explain ",
-)
 _DEMO_PROJECT_TITLES = {
     "House on the Hillside",
     "Community Library Pavilion",
@@ -69,15 +64,11 @@ _DEMO_TESTIMONIAL_NAMES = {
 
 
 def _contains_placeholder_marker(*values: str) -> bool:
-    return any(marker in value for marker in _PLACEHOLDER_MARKERS for value in values if value)
+    return any(is_placeholder_text(value) for value in values if value)
 
 
 def _concrete_lines(value: str) -> list[str]:
-    return [
-        line.strip()
-        for line in value.splitlines()
-        if line.strip() and not _contains_placeholder_marker(line)
-    ]
+    return public_lines(value)
 
 
 def collect_readiness_issues() -> tuple[list[str], list[str]]:
@@ -195,15 +186,10 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "Set the public role/title before launch."
         )
 
-    if not about.practice_structure:
-        blockers.append(
-            "AboutProfile.practice_structure is blank. "
-            "Add a truthful practice structure such as 'Solo practice' or 'Small studio'."
-        )
-    elif about.practice_structure == PRACTICE_STRUCTURE_PROMPT:
-        blockers.append(
-            "AboutProfile.practice_structure is still a starter prompt. "
-            "Replace it with the truthful public practice structure."
+    if not public_text(about.practice_structure):
+        warnings.append(
+            "AboutProfile.practice_structure is omitted or still a starter prompt. "
+            "The About hero will hide this line until real practice-structure wording is available."
         )
 
     if not about.one_line_practice_description:
@@ -228,15 +214,10 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "Replace it with your own About summary before launch."
         )
 
-    if not about.project_leadership:
-        blockers.append(
-            "AboutProfile.project_leadership is blank. "
-            "Explain how projects are led and where consultants or collaborators fit in."
-        )
-    elif about.project_leadership == PROJECT_LEADERSHIP_PROMPT:
-        blockers.append(
-            "AboutProfile.project_leadership is still a starter prompt. "
-            "Replace it with the real project leadership statement shown on the About page."
+    if not public_text(about.project_leadership):
+        warnings.append(
+            "AboutProfile.project_leadership is omitted or still a starter prompt. "
+            "The About page will hide this section until real project-leadership wording is available."
         )
     elif about.project_leadership == _DEMO_ABOUT_PROJECT_LEADERSHIP:
         blockers.append(
@@ -244,15 +225,10 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "Replace it with your real project leadership statement."
         )
 
-    if not about.professional_standing:
-        blockers.append(
-            "AboutProfile.professional_standing is blank. "
-            "Add the public registration or professional standing shown on the About page."
-        )
-    elif about.professional_standing == PROFESSIONAL_STANDING_PROMPT:
-        blockers.append(
-            "AboutProfile.professional_standing is still a starter prompt. "
-            "Replace it with the real public registration or professional standing."
+    if not public_text(about.professional_standing):
+        warnings.append(
+            "AboutProfile.professional_standing is omitted or still a starter prompt. "
+            "The public professional-profile block will stay hidden until exact standing wording is available."
         )
 
     if about.experience_years == 0:

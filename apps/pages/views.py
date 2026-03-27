@@ -50,12 +50,12 @@ class AboutView(TemplateView):
             hero_meta = ", ".join(
                 part for part in [profile.principal_title, site.site_name] if part
             )
-        elif profile.practice_structure:
-            hero_meta = profile.practice_structure
+        elif profile.public_practice_structure:
+            hero_meta = profile.public_practice_structure
 
         show_professional_profile = bool(
             site.location
-            and profile.professional_standing
+            and profile.public_professional_standing
             and profile.experience_years
             and profile.has_concrete_supporting_fact
         )

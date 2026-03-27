@@ -49,9 +49,9 @@
     </div>
     {% endif %}
 
-    {% if profile.project_leadership %}
+    {% if profile.public_project_leadership %}
     <div class="prose about-bio">
-      {{ profile.project_leadership|linebreaks }}
+      {{ profile.public_project_leadership|linebreaks }}
     </div>
     {% endif %}
 
@@ -60,7 +60,7 @@
       <h2>Professional Profile</h2>
       <ul>
         <li>Based in {{ about_public_location }}</li>
-        <li>{{ profile.professional_standing }}</li>
+        <li>{{ profile.public_professional_standing }}</li>
         <li>{{ profile.experience_years }}+ years in practice</li>
         {% for line in profile.education_lines %}
         <li>{{ line }}</li>

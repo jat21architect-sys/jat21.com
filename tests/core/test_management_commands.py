@@ -193,6 +193,24 @@ def test_seed_about_sets_safe_default_invitation_and_truth_prompts():
 
 
 @pytest.mark.django_db
+def test_about_readiness_warns_when_truth_fields_are_omitted_or_starter_prompts(service, project):
+    _, about = _populate_minimum_ready_site_and_about()
+    about.practice_structure = PRACTICE_STRUCTURE_PROMPT
+    about.project_leadership = ""
+    about.professional_standing = PROFESSIONAL_STANDING_PROMPT
+    about.save()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not any("practice_structure" in blocker for blocker in blockers)
+    assert not any("project_leadership" in blocker for blocker in blockers)
+    assert not any("professional_standing" in blocker for blocker in blockers)
+    assert any("practice_structure is omitted or still a starter prompt" in warning for warning in warnings)
+    assert any("project_leadership is omitted or still a starter prompt" in warning for warning in warnings)
+    assert any("professional_standing is omitted or still a starter prompt" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
 def test_about_readiness_blocks_when_person_led_name_is_missing(service, project):
     _, about = _populate_minimum_ready_site_and_about()
     about.identity_mode = AboutProfile.IdentityMode.PERSON
@@ -235,21 +253,21 @@ def test_about_readiness_blocks_when_optional_proof_fields_contain_only_starter_
         (
             "practice_structure",
             PRACTICE_STRUCTURE_PROMPT,
-            "AboutProfile.practice_structure is still a starter prompt.",
+            "AboutProfile.practice_structure is omitted or still a starter prompt.",
         ),
         (
             "project_leadership",
             PROJECT_LEADERSHIP_PROMPT,
-            "AboutProfile.project_leadership is still a starter prompt.",
+            "AboutProfile.project_leadership is omitted or still a starter prompt.",
         ),
         (
             "professional_standing",
             PROFESSIONAL_STANDING_PROMPT,
-            "AboutProfile.professional_standing is still a starter prompt.",
+            "AboutProfile.professional_standing is omitted or still a starter prompt.",
         ),
     ],
 )
-def test_about_readiness_blocks_when_truth_fields_are_still_starter_prompts(
+def test_about_readiness_warns_when_truth_fields_are_still_starter_prompts(
     service,
     project,
     field,
@@ -261,9 +279,10 @@ def test_about_readiness_blocks_when_truth_fields_are_still_starter_prompts(
     about.closing_invitation = CLOSING_INVITATION_DEFAULT
     about.save()
 
-    blockers, _ = collect_readiness_issues()
+    blockers, warnings = collect_readiness_issues()
 
-    assert any(expected_message in blocker for blocker in blockers)
+    assert not any(field in blocker for blocker in blockers)
+    assert any(expected_message in warning for warning in warnings)
     assert not any("closing_invitation is blank" in blocker for blocker in blockers)
 
 

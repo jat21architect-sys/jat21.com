@@ -6,6 +6,11 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
+from apps.core.about_defaults import (
+    PRACTICE_STRUCTURE_PROMPT,
+    PROFESSIONAL_STANDING_PROMPT,
+    PROJECT_LEADERSHIP_PROMPT,
+)
 from apps.core.models import AboutProfile
 from apps.projects.models import Project, ProjectImage
 
@@ -99,6 +104,27 @@ def test_about_page_hides_professional_profile_without_minimum_fact_set(client, 
     response = client.get(reverse("pages:about"))
 
     assert response.status_code == 200
+    assert b"Professional Profile" not in response.content
+
+
+@pytest.mark.django_db
+def test_about_page_hides_starter_prompt_fields_from_public_render(client, site_settings):
+    _populate_minimum_about(
+        site_settings,
+        practice_structure=PRACTICE_STRUCTURE_PROMPT,
+        project_leadership=PROJECT_LEADERSHIP_PROMPT,
+        professional_standing=PROFESSIONAL_STANDING_PROMPT,
+        education="[Add education details, one per line]",
+        supporting_facts="Registered architectural practice\nPlanning, technical design, and consultant coordination",
+    )
+
+    response = client.get(reverse("pages:about"))
+
+    assert response.status_code == 200
+    assert PRACTICE_STRUCTURE_PROMPT.encode() not in response.content
+    assert PROJECT_LEADERSHIP_PROMPT.encode() not in response.content
+    assert PROFESSIONAL_STANDING_PROMPT.encode() not in response.content
+    assert b"[Add education details, one per line]" not in response.content
     assert b"Professional Profile" not in response.content
 
 

@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.core.about_defaults import public_lines, public_text
+
 # ---------------------------------------------------------------------------
 # Singleton mixin — ensures only one row exists in the DB for "global" models
 # ---------------------------------------------------------------------------
@@ -187,12 +189,24 @@ class AboutProfile(SingletonModel):
 
     @property
     def education_lines(self) -> list[str]:
-        return self._lines(self.education)
+        return public_lines(self.education)
 
     @property
     def supporting_fact_lines(self) -> list[str]:
-        return self._lines(self.supporting_facts)
+        return public_lines(self.supporting_facts)
 
     @property
     def has_concrete_supporting_fact(self) -> bool:
         return bool(self.education_lines or self.supporting_fact_lines)
+
+    @property
+    def public_practice_structure(self) -> str:
+        return public_text(self.practice_structure)
+
+    @property
+    def public_project_leadership(self) -> str:
+        return public_text(self.project_leadership)
+
+    @property
+    def public_professional_standing(self) -> str:
+        return public_text(self.professional_standing)
