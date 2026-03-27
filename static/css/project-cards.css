@@ -14,6 +14,23 @@
 .projects-grid--featured .project-card { grid-column: span 4; }
 .projects-grid--featured .project-card--large { grid-column: span 8; }
 
+@media (min-width: 1025px) {
+  .projects-grid--featured-home-4 .project-card:nth-child(1),
+  .projects-grid--featured-home-4 .project-card:nth-child(4) {
+    grid-column: span 7;
+  }
+
+  .projects-grid--featured-home-4 .project-card:nth-child(2),
+  .projects-grid--featured-home-4 .project-card:nth-child(3) {
+    grid-column: span 5;
+  }
+
+  .projects-grid--featured-home-4 .project-card:nth-child(1) .project-card__media,
+  .projects-grid--featured-home-4 .project-card:nth-child(4) .project-card__media {
+    aspect-ratio: 16/10;
+  }
+}
+
 .projects-grid--uniform {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }

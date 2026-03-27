@@ -32,14 +32,14 @@
 
 <!-- ===== SELECTED PROJECTS ===== -->
 {% if homepage_projects %}
-<section class="section" id="featured">
+<section class="section homepage-projects" id="featured">
   <div class="container">
     <div class="section__header">
       <span class="section__label">Portfolio</span>
       <h2 class="section__title">Selected Projects</h2>
       <p class="section__subheading">Housing, civic, and workplace projects from the studio&rsquo;s recent work.</p>
     </div>
-    <div class="projects-grid projects-grid--featured">
+    <div class="projects-grid projects-grid--featured projects-grid--featured-home {% if homepage_projects|length == 4 %}projects-grid--featured-home-4{% endif %}">
       {% for project in homepage_projects %}
       <article class="project-card {% if forloop.first %}project-card--large{% endif %}">
         <a href="{{ project.get_absolute_url }}" class="project-card__link">
@@ -69,7 +69,7 @@
 
 <!-- ===== PHILOSOPHY ===== -->
 {% if about.approach %}
-<section class="section section--dark">
+<section class="section section--dark homepage-philosophy">
   <div class="container container--narrow">
     <span class="section__label section__label--muted">Design thinking</span>
     <blockquote class="philosophy">
@@ -82,13 +82,13 @@
 
 <!-- ===== SERVICES ===== -->
 {% if services %}
-<section class="section">
+<section class="section homepage-services">
   <div class="container">
     <div class="section__header">
       <span class="section__label">Capabilities</span>
       <h2 class="section__title">Design Services</h2>
     </div>
-    <ul class="services-list">
+    <ul class="services-list services-list--home">
       {% for service in services %}
       <li class="service-item">
         <a href="{% url 'services:list' %}#{{ service.slug }}" class="service-item__link">
@@ -107,7 +107,7 @@
 {% endif %}
 
 <!-- ===== FIT / START ===== -->
-<section class="section fit-strip">
+<section class="section fit-strip homepage-fit">
   <div class="container">
     <ul class="fit-strip__list">
       <li class="fit-strip__item">
@@ -151,7 +151,7 @@
 {% endif %}
 
 <!-- ===== CONTACT CTA ===== -->
-<section class="section cta-section">
+<section class="section cta-section homepage-cta">
   <div class="container container--narrow cta-section__inner">
     <h2 class="cta-section__title">Start a Conversation</h2>
     <p class="cta-section__body">If you have a site, a project in progress, or an early question, the practice can start there.</p>
