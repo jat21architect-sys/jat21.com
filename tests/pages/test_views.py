@@ -305,12 +305,13 @@ def test_homepage_uses_selected_projects_strip_and_updated_cta(client, site_sett
 
     assert response.status_code == 200
     assert b"Selected Projects" in response.content
-    assert b"Housing, civic, and workplace projects from the studio" in response.content
+    assert b"Housing, civic, and workplace projects from the studio" not in response.content
     assert b"More Work" not in response.content
     assert b"Who We Work With" in response.content
     assert b"Project Types" in response.content
     assert b"How Work Starts" in response.content
-    assert b"Start a Conversation" in response.content
+    assert b"Start a Conversation" in response.content  # section heading
+    assert b"Get in Touch" in response.content          # CTA button label
 
 
 @pytest.mark.django_db

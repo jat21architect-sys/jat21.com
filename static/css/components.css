@@ -142,6 +142,7 @@
 
 @media (max-width: 900px) {
   .fit-strip__list { grid-template-columns: 1fr; }
+  .home .services-list--home { grid-template-columns: 1fr; }
 }
 
 
@@ -345,6 +346,7 @@
 
   .home .homepage-cta {
     padding-block: 4rem 5.5rem;
+    border-block-start: 1px solid var(--c-warm-grey);
   }
 
   .home .homepage-cta .cta-section__inner {
