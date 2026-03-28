@@ -15,23 +15,28 @@
 .projects-grid--featured .project-card--large { grid-column: span 8; }
 
 @media (min-width: 960px) {
-  /* Restore 12-col for the home 4-card layout — overrides the ≤1024px 2-col fallback */
-  .projects-grid--featured-home-4 {
+  /* Restore 12-col for the home 4-card layout.
+     The .home prefix gives this block higher specificity (0,2,0) than the
+     generic max-width:1024px rule (0,1,0) so it wins at exactly 1024px.
+     Without scoping, the grid-template-columns would collapse to 2-col while
+     the nth-child span-7/span-5 rules (higher specificity) still applied,
+     causing cards to span 7 tracks in a 2-col grid — layout explosion. */
+  .home .projects-grid--featured-home-4 {
     grid-template-columns: repeat(12, 1fr);
   }
 
-  .projects-grid--featured-home-4 .project-card:nth-child(1),
-  .projects-grid--featured-home-4 .project-card:nth-child(4) {
+  .home .projects-grid--featured-home-4 .project-card:nth-child(1),
+  .home .projects-grid--featured-home-4 .project-card:nth-child(4) {
     grid-column: span 7;
   }
 
-  .projects-grid--featured-home-4 .project-card:nth-child(2),
-  .projects-grid--featured-home-4 .project-card:nth-child(3) {
+  .home .projects-grid--featured-home-4 .project-card:nth-child(2),
+  .home .projects-grid--featured-home-4 .project-card:nth-child(3) {
     grid-column: span 5;
   }
 
-  .projects-grid--featured-home-4 .project-card:nth-child(1) .project-card__media,
-  .projects-grid--featured-home-4 .project-card:nth-child(4) .project-card__media {
+  .home .projects-grid--featured-home-4 .project-card:nth-child(1) .project-card__media,
+  .home .projects-grid--featured-home-4 .project-card:nth-child(4) .project-card__media {
     aspect-ratio: 16/10;
   }
 }
