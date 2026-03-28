@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: 200px 1fr;
   gap: var(--space-lg);
-  padding-block: var(--space-xl);
+  padding-block: var(--space-lg);
 }
 
 .service-detail__header {

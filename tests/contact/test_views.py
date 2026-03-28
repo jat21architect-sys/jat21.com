@@ -21,7 +21,7 @@ def test_contact_success_page(client, site_settings):
     response = client.get(reverse("contact:success"))
     assert response.status_code == 200
     assert b"Your enquiry has been received." in response.content
-    assert b"The practice will review your message and follow up by email within two working days." in response.content
+    assert b"The practice will be in touch within two working days." in response.content
 
 
 @pytest.mark.django_db
