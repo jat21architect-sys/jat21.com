@@ -1,37 +1,50 @@
 {% extends "base.html" %}
 
 {% block title %}Privacy{% endblock %}
+{% block body_class %}privacy-page{% endblock %}
 {% block og_title %}Privacy — {{ site_settings.site_name }}{% endblock %}
 {% block meta_description %}How {{ site_settings.site_name }} handles contact enquiries and website data.{% endblock %}
 
 {% block content %}
 
-<section class="page-hero page-hero--short">
+<section class="page-hero page-hero--short page-hero--privacy">
   <div class="container">
     <p class="page-hero__label">Privacy</p>
     <h1 class="page-hero__title">Privacy</h1>
   </div>
 </section>
 
-<section class="section">
-  <div class="container container--narrow prose">
-    <p>
-      If you submit an enquiry through this website, the information you provide is used only to review your message
-      and respond to your enquiry.
-    </p>
-    <p>
-      Contact details and project information are not published on the site and are not shared with third parties
-      unless required to deliver the website or respond to a request you have made.
-    </p>
-    <p>
-      This site may use standard hosting, analytics, and error-monitoring services to keep the website available and
-      working properly. If you would like your enquiry information removed, please
-      {% if site_settings.contact_email %}
-      get in touch directly at <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>.
-      {% else %}
-      get in touch using the site contact form.
-      {% endif %}
-    </p>
+<section class="privacy-reading-block section">
+  <div class="container privacy-reading-block__layout">
+    <div class="privacy-reading prose">
+      <p>
+        If you submit an enquiry through this website, the information you provide is used only to review your message
+        and respond to your enquiry.
+      </p>
+      <p>
+        Contact details and project information are not published on the site and are not shared with third parties
+        unless required to deliver the website or respond to a request you have made.
+      </p>
+      <p>
+        This site may use standard hosting, analytics, and error-monitoring services to keep the website available and
+        working properly.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="privacy-note" aria-labelledby="privacy-note-title">
+  <div class="container">
+    <div class="privacy-note__inner">
+      <p class="privacy-note__label">Privacy contact</p>
+      <p id="privacy-note-title" class="privacy-note__text">
+        {% if site_settings.contact_email %}
+        If you would like your enquiry information removed, please get in touch directly at <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>.
+        {% else %}
+        If you would like your enquiry information removed, please get in touch using the <a href="{% url 'contact:contact' %}">contact form</a>.
+        {% endif %}
+      </p>
+    </div>
   </div>
 </section>
 

@@ -315,6 +315,145 @@
 
 
 /* ---------------------------------------------------------
+   13b. Homepage coda
+   --------------------------------------------------------- */
+.homepage-coda {
+  padding-block: 0;
+  background: linear-gradient(180deg, var(--c-white) 0%, rgba(242, 238, 233, 0.82) 100%);
+}
+
+.homepage-coda__inner {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: center;
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--c-warm-grey);
+}
+
+.homepage-coda__inner--with-visual {
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.72fr);
+}
+
+.homepage-coda__inner--text-only {
+  max-width: 46rem;
+}
+
+.homepage-coda__content {
+  max-width: 35rem;
+}
+
+.homepage-coda__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-block-end: 0.85rem;
+}
+
+.homepage-coda__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-weight: 300;
+  line-height: 1.08;
+  max-width: 13ch;
+}
+
+.homepage-coda__body {
+  max-width: 34ch;
+  margin-block: 1rem 1.75rem;
+  color: var(--c-text-muted);
+}
+
+.homepage-coda__visual {
+  width: min(100%, 420px);
+  margin-inline-start: auto;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background-color: var(--c-stone);
+}
+
+.homepage-coda__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* ---------------------------------------------------------
+   13c. Privacy page
+   --------------------------------------------------------- */
+.privacy-page main {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-hero--privacy .page-hero__title {
+  max-width: 10ch;
+  font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+}
+
+.privacy-reading-block {
+  padding-block: clamp(2.5rem, 5vw, 4.25rem) clamp(1.5rem, 4vw, 2.75rem);
+}
+
+.privacy-reading-block__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42rem) 1fr;
+  gap: var(--space-xl);
+}
+
+.privacy-reading {
+  grid-column: 1;
+  font-size: 1.02rem;
+}
+
+.privacy-reading p {
+  margin-block-end: 1.5rem;
+}
+
+.privacy-reading p:last-child {
+  margin-block-end: 0;
+}
+
+.privacy-note {
+  flex: 1;
+  display: flex;
+  background: linear-gradient(180deg, rgba(242, 238, 233, 0.38) 0%, rgba(242, 238, 233, 0.88) 100%);
+  border-top: 1px solid var(--c-warm-grey);
+}
+
+.privacy-note__inner {
+  max-width: 42rem;
+  padding-block: clamp(1.75rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.privacy-note__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-block-end: 0.75rem;
+}
+
+.privacy-note__text {
+  max-width: 38ch;
+  color: var(--c-text-muted);
+}
+
+.privacy-note__text a {
+  color: var(--c-text);
+  text-decoration: underline;
+  text-decoration-color: rgba(122, 99, 71, 0.28);
+  text-underline-offset: 0.18em;
+}
+
+.privacy-note__text a:hover {
+  color: var(--c-accent);
+  text-decoration-color: currentColor;
+}
+
+
+/* ---------------------------------------------------------
    14. Homepage desktop composition
    --------------------------------------------------------- */
 @media (min-width: 960px) {
@@ -328,6 +467,15 @@
 
   .home .homepage-projects .section__footer {
     margin-block-start: 1.75rem;
+  }
+
+  .home .homepage-coda__inner {
+    gap: 5rem;
+    padding-block: 3.5rem 4.5rem;
+  }
+
+  .home .homepage-coda__visual {
+    width: min(100%, 440px);
   }
 
   .home .homepage-philosophy {
@@ -452,5 +600,51 @@
 
   .home .homepage-section__button {
     min-width: 11rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .homepage-coda__inner,
+  .homepage-coda__inner--with-visual {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .homepage-coda__content,
+  .homepage-coda__body,
+  .homepage-coda__title,
+  .homepage-coda__visual,
+  .privacy-note__inner,
+  .privacy-note__text {
+    max-width: none;
+  }
+
+  .homepage-coda__visual {
+    margin-inline-start: 0;
+    width: 100%;
+    max-height: 18rem;
+  }
+
+  .privacy-reading-block__layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .privacy-note {
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 600px) {
+  .homepage-coda__inner {
+    padding-block: 2rem 2.5rem;
+  }
+
+  .homepage-coda__body {
+    margin-block-end: 1.5rem;
+  }
+
+  .privacy-reading {
+    font-size: 1rem;
   }
 }

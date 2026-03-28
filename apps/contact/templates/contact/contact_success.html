@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Enquiry Received{% endblock %}
+{% block body_class %}contact-success{% endblock %}
 
 {% block og_tags %}
 {{ block.super }}
@@ -8,14 +9,23 @@
 {% endblock %}
 
 {% block content %}
-<section class="page-hero page-hero--short">
+<section class="page-hero page-hero--short page-hero--receipt">
   <div class="container container--narrow">
     <p class="page-hero__label">Thank you</p>
     <h1 class="page-hero__title">Your enquiry has been received.</h1>
     <p class="page-hero__subtitle">The practice will be in touch within two working days.</p>
-    <div class="page-hero__actions">
-      <a href="{% url 'projects:list' %}" class="btn btn--outline">Explore Projects</a>
-      <a href="{% url 'pages:home' %}" class="btn btn--ghost">Back to Home</a>
+  </div>
+</section>
+
+<section class="completion-strip" aria-labelledby="completion-strip-title">
+  <div class="container container--narrow completion-strip__inner">
+    <div class="completion-strip__copy">
+      <p class="completion-strip__label">Next step</p>
+      <p id="completion-strip-title" class="completion-strip__text">The practice reviews each note directly. While you wait, you can browse recent work or return to the main page.</p>
+    </div>
+    <div class="completion-strip__actions">
+      <a href="{% url 'projects:list' %}" class="btn btn--primary">Explore Projects</a>
+      <a href="{% url 'pages:home' %}" class="completion-strip__back">Back to Home</a>
     </div>
   </div>
 </section>

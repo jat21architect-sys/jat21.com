@@ -66,104 +66,36 @@
 </section>
 {% endif %}
 
-<!-- ===== PHILOSOPHY ===== -->
-{% if about.approach %}
-<section class="section section--dark homepage-philosophy reveal">
-  <div class="container container--narrow">
-    <span class="section__label section__label--muted">Design thinking</span>
-    <blockquote class="philosophy">
-      <p>{{ about.approach|first_paragraph }}</p>
-    </blockquote>
-    <a href="{% url 'pages:about' %}" class="btn btn--ghost-light">About {{ site_settings.site_name }}</a>
-  </div>
-</section>
-{% endif %}
-
-<!-- ===== SERVICES ===== -->
-{% if services %}
-<section class="section homepage-services reveal">
+<section class="homepage-coda" aria-labelledby="homepage-coda-title">
   <div class="container">
-    <div class="section__header">
-      <span class="section__label">Capabilities</span>
-      <h2 class="section__title">Design Services</h2>
-    </div>
-    <ul class="services-list services-list--home">
-      {% for service in services %}
-      <li class="service-item">
-        <a href="{% url 'services:list' %}#{{ service.slug }}" class="service-item__link">
-          <h3 class="service-item__title">{{ service.title }}</h3>
-          <p class="service-item__summary">{{ service.summary }}</p>
-          <span class="service-item__arrow" aria-hidden="true">→</span>
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-    <div class="section__footer homepage-section__footer homepage-section__footer--services">
-      <a href="{% url 'services:list' %}" class="btn btn--outline homepage-section__button">All Services</a>
-    </div>
-  </div>
-</section>
-{% endif %}
-
-<!-- ===== FIT / START ===== -->
-<section class="section fit-strip homepage-fit reveal">
-  <div class="container">
-    <ul class="fit-strip__list">
-      <li class="fit-strip__item">
-        <h2 class="fit-strip__title">Who We Work With</h2>
-        <p class="fit-strip__body">Clients planning housing, civic, and workplace projects.</p>
-      </li>
-      <li class="fit-strip__item">
-        <h2 class="fit-strip__title">Project Types</h2>
-        <p class="fit-strip__body">Work includes housing, civic buildings, workplaces, and adaptive reuse.</p>
-      </li>
-      <li class="fit-strip__item">
-        <h2 class="fit-strip__title">How Work Starts</h2>
-        <p class="fit-strip__body">Most enquiries start with a site, a brief in progress, or an early question about scope. A short note is enough.</p>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- ===== TESTIMONIALS ===== -->
-{% if testimonials %}
-<section class="section section--tinted reveal" aria-label="Client testimonials">
-  <div class="container container--narrow">
-    <span class="section__label">Clients</span>
-    <div class="testimonials-track" aria-live="polite" aria-atomic="true">
-      {% for t in testimonials %}
-      <figure class="testimonial {% if not forloop.first %}testimonial--hidden{% endif %}">
-        <blockquote>
-          <p>"{{ t.quote }}"</p>
-        </blockquote>
-        <figcaption>
-          <strong>{{ t.name }}</strong>
-          {% if t.role or t.company %}
-          <span>{{ t.role }}{% if t.role and t.company %}, {% endif %}{{ t.company }}</span>
+    <div class="homepage-coda__inner {% if home_coda_project and home_coda_project.preview_image %}homepage-coda__inner--with-visual{% else %}homepage-coda__inner--text-only{% endif %}">
+      <div class="homepage-coda__content">
+        <p class="homepage-coda__label">Start Here</p>
+        <h2 id="homepage-coda-title" class="homepage-coda__title">
+          {% if about.closing_invitation %}
+          {{ about.closing_invitation }}
+          {% else %}
+          Bring a site, a brief in progress, or an early question.
           {% endif %}
-        </figcaption>
-      </figure>
-      {% endfor %}
-    </div>
-    {% if testimonials|length > 1 %}
-    <div class="testimonials-nav" role="group" aria-label="Testimonial navigation">
-      {% for t in testimonials %}
-      <button class="testimonials-dot {% if forloop.first %}testimonials-dot--active{% endif %}"
-              aria-label="Testimonial {{ forloop.counter }} of {{ testimonials|length }}"
-              data-index="{{ forloop.counter0 }}"></button>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-</section>
-{% endif %}
+        </h2>
+        <p class="homepage-coda__body">
+          {% if about.approach %}
+          {{ about.approach|first_paragraph }}
+          {% elif about.one_line_practice_description %}
+          {{ about.one_line_practice_description }}
+          {% else %}
+          {{ site_settings.tagline }}
+          {% endif %}
+        </p>
+        <a href="{% url 'contact:contact' %}" class="btn btn--primary">Get in Touch</a>
+      </div>
 
-<!-- ===== CONTACT CTA ===== -->
-<section class="section cta-section homepage-cta reveal">
-  <div class="container container--narrow cta-section__inner">
-    <h2 class="cta-section__title">Start a Conversation</h2>
-    <p class="cta-section__body">If you have a site, a project in progress, or an early question, the practice can start there.</p>
-    <a href="{% url 'contact:contact' %}" class="btn btn--primary btn--large">Get in Touch</a>
+      {% if home_coda_project and home_coda_project.preview_image %}
+      <figure class="homepage-coda__visual" aria-hidden="true">
+        <img src="{{ home_coda_project.preview_image.url }}" alt="{{ home_coda_project.preview_image_alt }}" loading="lazy">
+      </figure>
+      {% endif %}
+    </div>
   </div>
 </section>
 

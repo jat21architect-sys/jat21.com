@@ -1,8 +1,7 @@
 from django.views.generic import TemplateView
 
 from apps.core.models import AboutProfile, SiteSettings
-from apps.projects.models import Project, Testimonial
-from apps.services.models import Service
+from apps.projects.models import Project
 
 
 class HomeView(TemplateView):
@@ -22,8 +21,9 @@ class HomeView(TemplateView):
         homepage_projects = featured_projects + supporting_projects
         ctx["homepage_projects"] = homepage_projects
         ctx["hero_project"] = homepage_projects[0] if homepage_projects else None
-        ctx["services"] = Service.objects.filter(active=True)
-        ctx["testimonials"] = Testimonial.objects.filter(active=True)
+        ctx["home_coda_project"] = (
+            homepage_projects[-1] if len(homepage_projects) > 1 else ctx["hero_project"]
+        )
         ctx["about"] = AboutProfile.load()
         return ctx
 

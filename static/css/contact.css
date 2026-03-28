@@ -1,6 +1,75 @@
 /* ---------------------------------------------------------
    22. Contact page
    --------------------------------------------------------- */
+.contact-success main {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-hero--receipt {
+  padding-block: calc(4rem + var(--space-sm)) var(--space-sm);
+}
+
+.contact-success .page-hero__title {
+  max-width: 10ch;
+  font-size: clamp(2.35rem, 5vw, 4.35rem);
+}
+
+.contact-success .page-hero__subtitle {
+  max-width: 34rem;
+}
+
+.completion-strip {
+  flex: 1;
+  display: flex;
+  background: linear-gradient(180deg, rgba(242, 238, 233, 0.4) 0%, rgba(242, 238, 233, 0.88) 100%);
+  border-top: 1px solid var(--c-warm-grey);
+}
+
+.completion-strip__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+  width: 100%;
+  padding-block: clamp(1.75rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.completion-strip__copy {
+  max-width: 34rem;
+}
+
+.completion-strip__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-block-end: 0.7rem;
+}
+
+.completion-strip__text {
+  color: var(--c-text-muted);
+}
+
+.completion-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.completion-strip__back {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  transition: color var(--dur-sm);
+}
+
+.completion-strip__back:hover {
+  color: var(--c-accent);
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -176,10 +245,23 @@
 }
 
 @media (max-width: 900px) {
+  .completion-strip__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .contact-grid {
     grid-template-columns: 1fr;
   }
   .contact-info-col { position: static; }
   .form-row--2 { flex-direction: column; }
   .contact-form button[type="submit"] { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 600px) {
+  .completion-strip__actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

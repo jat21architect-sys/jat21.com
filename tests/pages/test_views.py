@@ -147,9 +147,13 @@ def test_about_page_shows_professional_profile_with_minimum_fact_set(client, sit
 
 @pytest.mark.django_db
 def test_privacy_page(client, site_settings):
+    site_settings.contact_email = "privacy@example.com"
+    site_settings.save()
     response = client.get(reverse("pages:privacy"))
     assert response.status_code == 200
     assert b"Privacy" in response.content
+    assert b"Privacy contact" in response.content
+    assert b"privacy@example.com" in response.content
 
 
 @pytest.mark.django_db
@@ -164,13 +168,14 @@ def test_about_page_falls_back_to_site_meta_description_when_page_meta_blank(cli
 
 
 @pytest.mark.django_db
-def test_homepage_fit_strip_uses_updated_taxonomy_language(client, site_settings):
+def test_homepage_closing_coda_uses_compact_invitation_language(client, site_settings):
     response = client.get(reverse("pages:home"))
 
     assert response.status_code == 200
-    assert b"office interiors" not in response.content
-    assert b"workplaces, and adaptive reuse" in response.content
-    assert b"the practice can start there" in response.content
+    assert b"Bring a site, a brief in progress, or an early question." in response.content
+    assert b"Who We Work With" not in response.content
+    assert b"Project Types" not in response.content
+    assert b"How Work Starts" not in response.content
 
 
 @pytest.mark.django_db
@@ -236,22 +241,31 @@ def test_homepage_projects_merge_featured_and_supporting_work(client, site_setti
 
 
 @pytest.mark.django_db
-def test_home_testimonials_in_context(client, site_settings):
+def test_homepage_context_exposes_last_selected_project_for_coda(client, site_settings):
+    first = Project.objects.create(
+        title="First Selected",
+        slug="first-selected",
+        short_description="First project.",
+        category="housing",
+        status="completed",
+        featured=True,
+        order=1,
+    )
+    second = Project.objects.create(
+        title="Second Selected",
+        slug="second-selected",
+        short_description="Second project.",
+        category="civic",
+        status="completed",
+        featured=True,
+        order=2,
+    )
+
     response = client.get(reverse("pages:home"))
+
     assert response.status_code == 200
-    assert "testimonials" in response.context
-
-
-@pytest.mark.django_db
-def test_home_testimonials_excludes_inactive(client, site_settings):
-    from apps.projects.models import Testimonial
-
-    Testimonial.objects.create(name="Shown", quote="Great.", order=1, active=True)
-    Testimonial.objects.create(name="Hidden", quote="Not shown.", order=2, active=False)
-    response = client.get(reverse("pages:home"))
-    names = [t.name for t in response.context["testimonials"]]
-    assert "Shown" in names
-    assert "Hidden" not in names
+    assert response.context["home_coda_project"] == second
+    assert response.context["hero_project"] == first
 
 
 @pytest.mark.django_db
@@ -307,11 +321,10 @@ def test_homepage_uses_selected_projects_strip_and_updated_cta(client, site_sett
     assert b"Selected Projects" in response.content
     assert b"Housing, civic, and workplace projects from the studio" not in response.content
     assert b"More Work" not in response.content
-    assert b"Who We Work With" in response.content
-    assert b"Project Types" in response.content
-    assert b"How Work Starts" in response.content
-    assert b"Start a Conversation" in response.content  # section heading
-    assert b"Get in Touch" in response.content          # CTA button label
+    assert b"Design Services" not in response.content
+    assert b"Client testimonials" not in response.content
+    assert b"Start Here" in response.content
+    assert b"Get in Touch" in response.content
 
 
 @pytest.mark.django_db
