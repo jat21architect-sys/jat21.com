@@ -110,7 +110,6 @@
    14. Page hero
    --------------------------------------------------------- */
 .page-hero {
-  padding-block: calc(4.5rem + var(--space-xl)) var(--space-xl);
   background-color: var(--c-stone);
 }
 
@@ -149,22 +148,9 @@
   margin-block-start: var(--space-md);
 }
 
-/* On very narrow phones (≤480px) the standard page-hero has 11.5rem of top
-   padding, which consumes ~33% of the viewport before any content renders.
-   Match the page-hero--short rhythm at this size.
-   Also prevent buttons from overflowing their containers: at 320 px the
-   content area is only ~272 px wide, too narrow for long labels with
-   white-space:nowrap. Do not force hero CTAs full-width — at 390px there is
-   room for the pair to sit inline; full-width stacking is a native-app
-   convention that undercuts the editorial register here. Standalone buttons
-   in other sections are capped at container width and allowed to wrap. */
+/* On narrow phones (≤480px): prevent buttons from overflowing their containers
+   at 320 px where the content area is only ~272 px wide. Allow text to wrap. */
 @media (max-width: 480px) {
-  .page-hero:not(.page-hero--short) {
-    padding-block: calc(4.5rem + var(--space-lg)) var(--space-lg);
-  }
-
-  /* Standalone buttons outside the hero CTA (e.g. philosophy section "About…")
-     must not exceed their container at 320 px. Allow text to wrap gracefully. */
   .btn {
     max-width: 100%;
     white-space: normal;

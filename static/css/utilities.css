@@ -1,16 +1,18 @@
 /* ---------------------------------------------------------
    24. Scroll reveal animations
    --------------------------------------------------------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity var(--dur-lg) var(--ease),
-              transform var(--dur-lg) var(--ease);
-}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--dur-lg) var(--ease),
+                transform var(--dur-lg) var(--ease);
+  }
 
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .reveal-delay-1 { transition-delay: 100ms; }

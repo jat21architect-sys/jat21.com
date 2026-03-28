@@ -84,21 +84,5 @@ h1, h2, h3, h4, h5 {
 
 @media (max-width: 768px) {
   .section { padding-block: var(--space-lg); }
-}
-
-
-/* ---------------------------------------------------------
-   Scroll reveal
-   --------------------------------------------------------- */
-@media (prefers-reduced-motion: no-preference) {
-  .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
-  }
-
-  .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .section--archive { padding-block-start: var(--space-md); }
 }
