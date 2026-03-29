@@ -30,15 +30,15 @@
   </a>
 </section>
 
-<!-- ===== SELECTED PROJECTS ===== -->
+<!-- ===== FEATURED PROJECTS ===== -->
 {% if homepage_projects %}
 <section class="section homepage-projects" id="featured">
   <div class="container">
-    <div class="section__header">
-      <span class="section__label">Portfolio</span>
-      <h2 class="section__title">Selected Projects</h2>
+    <div class="section__header section__header--inline">
+      <h2 class="section__title">Featured Projects</h2>
+      <a href="{% url 'projects:list' %}" class="section__header-link">View All →</a>
     </div>
-    <div class="projects-grid projects-grid--home">
+    <div class="projects-grid projects-grid--home projects-grid--home-n{{ homepage_projects_count }}">
       {% for project in homepage_projects %}
       <article class="project-card">
         <a href="{{ project.get_absolute_url }}" class="project-card__link">
@@ -58,9 +58,6 @@
         </a>
       </article>
       {% endfor %}
-    </div>
-    <div class="section__footer homepage-section__footer homepage-section__footer--projects">
-      <a href="{% url 'projects:list' %}" class="btn btn--outline homepage-section__button">All Projects</a>
     </div>
   </div>
 </section>

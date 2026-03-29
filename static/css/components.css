@@ -8,6 +8,24 @@
   margin-block-end: var(--space-lg);
 }
 
+.section__header--inline {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.section__header-link {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.section__header-link:hover { text-decoration: underline; }
+
 .section__label {
   font-family: var(--font-sans);
   font-size: 0.75rem;
@@ -542,16 +560,6 @@
     margin-block-end: 0.25rem;
   }
 
-  .home .homepage-section__footer {
-    justify-content: flex-end;
-    margin-block-start: 1.5rem;
-    padding-block-start: 1.25rem;
-    border-block-start: 1px solid var(--c-warm-grey);
-  }
-
-  .home .homepage-section__button {
-    min-width: 11rem;
-  }
 }
 
 @media (max-width: 900px) {

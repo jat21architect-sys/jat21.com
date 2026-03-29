@@ -179,65 +179,59 @@ def test_homepage_closing_coda_uses_compact_invitation_language(client, site_set
 
 
 @pytest.mark.django_db
-def test_homepage_projects_merge_featured_and_supporting_work(client, site_settings):
-    """Homepage projects should show featured work first, then fill from supporting work."""
-    featured_one = Project.objects.create(
-        title="Featured One",
-        slug="featured-one",
-        short_description="Featured project.",
-        category="workplace",
-        status="completed",
-        featured=True,
-        order=2,
+def test_homepage_shows_featured_projects_only_when_any_featured_exist(client, site_settings):
+    """When featured projects exist, homepage shows only featured — never non-featured."""
+    featured_a = Project.objects.create(
+        title="Featured A", slug="featured-a", short_description=".",
+        category="housing", status="completed", featured=True, order=1,
     )
-    featured_two = Project.objects.create(
-        title="Featured Two",
-        slug="featured-two",
-        short_description="Featured project.",
-        category="civic",
-        status="completed",
-        featured=True,
-        order=1,
+    featured_b = Project.objects.create(
+        title="Featured B", slug="featured-b", short_description=".",
+        category="civic", status="completed", featured=True, order=2,
     )
-    supporting_one = Project.objects.create(
-        title="Supporting One",
-        slug="supporting-one",
-        short_description="Supporting project.",
-        category="housing",
-        status="completed",
-        featured=False,
-        order=3,
-    )
-    supporting_two = Project.objects.create(
-        title="Supporting Two",
-        slug="supporting-two",
-        short_description="Supporting project.",
-        category="housing",
-        status="completed",
-        featured=False,
-        order=4,
-    )
-    supporting_three = Project.objects.create(
-        title="Supporting Three",
-        slug="supporting-three",
-        short_description="Supporting project.",
-        category="housing",
-        status="completed",
-        featured=False,
-        order=5,
+    non_featured = Project.objects.create(
+        title="Non-Featured", slug="non-featured", short_description=".",
+        category="workplace", status="completed", featured=False, order=3,
     )
 
     response = client.get(reverse("pages:home"))
 
     assert response.status_code == 200
-    project_slugs = [p.slug for p in response.context["homepage_projects"]]
-    assert project_slugs == [
-        featured_two.slug,
-        featured_one.slug,
-        supporting_one.slug,
-        supporting_two.slug,
-    ]
-    assert supporting_three.slug not in project_slugs
+    slugs = [p.slug for p in response.context["homepage_projects"]]
+    assert featured_a.slug in slugs
+    assert featured_b.slug in slugs
+    assert non_featured.slug not in slugs
+
+
+@pytest.mark.django_db
+def test_homepage_caps_featured_projects_at_six(client, site_settings):
+    """Homepage shows at most 6 featured projects regardless of how many are marked featured."""
+    for i in range(8):
+        Project.objects.create(
+            title=f"Featured {i}", slug=f"featured-{i}", short_description=".",
+            category="housing", status="completed", featured=True, order=i,
+        )
+
+    response = client.get(reverse("pages:home"))
+
+    assert response.status_code == 200
+    assert len(response.context["homepage_projects"]) == 6
+    assert response.context["homepage_projects_count"] == 6
+
+
+@pytest.mark.django_db
+def test_homepage_falls_back_to_recent_projects_when_none_are_featured(client, site_settings):
+    """When no projects are marked featured, homepage falls back to recent published projects."""
+    recent = Project.objects.create(
+        title="Recent Project", slug="recent-project", short_description=".",
+        category="housing", status="completed", featured=False, order=1,
+    )
+
+    response = client.get(reverse("pages:home"))
+
+    assert response.status_code == 200
+    slugs = [p.slug for p in response.context["homepage_projects"]]
+    assert recent.slug in slugs
 
 
 @pytest.mark.django_db
@@ -303,7 +297,7 @@ def test_home_project_cards_fall_back_to_first_gallery_image(client, site_settin
 
 
 @pytest.mark.django_db
-def test_homepage_uses_selected_projects_strip_and_updated_cta(client, site_settings):
+def test_homepage_uses_featured_projects_strip_and_updated_cta(client, site_settings):
     Project.objects.create(
         title="Selected Project",
         slug="selected-project",
@@ -317,7 +311,9 @@ def test_homepage_uses_selected_projects_strip_and_updated_cta(client, site_sett
     response = client.get(reverse("pages:home"))
 
     assert response.status_code == 200
-    assert b"Selected Projects" in response.content
+    assert b"Featured Projects" in response.content
+    assert b"View All" in response.content
+    assert b"All Projects" not in response.content
     assert b"Housing, civic, and workplace projects from the studio" not in response.content
     assert b"More Work" not in response.content
     assert b"Design Services" not in response.content

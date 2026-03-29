@@ -14,10 +14,25 @@
 .projects-grid--featured .project-card { grid-column: span 4; }
 .projects-grid--featured .project-card--large { grid-column: span 8; }
 
-/* Homepage featured projects — calm 2-column balanced grid */
+/* Homepage featured projects — classic balanced grid */
 .projects-grid--home {
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
+}
+
+/* Desktop count-driven column layout — applied via homepage_projects_count context var */
+@media (min-width: 960px) {
+  /* 1 item: contained single-column — reads as a deliberate single pick */
+  .projects-grid--home-n1 {
+    grid-template-columns: minmax(0, 480px);
+  }
+  /* 3, 5, 6 items: 3-column grid */
+  .projects-grid--home-n3,
+  .projects-grid--home-n5,
+  .projects-grid--home-n6 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  /* 2 and 4 items: keep the default 2-column — no rule needed */
 }
 
 .projects-grid--uniform {
