@@ -196,6 +196,114 @@ PROJECTS = [
         "featured": True,
         "order": 4,
     },
+    {
+        "slug": "civic-waterfront-square",
+        "title": "Civic Waterfront Square",
+        "short_description": "A reclaimed post-industrial waterfront remade as a public square — hard-landscaped, weather-ready, and designed to be used year-round by the full range of the city's population.",
+        "category": "civic",
+        "status": "completed",
+        "location": "Harbour District",
+        "year": 2022,
+        "area": "3 200 m²",
+        "overview": (
+            "A redundant cargo terminal apron was handed back to the city for public use. "
+            "The brief was open: create a square that would work for daily life, not just "
+            "events — somewhere residents would actually cross, sit in, and return to."
+        ),
+        "challenge": (
+            "Post-industrial waterfronts often become windswept trophy spaces — impressive in "
+            "photographs and empty in practice. The challenge was to design a public realm that "
+            "acknowledged the scale and exposure of the site while creating sheltered pockets "
+            "of use that would function in all seasons."
+        ),
+        "concept": (
+            "The square is organised around a series of low stone walls that run parallel to "
+            "the water's edge — defining seating zones, breaking the wind, and providing "
+            "informal edges for gathering. A single covered canopy at the inland end marks the "
+            "entrance from the city and provides weather protection for the market stalls and "
+            "events programme."
+        ),
+        "outcome": (
+            "Within the first summer, the square was used continuously from morning to late "
+            "evening. The low walls have become informal seating, skateboard features, and "
+            "lunchtime berths in equal measure. The covered canopy hosts a weekly market "
+            "and has been adopted for informal performances."
+        ),
+        "featured": True,
+        "order": 5,
+    },
+    {
+        "slug": "housing-block-north-quarter",
+        "title": "Housing Block, North Quarter",
+        "short_description": "A mid-rise housing block on a tight urban infill site — compact flats arranged around a shared courtyard, with robust envelope design and clear wayfinding throughout.",
+        "category": "housing",
+        "status": "completed",
+        "location": "North Quarter",
+        "year": 2024,
+        "area": "2 100 m²",
+        "overview": (
+            "A corner site in a dense residential neighbourhood was redeveloped as a "
+            "thirty-flat housing block for a housing association. The brief required a "
+            "mix of one- and two-bedroom flats, shared amenity space, and robust "
+            "materials suited to a high-traffic urban context."
+        ),
+        "challenge": (
+            "The site geometry — a shallow corner plot with a significant level change — "
+            "made it difficult to achieve good daylighting across all units while meeting "
+            "the density required by the brief. The design had to resolve both the "
+            "planning massing constraints and the internal organisation simultaneously."
+        ),
+        "concept": (
+            "The block steps down with the site, creating a roofscape that reduces "
+            "bulk in key views while allowing south-facing terraces for upper-floor units. "
+            "A shared courtyard at ground level is accessed from two points on the street "
+            "grid, giving the block legible thresholds without requiring a staffed entrance."
+        ),
+        "outcome": (
+            "The block achieved planning consent on first submission and was delivered "
+            "within programme. Post-occupancy feedback from the housing association noted "
+            "that residents valued the courtyard as a key amenity — particularly families "
+            "with children and older residents."
+        ),
+        "featured": True,
+        "order": 6,
+    },
+    {
+        "slug": "school-extension-timber-frame",
+        "title": "School Extension, Timber Frame",
+        "short_description": "A single-storey timber-frame extension to a primary school — adding four classrooms, a shared learning corridor, and direct access to the school garden.",
+        "category": "civic",
+        "status": "completed",
+        "location": "Suburban District",
+        "year": 2021,
+        "area": "420 m²",
+        "overview": (
+            "A primary school with insufficient classroom capacity required a permanent "
+            "extension to replace long-standing temporary buildings. The brief asked for "
+            "four new classrooms, improved circulation between the existing school and "
+            "the extension, and better access to the school's outdoor spaces."
+        ),
+        "challenge": (
+            "The site was constrained on three sides by the existing school building, "
+            "outdoor play areas, and a protected tree line. The extension had to fit "
+            "within these constraints while maintaining fire separation from the main "
+            "building and meeting current educational space standards."
+        ),
+        "concept": (
+            "A single-storey pavilion organised as a shared learning corridor with "
+            "classrooms on the south side and a continuous covered outdoor teaching "
+            "terrace linking to the garden. The timber structure is left exposed internally, "
+            "providing a warm, legible ceiling that contributes to the acoustic performance "
+            "of the rooms."
+        ),
+        "outcome": (
+            "The extension opened ahead of the autumn term and was adopted immediately "
+            "as the school's preferred teaching space. The outdoor terrace is used daily "
+            "for science lessons and informal outdoor learning in all but the coldest weather."
+        ),
+        "featured": False,
+        "order": 7,
+    },
 ]
 
 TESTIMONIALS = [
