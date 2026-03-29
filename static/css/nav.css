@@ -31,9 +31,14 @@
   height: 4.5rem;
 }
 
-.nav__brand { flex-shrink: 0; }
+.nav__brand {
+  min-width: 0;       /* allow flex item to shrink below intrinsic content width */
+  flex: 0 1 auto;     /* shrinkable but never growing */
+  overflow: hidden;   /* clip at brand boundary before child's ellipsis fires */
+}
 
 .nav__name {
+  display: block;     /* must be block/inline-block for max-width + text-overflow to fire */
   font-family: var(--font-serif);
   font-size: 1.1rem;
   font-weight: 500;
