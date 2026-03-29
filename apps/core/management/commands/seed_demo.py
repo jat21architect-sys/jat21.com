@@ -409,6 +409,13 @@ class Command(BaseCommand):
             media_dir = Path(options["media_dir"]).resolve()
             if not media_dir.is_dir():
                 raise CommandError(f"--media-dir does not exist or is not a directory: {media_dir}")
+        else:
+            # Auto-discover bundled demo media when --media-dir is not given
+            from django.conf import settings
+            _candidate = settings.MEDIA_ROOT / "demo_seed" / "strand-architecture"
+            if _candidate.is_dir():
+                media_dir = _candidate
+                self.stdout.write(f"Auto-discovered demo media: {media_dir}")
 
         self._seed_settings()
         self._seed_about()
@@ -585,14 +592,10 @@ class Command(BaseCommand):
         """Attach covers for the projects that should have one.
         Returns (count_attached_or_skipped, warning_count)."""
         covers_dir = media_dir / "covers"
-        gallery_dir = media_dir / "gallery"
         attached = 0
         warnings = 0
         # Projects with a dedicated cover file in covers/<slug>.*
-        cover_slugs = ["house-on-the-hillside", "commercial-office-conversion"]
-        # Projects whose cover should be derived from the first gallery image
-        # (no dedicated cover file in the demo media package)
-        gallery_cover_slugs = ["ridgeline-housing"]
+        cover_slugs = ["house-on-the-hillside", "commercial-office-conversion", "ridgeline-housing"]
 
         for slug in cover_slugs:
             cover_file = _find_file(covers_dir, slug) if covers_dir.is_dir() else None
@@ -619,33 +622,6 @@ class Command(BaseCommand):
             with cover_file.open("rb") as fh:
                 project.cover_image.save(cover_file.name, File(fh), save=True)
             self.stdout.write(f"  Attached cover for '{slug}' → {project.cover_image.name}")
-            attached += 1
-
-        # Attach covers derived from gallery images for projects without a dedicated cover file
-        for slug in gallery_cover_slugs:
-            project_gallery_dir = gallery_dir / slug if gallery_dir.is_dir() else Path("/nonexistent")
-            gallery_files = _list_images(project_gallery_dir) if project_gallery_dir.is_dir() else []
-            if not gallery_files:
-                warnings += self._warn(
-                    f"no gallery images found to derive cover for '{slug}': {project_gallery_dir}"
-                )
-                continue
-            cover_file = gallery_files[0]
-            try:
-                project = Project.objects.get(slug=slug)
-            except Project.DoesNotExist:
-                warnings += self._warn(f"Project with slug '{slug}' not found — skipping gallery-derived cover")
-                continue
-            if (
-                project.cover_image
-                and _stem_clean(project.cover_image.name) == _stem_clean(cover_file.name)
-            ):
-                self.stdout.write(f"  SKIP cover for '{slug}' (already attached): {cover_file.name}")
-                attached += 1
-                continue
-            with cover_file.open("rb") as fh:
-                project.cover_image.save(cover_file.name, File(fh), save=True)
-            self.stdout.write(f"  Attached gallery-derived cover for '{slug}' → {project.cover_image.name}")
             attached += 1
 
         return attached, warnings
