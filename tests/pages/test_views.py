@@ -11,7 +11,7 @@ from apps.core.about_defaults import (
     PROFESSIONAL_STANDING_PROMPT,
     PROJECT_LEADERSHIP_PROMPT,
 )
-from apps.core.models import AboutProfile
+from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, ProjectImage
 
 
@@ -387,3 +387,66 @@ def test_homepage_grid_has_breakpoint_count_classes(client, site_settings):
     assert response.status_code == 200
     assert b"hp-mob-2" in response.content
     assert b"hp-tab-3" in response.content
+
+
+# ---------------------------------------------------------------------------
+# Hero label and compact mode
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_hero_label_absent_when_blank(client, site_settings):
+    """When hero_label is blank the label element must not appear in the DOM."""
+    site_settings.hero_label = ""
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert response.status_code == 200
+    assert b"hero__label" not in response.content
+
+
+@pytest.mark.django_db
+def test_hero_label_rendered_when_set(client, site_settings):
+    """When hero_label is set it must appear in the hero section."""
+    site_settings.hero_label = "Architecture & Urbanism"
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert response.status_code == 200
+    assert b"Architecture &amp; Urbanism" in response.content
+    assert b"hero__label" in response.content
+
+
+@pytest.mark.django_db
+def test_hero_tagline_absent_when_blank(client, site_settings):
+    """When tagline is blank the subtitle element must not appear in the DOM."""
+    site_settings.tagline = ""
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert response.status_code == 200
+    assert b"hero__subtitle" not in response.content
+
+
+@pytest.mark.django_db
+def test_hero_compact_class_absent_by_default(client, site_settings):
+    """hero--compact modifier must not be present when hero_compact is False."""
+    assert site_settings.hero_compact is False
+    response = client.get(reverse("pages:home"))
+    assert response.status_code == 200
+    assert b"hero--compact" not in response.content
+
+
+@pytest.mark.django_db
+def test_hero_compact_class_present_when_enabled(client, site_settings):
+    """hero--compact modifier must appear on the section element when hero_compact is True."""
+    site_settings.hero_compact = True
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert response.status_code == 200
+    assert b"hero--compact" in response.content
+
+
+@pytest.mark.django_db
+def test_site_settings_hero_fields_default(db):
+    """hero_label defaults blank and hero_compact defaults False."""
+    s = SiteSettings.load()
+    assert s.hero_label == ""
+    assert s.hero_compact is False

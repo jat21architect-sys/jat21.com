@@ -138,3 +138,20 @@ def test_site_settings_homepage_project_count_accepts_valid_values():
         s.clean()
     except ValidationError:
         pytest.fail("clean() raised ValidationError for valid counts 2/4/6")
+
+
+# ---------------------------------------------------------------------------
+# SiteSettings — hero fields
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_site_settings_hero_label_defaults_blank():
+    s = SiteSettings.load()
+    assert s.hero_label == ""
+
+
+@pytest.mark.django_db
+def test_site_settings_hero_compact_defaults_false():
+    s = SiteSettings.load()
+    assert s.hero_compact is False

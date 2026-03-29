@@ -13,8 +13,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (
             "Identity",
             {
-                "fields": ("site_name", "tagline", "logo", "og_image"),
-                "description": "og_image is the default image used when sharing any page on social media.",
+                "fields": ("site_name", "tagline", "hero_label", "hero_compact", "logo", "og_image"),
+                "description": (
+                    "og_image is the default image used when sharing any page on social media. "
+                    "hero_label appears above the studio name in the homepage hero; leave blank to omit it. "
+                    "Enable hero_compact if the hero looks crowded with a long name or tagline."
+                ),
             },
         ),
         (

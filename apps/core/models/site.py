@@ -27,10 +27,26 @@ class SingletonModel(models.Model):
 
 
 class SiteSettings(SingletonModel):
-    site_name = models.CharField(max_length=120, default="")
+    site_name = models.CharField(
+        max_length=120,
+        default="",
+        help_text="Your practice's display name. Shorter names (under 40 characters) work best in the homepage hero.",
+    )
     tagline = models.CharField(
         max_length=220,
+        blank=True,
         default="Architectural design shaped by context, clarity, and identity.",
+        help_text="One or two sentences describing your practice. Under 140 characters fits most hero layouts cleanly.",
+    )
+    hero_label = models.CharField(
+        max_length=60,
+        blank=True,
+        default="",
+        help_text="Short descriptor shown above the studio name in the homepage hero (e.g. 'Architecture & Urbanism'). Leave blank to omit.",
+    )
+    hero_compact = models.BooleanField(
+        default=False,
+        help_text="Compact hero text — use if your practice name or tagline is long and the hero looks crowded.",
     )
     logo = models.ImageField(upload_to="site/", blank=True, null=True)
     contact_email = models.EmailField(default="")

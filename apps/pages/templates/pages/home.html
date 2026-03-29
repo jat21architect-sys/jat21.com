@@ -7,7 +7,7 @@
 {% block content %}
 
 <!-- ===== HERO ===== -->
-<section class="hero">
+<section class="hero{% if site_settings.hero_compact %} hero--compact{% endif %}">
   <div class="hero__media">
     {% if hero_project and hero_project.cover_image %}
       <img src="{{ hero_project.cover_image.url }}" alt="{{ hero_project.title }}" class="hero__bg" loading="eager">
@@ -17,9 +17,9 @@
     <div class="hero__overlay"></div>
   </div>
   <div class="hero__content container">
-    <p class="hero__label">Architectural Practice</p>
+    {% if site_settings.hero_label %}<p class="hero__label">{{ site_settings.hero_label }}</p>{% endif %}
     <h1 class="hero__title">{{ site_settings.site_name|default:"Studio Name" }}</h1>
-    <p class="hero__subtitle">{{ site_settings.tagline }}</p>
+    {% if site_settings.tagline %}<p class="hero__subtitle">{{ site_settings.tagline }}</p>{% endif %}
     <div class="hero__cta">
       <a href="{% url 'projects:list' %}" class="btn btn--primary">View Projects</a>
       <a href="{% url 'contact:contact' %}" class="btn btn--ghost-light">Start a Conversation</a>

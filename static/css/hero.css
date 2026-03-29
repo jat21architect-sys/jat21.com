@@ -18,7 +18,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 30%;
   transition: transform 8s var(--ease);
 }
 
@@ -32,7 +32,7 @@
   background: linear-gradient(
     to top,
     rgba(20, 18, 15, 0.85) 0%,
-    rgba(20, 18, 15, 0.35) 50%,
+    rgba(20, 18, 15, 0.50) 55%,
     rgba(20, 18, 15, 0.15) 100%
   );
 }
@@ -59,6 +59,7 @@
   line-height: 1.02;
   letter-spacing: -0.02em;
   margin-block-end: 1.25rem;
+  overflow-wrap: break-word; /* emergency safeguard: activates only for unbreakable single tokens */
 }
 
 .hero__subtitle {
@@ -155,6 +156,15 @@
     max-width: 100%;
     white-space: normal;
   }
+}
+
+/* Compact modifier — reduces title scale ceiling for long names or taglines */
+.hero--compact .hero__title {
+  font-size: clamp(3rem, 5.5vw, 4.5rem);
+}
+
+@media (max-width: 639px) {
+  .hero__scroll { display: none; }
 }
 
 @media (hover: hover) {
