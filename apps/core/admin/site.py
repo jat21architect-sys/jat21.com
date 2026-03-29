@@ -13,11 +13,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (
             "Identity",
             {
-                "fields": ("site_name", "tagline", "hero_label", "hero_compact", "logo", "og_image"),
+                "fields": ("site_name", "tagline", "hero_label", "hero_compact", "nav_name", "logo", "og_image"),
                 "description": (
                     "og_image is the default image used when sharing any page on social media. "
                     "hero_label appears above the studio name in the homepage hero; leave blank to omit it. "
-                    "Enable hero_compact if the hero looks crowded with a long name or tagline."
+                    "Enable hero_compact if the hero looks crowded with a long name or tagline. "
+                    "nav_name is a shortened form of your practice name for the navigation bar — "
+                    "leave blank to use the full name; a logo supersedes both."
                 ),
             },
         ),
@@ -88,6 +90,24 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "footer — set it before sharing or publishing the site.",
                 level=messages.WARNING,
             )
+        else:
+            # Warn when a long site_name could crowd the navbar and no mitigation is set.
+            if request.method == "POST":
+                site_name_val = request.POST.get("site_name", "")
+                nav_name_val  = request.POST.get("nav_name", "")
+                logo_val      = request.POST.get("logo", "") or request.FILES.get("logo")
+            else:
+                s = SiteSettings.load()
+                site_name_val = s.site_name
+                nav_name_val  = s.nav_name
+                logo_val      = s.logo
+            if len(site_name_val) > 30 and not nav_name_val and not logo_val:
+                self.message_user(
+                    request,
+                    "Your practice name is longer than 30 characters. Consider adding a short "
+                    "Navigation Name, or uploading a logo, to ensure it fits on narrow screens.",
+                    level=messages.INFO,
+                )
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def has_add_permission(self, request):

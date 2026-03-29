@@ -48,6 +48,16 @@ class SiteSettings(SingletonModel):
         default=False,
         help_text="Compact hero text — use if your practice name or tagline is long and the hero looks crowded.",
     )
+    nav_name = models.CharField(
+        max_length=30,
+        blank=True,
+        default="",
+        help_text=(
+            "Shortened form of your practice name for the navigation bar — e.g. 'Strand Architecture' or "
+            "'BWK Partnership'. Use this only if your full practice name is long and crowds the header. "
+            "Leave blank to use the full name. A logo supersedes both."
+        ),
+    )
     logo = models.ImageField(upload_to="site/", blank=True, null=True)
     contact_email = models.EmailField(default="")
     phone = models.CharField(max_length=40, blank=True)

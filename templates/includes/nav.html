@@ -3,6 +3,8 @@
     <a href="{% url 'pages:home' %}" class="nav__brand">
       {% if site_settings.logo %}
         <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="nav__logo">
+      {% elif site_settings.nav_name %}
+        <span class="nav__name">{{ site_settings.nav_name }}</span>
       {% else %}
         <span class="nav__name">{{ site_settings.site_name|default:"Studio Name" }}</span>
       {% endif %}

@@ -19,7 +19,7 @@ from apps.projects.models import Project, ProjectImage
 def test_home_page(client, site_settings):
     response = client.get(reverse("pages:home"))
     assert response.status_code == 200
-    assert b"Architecture Practice" in response.content
+    assert b"Test Site" in response.content  # hero h1 renders site_name
     assert b"/static/images/og-default.svg" in response.content
 
 
@@ -450,3 +450,41 @@ def test_site_settings_hero_fields_default(db):
     s = SiteSettings.load()
     assert s.hero_label == ""
     assert s.hero_compact is False
+
+
+# ---------------------------------------------------------------------------
+# Navbar brand — nav_name fallback logic
+# ---------------------------------------------------------------------------
+
+@pytest.mark.django_db
+def test_nav_renders_site_name_when_nav_name_blank(client, site_settings):
+    """When nav_name is blank and no logo, site_name appears in nav brand."""
+    site_settings.site_name = "Test Studio"
+    site_settings.nav_name = ""
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert b"Test Studio" in response.content
+
+
+@pytest.mark.django_db
+def test_nav_renders_nav_name_when_set(client, site_settings):
+    """nav_name is rendered in the brand span when set (no logo); site_name still appears in title/hero."""
+    site_settings.site_name = "Beaumont Whitfield Kellerman Partnership"
+    site_settings.nav_name = "BWK Partnership"
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert b"BWK Partnership" in response.content
+    # nav_name replaces site_name inside the nav__brand span; site_name still
+    # appears in <title>, hero h1, and footer — so we check the nav span directly.
+    assert b'class="nav__name">BWK Partnership</span>' in response.content
+    assert b'class="nav__name">Beaumont Whitfield Kellerman Partnership</span>' not in response.content
+
+
+@pytest.mark.django_db
+def test_nav_name_absent_renders_site_name(client, site_settings):
+    """Regression: when nav_name is blank, site_name is used (not an empty span)."""
+    site_settings.site_name = "Strand Architecture"
+    site_settings.nav_name = ""
+    site_settings.save()
+    response = client.get(reverse("pages:home"))
+    assert b"Strand Architecture" in response.content

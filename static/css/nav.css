@@ -41,11 +41,30 @@
   text-transform: uppercase;
   color: var(--c-text);
   transition: color var(--dur-sm);
+  /* safety net — a well-set nav_name (≤24 chars) will never trigger this */
+  max-width: clamp(120px, 38vw, 240px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .home .site-header:not(.scrolled):not(.nav-open) .nav__name { color: var(--c-white); }
 
-.nav__logo { height: 2.5rem; width: auto; }
+/*
+ * Transparent hero state: invert logo to white for visibility.
+ * This is a safe-default visibility strategy, not a fidelity guarantee.
+ * Dark/black logomarks render as white silhouettes; coloured logos also
+ * display as white — which is documented expected behaviour.
+ */
+.home .site-header:not(.scrolled):not(.nav-open) .nav__logo {
+  filter: brightness(0) invert(1);
+}
+
+.nav__logo {
+  height: 2.5rem;
+  width: auto;
+  max-width: 160px; /* provisional — validate against 390px mobile nav during QA */
+}
 
 .nav__links {
   display: flex;
