@@ -92,7 +92,7 @@
 
 .project-card__title {
   font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
   font-weight: 400;
   margin-block-end: 0.5rem;
   transition: color var(--dur-sm);
@@ -101,7 +101,7 @@
 .project-card__link:hover .project-card__title { color: var(--c-accent); }
 
 .project-card__desc {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--c-text-muted);
   margin-block-end: 0.75rem;
   display: -webkit-box;
@@ -111,7 +111,7 @@
 }
 
 .project-card__cta {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--c-accent);

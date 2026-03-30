@@ -15,7 +15,7 @@
 }
 
 .section__header-link {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--c-accent);
@@ -148,7 +148,7 @@
 }
 
 .fit-strip__title {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -226,7 +226,7 @@
 
 .testimonial figcaption strong {
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   letter-spacing: 0.04em;
 }
 
