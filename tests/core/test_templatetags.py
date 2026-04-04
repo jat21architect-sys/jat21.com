@@ -1,6 +1,5 @@
-"""Tests for custom template filters in core/templatetags/core_tags.py."""
+"""Tests for shared template filters in core/templatetags/core_tags.py."""
 
-import pytest
 
 from apps.core.templatetags.core_tags import (
     NAV_TEXT_MAX_CHARS,
@@ -8,7 +7,6 @@ from apps.core.templatetags.core_tags import (
     first_paragraph,
     nav_needs_monogram,
 )
-
 
 # ---------------------------------------------------------------------------
 # first_paragraph filter (existing tests)

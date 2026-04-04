@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "cloudinary",
     "apps.core.apps.CoreConfig",
+    "apps.site.apps.SiteConfigApp",
     "apps.pages.apps.PagesConfig",
     "apps.projects.apps.ProjectsConfig",
     "apps.contact.apps.ContactConfig",

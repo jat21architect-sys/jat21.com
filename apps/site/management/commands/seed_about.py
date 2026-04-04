@@ -25,13 +25,13 @@ Run on production via Railway:
 
 from django.core.management.base import BaseCommand
 
-from apps.core.about_defaults import (
+from apps.site.about_defaults import (
     CLOSING_INVITATION_DEFAULT,
     PRACTICE_STRUCTURE_PROMPT,
     PROFESSIONAL_STANDING_PROMPT,
     PROJECT_LEADERSHIP_PROMPT,
 )
-from apps.core.models import AboutProfile
+from apps.site.models import AboutProfile
 
 CONTENT = {
     "practice_structure": PRACTICE_STRUCTURE_PROMPT,

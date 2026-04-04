@@ -1,5 +1,5 @@
 """
-Custom Django system checks for the core app.
+Custom Django system checks for the shared core app.
 
 These run automatically via `manage.py check` and `manage.py check --deploy`,
 and are registered when the app is ready (see apps.py).

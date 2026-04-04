@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
-from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project
+from apps.site.models import AboutProfile, SiteSettings
 
 
 class HomeView(TemplateView):

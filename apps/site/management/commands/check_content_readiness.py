@@ -18,19 +18,22 @@ Suitable as a pre-launch gate.  Add to a deploy checklist, not to `make health`
 
 import sys
 
+from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand
 
-from apps.core.about_defaults import (
-    PROJECT_LEADERSHIP_PROMPT,
-    PRACTICE_STRUCTURE_PROMPT,
-    PROFESSIONAL_STANDING_PROMPT,
+from apps.core.templatetags.core_tags import (
+    NAV_TEXT_MAX_CHARS,
+    NAV_TEXT_MAX_WORDS,
+    _compute_monogram,
+)
+from apps.projects.models import Project, Testimonial
+from apps.services.models import Service
+from apps.site.about_defaults import (
     is_placeholder_text,
     public_lines,
     public_text,
 )
-from apps.core.models import AboutProfile, SiteSettings
-from apps.projects.models import Project, Testimonial
-from apps.services.models import Service
+from apps.site.models import AboutProfile, SiteSettings
 
 _DEMO_SITE_NAME = "Demo Architecture Studio"
 _DEMO_CONTACT_EMAIL = "hello@demo-architecture.example"
@@ -96,6 +99,26 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             f"SiteSettings.site_name is still the starter value ('{_DEMO_SITE_NAME}'). "
             "Replace it with your real practice name in admin \u2192 Site Settings."
         )
+    else:
+        nav_name_set = bool(site.nav_name.strip())
+        logo_set = bool(site.logo)
+        normalized_site_name = " ".join(site.site_name.split())
+        monogram_triggered = (
+            len(normalized_site_name) > NAV_TEXT_MAX_CHARS
+            or len(normalized_site_name.split()) > NAV_TEXT_MAX_WORDS
+        )
+        if len(normalized_site_name) > 30 and not nav_name_set and not logo_set:
+            warnings.append(
+                "SiteSettings.site_name is longer than 30 characters and no nav_name or logo is set. "
+                "The automatic navbar fallback may feel crowded or weak on narrow screens."
+            )
+        if monogram_triggered and not nav_name_set and not logo_set:
+            monogram = _compute_monogram(normalized_site_name)
+            if len(monogram) == 1:
+                warnings.append(
+                    f"SiteSettings.site_name would collapse to a single-letter automatic monogram ('{monogram}'). "
+                    "Set nav_name or upload a logo before launch."
+                )
 
     if not site.contact_email:
         blockers.append(
@@ -106,6 +129,12 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
         blockers.append(
             f"SiteSettings.contact_email is still the starter value ('{_DEMO_CONTACT_EMAIL}'). "
             "Replace the public contact email in admin \u2192 Site Settings."
+        )
+
+    if not getattr(django_settings, "CONTACT_EMAIL", "").strip():
+        warnings.append(
+            "CONTACT_EMAIL is blank. Public contact details may still render, but contact-form notification emails "
+            "will not reach the practice until the internal inbox is configured in the environment."
         )
 
     if site.tagline == _DEMO_TAGLINE:
@@ -295,6 +324,30 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "The portfolio will be empty."
         )
     else:
+        homepage_projects_desktop_count = site.homepage_projects_desktop_count
+        featured_projects = list(
+            Project.objects.with_preview_media()
+            .filter(featured=True)
+            .order_by("order")[:homepage_projects_desktop_count]
+        )
+        homepage_projects = featured_projects or list(
+            Project.objects.with_preview_media()
+            .order_by("order")[:homepage_projects_desktop_count]
+        )
+
+        if not featured_projects:
+            warnings.append(
+                "No featured Project records are selected. "
+                "The homepage will fall back to the first ordered projects until featured projects are chosen."
+            )
+
+        hero_project = homepage_projects[0] if homepage_projects else None
+        if hero_project and not hero_project.cover_image:
+            warnings.append(
+                f"The current homepage hero project ('{hero_project.title}') has no cover image. "
+                "The hero will use the placeholder background until a cover image is uploaded or a different project is chosen first."
+            )
+
         demo_project_titles = sorted(
             title for title in projects.values_list("title", flat=True) if title in _DEMO_PROJECT_TITLES
         )

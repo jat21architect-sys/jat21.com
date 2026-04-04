@@ -38,9 +38,9 @@ from pathlib import Path
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 
-from apps.core.models import AboutProfile, SiteSettings
 from apps.projects.models import Project, ProjectImage, Testimonial
 from apps.services.models import Service
+from apps.site.models import AboutProfile, SiteSettings
 
 _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
@@ -48,7 +48,9 @@ _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 _DJANGO_SUFFIX_RE = re.compile(r"_[A-Za-z0-9]{7}$")
 
 
-def _stem_clean(name: str) -> str:
+def _stem_clean(name: str | None) -> str:
+    if not name:
+        return ""
     stem = Path(name).stem
     return _DJANGO_SUFFIX_RE.sub("", stem)
 

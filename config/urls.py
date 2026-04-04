@@ -22,7 +22,7 @@ from django.contrib.sitemaps.views import sitemap as sitemap_view
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from apps.core.sitemaps import StaticViewSitemap
+from apps.pages.sitemaps import StaticViewSitemap
 from apps.projects.sitemaps import ProjectSitemap
 
 _sitemaps = {

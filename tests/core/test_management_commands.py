@@ -6,21 +6,22 @@ Each test runs against a fresh isolated DB (pytest-django default).
 """
 
 import pytest
-from django.core.management import call_command
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.test import override_settings
 
-from apps.core.about_defaults import (
+from apps.projects.models import Project, Testimonial
+from apps.site.about_defaults import (
     CLOSING_INVITATION_DEFAULT,
     PRACTICE_STRUCTURE_PROMPT,
     PROFESSIONAL_STANDING_PROMPT,
     PROJECT_LEADERSHIP_PROMPT,
 )
-from apps.core.management.commands.check_content_readiness import (
+from apps.site.management.commands.check_content_readiness import (
     collect_readiness_issues,
     collect_warnings,
 )
-from apps.core.models import AboutProfile, SiteSettings
-from apps.projects.models import Project, Testimonial
+from apps.site.models import AboutProfile, SiteSettings
 
 # ---------------------------------------------------------------------------
 # SiteSettings checks
@@ -355,3 +356,65 @@ def test_warns_when_demo_testimonials_exist(project):
     )
     warnings = collect_warnings()
     assert any("Starter Testimonial records are still present" in w for w in warnings)
+
+
+@pytest.mark.django_db
+def test_readiness_warns_when_long_site_name_has_no_nav_name_or_logo(service):
+    site, _ = _populate_minimum_ready_site_and_about()
+    site.site_name = "Beaumont Whitfield Kellerman Partnership"
+    site.nav_name = ""
+    site.logo = None
+    site.save()
+    Project.objects.create(
+        title="Harbor House",
+        slug="harbor-house",
+        short_description="Project used for readiness coverage.",
+        category="housing",
+        status="completed",
+        featured=True,
+        cover_image=SimpleUploadedFile("cover.jpg", b"cover-image", content_type="image/jpeg"),
+    )
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not blockers
+    assert any("longer than 30 characters" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+def test_readiness_warns_when_no_featured_projects_are_selected(service, project):
+    _populate_minimum_ready_site_and_about()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not blockers
+    assert any("No featured Project records are selected" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+def test_readiness_warns_when_current_homepage_hero_project_has_no_cover_image(service):
+    _populate_minimum_ready_site_and_about()
+    Project.objects.create(
+        title="Featured Without Cover",
+        slug="featured-without-cover",
+        short_description="Project without a cover image.",
+        category="housing",
+        status="completed",
+        featured=True,
+    )
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not blockers
+    assert any("homepage hero project ('Featured Without Cover') has no cover image" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
+@override_settings(CONTACT_EMAIL="")
+def test_readiness_warns_when_internal_contact_notification_inbox_is_missing(service, project):
+    _populate_minimum_ready_site_and_about()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert not blockers
+    assert any("CONTACT_EMAIL is blank" in warning for warning in warnings)

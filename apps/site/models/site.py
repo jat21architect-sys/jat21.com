@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.core.about_defaults import public_lines, public_text
+from apps.site.about_defaults import public_lines, public_text
 
 # ---------------------------------------------------------------------------
 # Singleton mixin — ensures only one row exists in the DB for "global" models
@@ -128,6 +128,13 @@ class SiteSettings(SingletonModel):
         help_text="Max featured projects shown on desktop (960px+). Between 1 and 6, at least tablet count.",
     )
 
+    class Meta:
+        verbose_name = "Site Settings"
+        verbose_name_plural = "Site Settings"
+
+    def __str__(self):
+        return "Site Settings"
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
@@ -147,13 +154,6 @@ class SiteSettings(SingletonModel):
                 errors["homepage_projects_tablet_count"] = "Tablet count cannot exceed desktop count."
         if errors:
             raise ValidationError(errors)
-
-    class Meta:
-        verbose_name = "Site Settings"
-        verbose_name_plural = "Site Settings"
-
-    def __str__(self):
-        return "Site Settings"
 
 
 # ---------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 """
-Model tests for apps.core: SiteSettings and AboutProfile singletons.
+Model tests for apps.site: SiteSettings and AboutProfile singletons.
 """
 
 import pytest
 
-from apps.core.models import AboutProfile, SiteSettings
+from apps.site.models import AboutProfile, SiteSettings
 
 # ---------------------------------------------------------------------------
 # SiteSettings singleton
