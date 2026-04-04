@@ -8,6 +8,7 @@ A professional, content-driven portfolio platform for architecture practices, bu
 > **Status:** Stable\
 > **Stack:** Python `3.13` · Django `5.2 LTS`\
 > **Docs:** [SETUP.md](SETUP.md) · [DEMO.md](DEMO.md) · [CHANGELOG.md](CHANGELOG.md) · [LICENSE.md](LICENSE.md)\
+> **Theme guide:** [docs/specs/TOKENS.md](docs/specs/TOKENS.md)\
 > **Maintainers:** [RELEASE.md](RELEASE.md)
 
 ---
@@ -43,7 +44,7 @@ focused tool for a specific purpose.
 
 | Page | What it does |
 | --- | --- |
-| **Home** | Hero, featured projects, services summary, testimonials, CTA |
+| **Home** | Hero, featured projects, homepage coda CTA |
 | **Projects** | Paginated portfolio grid with category filter |
 | **Project detail** | Full project case study — narrative, gallery, testimonials, SEO |
 | **About** | Biography, philosophy, credentials, portrait, CV download |
@@ -123,6 +124,40 @@ See [LICENSE.md](LICENSE.md) for purchase terms.
 | Testing | pytest + pytest-django + pytest-cov |
 | CI | GitHub Actions |
 | Git hooks | pre-commit |
+
+---
+
+## Repo architecture
+
+This repo separates reusable Django apps from Jeannote-specific composition.
+Reusable shell and domain apps live under `apps/`; Jeannote-only global config
+and page composition live outside `apps/` so product-specific concerns do not
+leak into reusable boundaries.
+
+| Path | Ownership |
+| --- | --- |
+| `config/` | Django project package: settings split, root URLs, ASGI/WSGI. |
+| `apps/core/` | Cross-cutting Django glue only: system checks, context processor, templatetags, and other tiny shared helpers. |
+| `apps/site/` | Site-wide content/config/admin behavior: `SiteSettings`, `AboutProfile`, readiness rules, and seed/readiness commands. |
+| `apps/pages/` | Public page composition for Home, About, and Privacy, plus page-scoped CSS. Keep it thin. |
+| `apps/projects/` | Reusable portfolio / case-study domain. Owns its templates and CSS. |
+| `apps/services/` | Reusable services domain and service-specific enquiry context. Owns its templates and CSS. |
+| `apps/contact/` | Reusable enquiry flow, persistence, and delivery handling. Owns its templates and CSS. |
+| `templates/` | Repo-level shared shell and global chrome: `base.html`, shared nav/footer, error templates, and `robots.txt`. |
+| `static/` | Repo-level shared shell assets. Shared CSS stays under `static/css/` with shallow `base/`, `components/`, and `utilities/` grouping plus one `main.css` entrypoint. |
+| `tests/` | Repo-level test suite organised by domain and test layer. |
+| `docs/` | Repo-level implementation, QA, and admin documentation system. |
+| `scripts/` | Operational helpers and local audit scripts. Treat durable scripts differently from ad hoc audits; do not assume everything here is a reusable platform tool. |
+
+### Structural rules
+
+- Add a new Django app only when a real content/workflow domain needs one.
+- Reusable/domain apps own their templates and route-specific static assets. The shared shell stays repo-level in `templates/` and `static/`.
+- `apps/core` stays small: checks, context processors, templatetags, and tiny shared glue only.
+- Site-wide content/config/admin behavior belongs in `apps/site/`, not in `apps/core`.
+- Page composition belongs in `apps/pages/`, not in `apps/site/`.
+- Do not make a surface reusable unless more than one real project proves the boundary is stable.
+- If a new feature is global only because it is configured once, that still does **not** automatically make `apps/core` the right home; use `apps/site` for site-wide content/config or create a new domain app if it owns a real workflow or content model.
 
 ---
 
@@ -503,30 +538,33 @@ Six custom commands handle content bootstrap, media import, and readiness checki
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
-├── apps/                      # all first-party Django apps
-│   ├── core/                  # site-wide glue: global models, checks, context processor, sitemaps
-│   │   ├── admin/
-│   │   ├── models/            # SiteSettings, AboutProfile (singletons)
-│   │   ├── templatetags/
-│   │   │   └── core_tags.py   # first_paragraph filter
-│   │   ├── management/commands/
-│   │   │   └── seed_demo.py
-│   │   ├── migrations/
-│   │   ├── checks.py          # core.W001 — email backend guard
-│   │   ├── context_processors.py
-│   │   ├── sitemaps.py
-│   ├── pages/                 # static content pages (home + about)
+├── apps/                      # reusable first-party Django apps
+│   ├── core/                  # shared Django runtime glue
 │   │   ├── apps.py
-│   │   ├── views.py           # HomeView, AboutView
+│   │   ├── checks.py          # shared deploy/runtime checks
+│   │   ├── context_processors.py
+│   │   ├── templatetags/
+│   │   │   └── core_tags.py
+│   ├── site/                  # site-wide content/config/admin behavior
+│   │   ├── admin/
+│   │   ├── management/commands/
+│   │   ├── migrations/
+│   │   └── models/            # SiteSettings, AboutProfile (singletons)
+│   ├── pages/                 # Home/About/Privacy composition
+│   │   ├── views.py
 │   │   ├── urls.py
-│   │   ├── templates/
-│   │   │   └── pages/
+│   │   ├── sitemaps.py
+│   │   ├── templates/pages/
+│   │   └── static/css/
 │   ├── projects/              # portfolio projects domain
 │   │   ├── admin.py
 │   │   ├── models.py
 │   │   ├── views.py
 │   │   ├── templates/
 │   │   │   └── projects/
+│   │   ├── static/css/
+│   │   │   ├── project-cards.css
+│   │   │   └── project-detail.css
 │   │   ├── migrations/
 │   │   ├── sitemaps.py
 │   │   └── urls.py
@@ -537,6 +575,8 @@ Six custom commands handle content bootstrap, media import, and readiness checki
 │   │   ├── views.py
 │   │   ├── templates/
 │   │   │   └── contact/
+│   │   ├── static/css/
+│   │   │   └── contact.css
 │   │   ├── migrations/
 │   │   └── urls.py
 │   └── services/              # services listing domain
@@ -545,16 +585,22 @@ Six custom commands handle content bootstrap, media import, and readiness checki
 │       ├── views.py
 │       ├── templates/
 │       │   └── services/
+│       ├── static/css/
+│       │   └── services.css
 │       ├── migrations/
 │       └── urls.py
-├── templates/                 # project-level shell templates (base, nav, footer)
+├── templates/                 # repo-level shared shell
 │   ├── base.html
 │   ├── robots.txt
 │   └── includes/
 │       ├── nav.html
 │       └── footer.html
-├── static/
-│   ├── css/main.css           # design system (CSS custom properties)
+├── static/                    # repo-level shared shell assets
+│   ├── css/
+│   │   ├── base/
+│   │   ├── components/
+│   │   ├── utilities/
+│   │   └── main.css
 │   ├── js/main.js
 │   └── images/
 ├── tests/                     # domain-structured test suite (mirrors apps/)
@@ -590,13 +636,14 @@ Templates are split across two locations with distinct ownership:
 
 | Location | Owns | Purpose |
 | --- | --- | --- |
-| `templates/` | Project level | Shell and global chrome — `base.html`, nav, footer, `robots.txt` |
-| `apps/pages/templates/pages/` | `pages` app | Home and about page templates |
+| `templates/` | Repo level | Shared shell and global chrome — `base.html`, nav, footer, errors, `robots.txt` |
+| `static/` | Repo level | Shared shell CSS, JS, and shared images |
+| `apps/pages/templates/pages/` | `pages` app | Home, About, and Privacy composition templates |
 | `apps/projects/templates/projects/` | `projects` app | Project list and detail |
 | `apps/contact/templates/contact/` | `contact` app | Contact form and success page |
 | `apps/services/templates/services/` | `services` app | Services listing |
 
-Django's `APP_DIRS=True` loader finds app-level templates automatically. The project-level `templates/` directory holds only the structural chrome (layout, navigation, brand) shared across all apps.
+Django's `APP_DIRS=True` loader finds app-level templates automatically. The shared shell stays repo-level, `apps/pages` owns page composition, and domain apps own their route templates.
 
 ---
 
@@ -620,7 +667,7 @@ Django's `APP_DIRS=True` loader finds app-level templates automatically. The pro
 
 | URL | View | Purpose |
 | --- | --- | --- |
-| `/` | `HomeView` | Hero, featured projects, philosophy, services, trust, CTA |
+| `/` | `HomeView` | Hero, featured projects, homepage coda CTA |
 | `/projects/` | `ProjectListView` | Paginated listing with category filter |
 | `/projects/<slug>/` | `ProjectDetailView` | Full project case study with gallery |
 | `/about/` | `AboutView` | Profile, biography, philosophy, credentials |
