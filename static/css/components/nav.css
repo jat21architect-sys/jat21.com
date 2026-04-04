@@ -286,6 +286,10 @@
 
   /* Active state on mobile overlay: reset filled bg; color handled by .nav__link.is-active above */
   .nav__cta.is-active { background: none; }
+
+  /* Restore underline indicator (base .nav__cta::after { display:none } suppresses it for desktop chrome).
+   * transform: scaleX(1) is already applied by .nav__link.is-active::after in base styles. */
+  .nav__cta.is-active::after { display: block; }
 }
 
 /* All transitions gated: reduced-motion users get instant state changes */

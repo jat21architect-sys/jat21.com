@@ -631,10 +631,10 @@ def test_nav_full_text_has_aria_label(client, site_settings):
 @pytest.mark.parametrize(
     ("route_name", "expected_fragment"),
     [
-        ("projects:list", b'class="nav__link is-active">Projects</a>'),
-        ("pages:about", b'class="nav__link is-active">About</a>'),
-        ("services:list", b'class="nav__link is-active">Services</a>'),
-        ("contact:contact", b'class="nav__link nav__cta is-active">Contact</a>'),
+        ("projects:list", b'class="nav__link is-active" aria-current="page">Projects</a>'),
+        ("pages:about", b'class="nav__link is-active" aria-current="page">About</a>'),
+        ("services:list", b'class="nav__link is-active" aria-current="page">Services</a>'),
+        ("contact:contact", b'class="nav__link nav__cta is-active" aria-current="page">Contact</a>'),
     ],
 )
 @pytest.mark.django_db

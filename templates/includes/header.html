@@ -21,10 +21,10 @@
     </button>
 
     <ul class="nav__links" id="nav-menu">
-      <li><a href="{% url 'projects:list' %}" class="nav__link {% if request.resolver_match.app_name == 'projects' %}is-active{% endif %}">Projects</a></li>
-      <li><a href="{% url 'pages:about' %}" class="nav__link {% if request.resolver_match.url_name == 'about' %}is-active{% endif %}">About</a></li>
-      <li><a href="{% url 'services:list' %}" class="nav__link {% if request.resolver_match.app_name == 'services' %}is-active{% endif %}">Services</a></li>
-      <li><a href="{% url 'contact:contact' %}" class="nav__link nav__cta {% if request.resolver_match.app_name == 'contact' %}is-active{% endif %}">Contact</a></li>
+      <li><a href="{% url 'projects:list' %}" class="nav__link {% if request.resolver_match.app_name == 'projects' %}is-active{% endif %}"{% if request.resolver_match.app_name == 'projects' %} aria-current="page"{% endif %}>Projects</a></li>
+      <li><a href="{% url 'pages:about' %}" class="nav__link {% if request.resolver_match.url_name == 'about' %}is-active{% endif %}"{% if request.resolver_match.url_name == 'about' %} aria-current="page"{% endif %}>About</a></li>
+      <li><a href="{% url 'services:list' %}" class="nav__link {% if request.resolver_match.app_name == 'services' %}is-active{% endif %}"{% if request.resolver_match.app_name == 'services' %} aria-current="page"{% endif %}>Services</a></li>
+      <li><a href="{% url 'contact:contact' %}" class="nav__link nav__cta {% if request.resolver_match.app_name == 'contact' %}is-active{% endif %}"{% if request.resolver_match.app_name == 'contact' %} aria-current="page"{% endif %}>Contact</a></li>
     </ul>
   </nav>
 </header>
