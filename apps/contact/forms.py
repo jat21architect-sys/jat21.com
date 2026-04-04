@@ -45,6 +45,8 @@ TIMELINE_CHOICES = [
     ("Long-term / ongoing", "Long-term / ongoing"),
 ]
 
+INVALID_SUBMISSION_MESSAGE = "This form expired or became invalid. Reload the page and try again."
+
 
 class ContactForm(forms.ModelForm):
     project_type = forms.ChoiceField(choices=PROJECT_TYPE_CHOICES, required=False)
@@ -100,7 +102,7 @@ class ContactForm(forms.ModelForm):
     def clean_website(self) -> str:
         value = self.cleaned_data.get("website", "")
         if value:
-            raise forms.ValidationError("Invalid submission.")
+            raise forms.ValidationError(INVALID_SUBMISSION_MESSAGE)
         return ""
 
     def clean(self):
@@ -110,7 +112,7 @@ class ContactForm(forms.ModelForm):
 
         token = cleaned_data.get("submission_token", "")
         if not token:
-            raise forms.ValidationError("Invalid submission.")
+            raise forms.ValidationError(INVALID_SUBMISSION_MESSAGE)
 
         max_age = getattr(settings, "CONTACT_FORM_TOKEN_MAX_AGE_SECONDS", 86_400)
         min_age = getattr(settings, "CONTACT_FORM_MIN_AGE_SECONDS", 3)
@@ -118,7 +120,7 @@ class ContactForm(forms.ModelForm):
         try:
             issued_at = int(self._token_signer.unsign(token, max_age=max_age))
         except (signing.BadSignature, ValueError):
-            raise forms.ValidationError("Invalid submission.") from None
+            raise forms.ValidationError(INVALID_SUBMISSION_MESSAGE) from None
 
         age = int(time.time()) - issued_at
         if age < min_age:

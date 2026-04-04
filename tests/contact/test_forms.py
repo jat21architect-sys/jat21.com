@@ -6,6 +6,7 @@ import time
 
 import pytest
 from django.core.signing import TimestampSigner
+from django.test import override_settings
 from django.urls import reverse
 
 from apps.contact.models import ContactInquiry
@@ -31,12 +32,13 @@ def make_payload(**overrides):
 
 
 @pytest.mark.django_db
+@override_settings(CONTACT_EMAIL="notify@example.com", DEFAULT_FROM_EMAIL="no-reply@example.com")
 def test_contact_form_valid_post_creates_inquiry(client, site_settings):
     assert ContactInquiry.objects.count() == 0
     response = client.post(reverse("contact:contact"), data=make_payload(), follow=False)
     # Should redirect to the thank-you page
     assert response.status_code == 302
-    assert response["Location"] == reverse("contact:success")
+    assert response["Location"] == f"{reverse('contact:success')}?delivery=sent"
     assert ContactInquiry.objects.count() == 1
 
     inquiry = ContactInquiry.objects.get(email="alice@example.com")
@@ -101,10 +103,49 @@ def test_contact_form_submitted_too_quickly_rejected(client, site_settings):
 
 
 @pytest.mark.django_db
-def test_contact_form_saves_inquiry_even_when_email_send_fails(client, site_settings, monkeypatch):
+def test_contact_form_invalid_token_uses_actionable_reload_message(client, site_settings):
+    payload = make_payload(submission_token="not-a-valid-token")
+    response = client.post(reverse("contact:contact"), data=payload)
+
+    assert response.status_code == 200
+    assert b"This form expired or became invalid. Reload the page and try again." in response.content
+    assert ContactInquiry.objects.count() == 0
+
+
+@pytest.mark.django_db
+@override_settings(CONTACT_EMAIL="", DEFAULT_FROM_EMAIL="")
+def test_contact_form_saves_inquiry_without_send_when_contact_email_missing(
+    client, site_settings, monkeypatch, caplog
+):
+    """
+    If CONTACT_EMAIL is blank the inquiry is still saved, no send attempt runs,
+    and the public flow switches to the saved-only success state.
+    """
+    from django.core.mail import EmailMessage as DjangoEmailMessage
+
+    called = False
+
+    def _send(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("Email send should not run when CONTACT_EMAIL is blank")
+
+    monkeypatch.setattr(DjangoEmailMessage, "send", _send)
+
+    response = client.post(reverse("contact:contact"), data=make_payload(), follow=False)
+    assert response.status_code == 302
+    assert response["Location"] == f"{reverse('contact:success')}?delivery=saved-only"
+    assert ContactInquiry.objects.count() == 1
+    assert called is False
+    assert "CONTACT_EMAIL is blank" in caplog.text
+
+
+@pytest.mark.django_db
+@override_settings(CONTACT_EMAIL="notify@example.com", DEFAULT_FROM_EMAIL="no-reply@example.com")
+def test_contact_form_saves_inquiry_even_when_email_send_fails(client, site_settings, monkeypatch, caplog):
     """
     If the email backend raises an exception the inquiry must still be saved
-    and the user must still be redirected to the success page.
+    and the user must still be redirected to the saved-only success state.
     The send failure is logged but must never surface as an HTTP 500.
     """
     from django.core.mail import EmailMessage as DjangoEmailMessage
@@ -116,8 +157,9 @@ def test_contact_form_saves_inquiry_even_when_email_send_fails(client, site_sett
 
     response = client.post(reverse("contact:contact"), data=make_payload(), follow=False)
     assert response.status_code == 302
-    assert response["Location"] == reverse("contact:success")
+    assert response["Location"] == f"{reverse('contact:success')}?delivery=saved-only"
     assert ContactInquiry.objects.count() == 1
+    assert "Contact email failed for inquiry" in caplog.text
 
 
 @pytest.mark.django_db

@@ -13,6 +13,8 @@ pytestmark = pytest.mark.e2e
 def test_contact_form_submit_reaches_success_page(
     page, open_page, app_url, site_settings, fast_contact_form
 ):
+    fast_contact_form.CONTACT_EMAIL = "notify@example.com"
+    fast_contact_form.DEFAULT_FROM_EMAIL = "no-reply@example.com"
     open_page("/contact/")
 
     expect(page.get_by_role("heading", name="Let's Talk", level=1)).to_be_visible()
@@ -26,7 +28,7 @@ def test_contact_form_submit_reaches_success_page(
 
     page.get_by_role("button", name="Send Enquiry").click()
 
-    expect(page).to_have_url(f"{app_url}/contact/thank-you/")
+    expect(page).to_have_url(f"{app_url}/contact/thank-you/?delivery=sent")
     expect(page.get_by_role("heading", name="Your enquiry has been received.", level=1)).to_be_visible()
 
     inquiry = ContactInquiry.objects.get(email="alice@example.com")

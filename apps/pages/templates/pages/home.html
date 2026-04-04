@@ -15,7 +15,7 @@
 <section class="hero{% if site_settings.hero_compact %} hero--compact{% endif %}">
   <div class="hero__media">
     {% if hero_project and hero_project.cover_image %}
-      <img src="{{ hero_project.cover_image.url }}" alt="{{ hero_project.title }}" class="hero__bg" loading="eager">
+      <img src="{{ hero_project.cover_image.url }}" alt="{{ hero_project.title }}" class="hero__bg" loading="eager" fetchpriority="high"{% if hero_project.cover_image_dimensions %} width="{{ hero_project.cover_image_dimensions.width }}" height="{{ hero_project.cover_image_dimensions.height }}"{% endif %}>
     {% else %}
       <div class="hero__bg hero__bg--placeholder"></div>
     {% endif %}
@@ -49,7 +49,7 @@
         <a href="{{ project.get_absolute_url }}" class="project-card__link">
           <div class="project-card__media">
             {% if project.preview_image %}
-              <img src="{{ project.preview_image.url }}" alt="{{ project.preview_image_alt }}" loading="lazy">
+              <img src="{{ project.preview_image.url }}" alt="{{ project.preview_image_alt }}" loading="lazy" decoding="async"{% if project.preview_image_dimensions %} width="{{ project.preview_image_dimensions.width }}" height="{{ project.preview_image_dimensions.height }}"{% endif %}>
             {% else %}
               <div class="project-card__placeholder"></div>
             {% endif %}

@@ -30,7 +30,7 @@
         <div class="contact-process">
           <h2 class="contact-process__title">What to expect</h2>
           <p class="contact-process__intro">
-            The practice will review your enquiry and follow up within two working days.
+            The practice reviews each enquiry directly.
             {% if site_settings.phone and site_settings.contact_email %}
             For urgent matters, reach out directly.
             {% elif site_settings.contact_email %}
@@ -82,8 +82,8 @@
         <form method="post" action="{% url 'contact:contact' %}" class="contact-form" data-submit-pending-label="Sending…" novalidate>
           {% csrf_token %}
           {% if form.non_field_errors %}
-          <div class="form-row">
-            <div class="form-field has-error">
+          <div class="form-row" aria-live="polite">
+            <div class="form-field has-error" role="alert">
               <span class="form-error">{{ form.non_field_errors.0 }}</span>
             </div>
           </div>
@@ -146,7 +146,7 @@
           {{ form.website }}
           {{ form.submission_token }}
           <button type="submit" class="btn btn--primary btn--large">Send Enquiry</button>
-          <p class="contact-form__trust">Your details are used only to respond to your enquiry. After submission, the practice will review your message and follow up by email.</p>
+          <p class="contact-form__trust">Your details are used only to review and respond to your enquiry. After submission, your message is saved for the practice to review.</p>
         </form>
       </div>
 

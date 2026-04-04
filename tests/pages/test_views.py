@@ -6,13 +6,13 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
-from apps.core.about_defaults import (
+from apps.projects.models import Project, ProjectImage
+from apps.site.about_defaults import (
     PRACTICE_STRUCTURE_PROMPT,
     PROFESSIONAL_STANDING_PROMPT,
     PROJECT_LEADERSHIP_PROMPT,
 )
-from apps.core.models import AboutProfile, SiteSettings
-from apps.projects.models import Project, ProjectImage
+from apps.site.models import AboutProfile, SiteSettings
 
 
 @pytest.mark.django_db
@@ -21,6 +21,50 @@ def test_home_page(client, site_settings):
     assert response.status_code == 200
     assert b"Test Site" in response.content  # hero h1 renders site_name
     assert b"/static/images/og-default.svg" in response.content
+
+
+@pytest.mark.django_db
+def test_homepage_hero_and_featured_cards_emit_image_dimensions_and_priority(
+    client, site_settings, make_uploaded_image
+):
+    hero_project = Project.objects.create(
+        title="Hero Project",
+        slug="hero-project",
+        short_description="Hero project.",
+        category="housing",
+        status="completed",
+        featured=True,
+        order=1,
+        cover_image=make_uploaded_image("hero.jpg", size=(1600, 900)),
+    )
+    card_project = Project.objects.create(
+        title="Card Project",
+        slug="card-project",
+        short_description="Card project.",
+        category="civic",
+        status="completed",
+        featured=True,
+        order=2,
+    )
+    gallery_image = ProjectImage.objects.create(
+        project=card_project,
+        image=make_uploaded_image("card.jpg", size=(1200, 800)),
+        alt_text="Card preview",
+        order=1,
+        image_type="gallery",
+    )
+
+    response = client.get(reverse("pages:home"))
+
+    assert response.status_code == 200
+    assert hero_project.cover_image.url.encode() in response.content
+    assert b'fetchpriority="high"' in response.content
+    assert b'width="1600"' in response.content
+    assert b'height="900"' in response.content
+    assert gallery_image.image.url.encode() in response.content
+    assert b'decoding="async"' in response.content
+    assert b'width="1200"' in response.content
+    assert b'height="800"' in response.content
 
 
 @pytest.mark.django_db
@@ -445,6 +489,32 @@ def test_hero_compact_class_present_when_enabled(client, site_settings):
 
 
 @pytest.mark.django_db
+def test_homepage_hero_renders_selected_cover_image_as_eager_background(
+    client, site_settings, make_uploaded_image
+):
+    featured = Project.objects.create(
+        title="Hero Cover Project",
+        slug="hero-cover-project",
+        short_description="Hero image project.",
+        category="housing",
+        status="completed",
+        featured=True,
+        order=1,
+        cover_image=make_uploaded_image("hero-cover.jpg", size=(1600, 900)),
+    )
+
+    response = client.get(reverse("pages:home"))
+
+    assert response.status_code == 200
+    assert featured.cover_image.url.encode() in response.content
+    assert b'class="hero__bg"' in response.content
+    assert b'loading="eager"' in response.content
+    assert b'fetchpriority="high"' in response.content
+    assert b'width="1600"' in response.content
+    assert b'height="900"' in response.content
+
+
+@pytest.mark.django_db
 def test_site_settings_hero_fields_default(db):
     """hero_label defaults blank and hero_compact defaults False."""
     s = SiteSettings.load()
@@ -557,3 +627,19 @@ def test_nav_full_text_has_aria_label(client, site_settings):
     response = client.get(reverse("pages:home"))
     assert b'aria-label="Atelier Nord"' in response.content
 
+
+@pytest.mark.parametrize(
+    ("route_name", "expected_fragment"),
+    [
+        ("projects:list", b'class="nav__link is-active">Projects</a>'),
+        ("pages:about", b'class="nav__link is-active">About</a>'),
+        ("services:list", b'class="nav__link is-active">Services</a>'),
+        ("contact:contact", b'class="nav__link nav__cta is-active">Contact</a>'),
+    ],
+)
+@pytest.mark.django_db
+def test_nav_marks_current_route_active(client, site_settings, route_name, expected_fragment):
+    response = client.get(reverse(route_name))
+
+    assert response.status_code == 200
+    assert expected_fragment in response.content

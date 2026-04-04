@@ -10,9 +10,9 @@ from collections.abc import Callable
 import pytest
 from django.core.management import call_command
 
-from apps.core.models import SiteSettings
 from apps.projects.models import Project
 from apps.services.models import Service
+from apps.site.models import SiteSettings
 
 # pytest-playwright keeps an event loop around during setup, which trips
 # Django's async safety guard when pytest-django creates the test database.

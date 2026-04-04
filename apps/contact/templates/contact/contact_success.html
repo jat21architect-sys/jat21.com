@@ -16,8 +16,13 @@
 <section class="page-hero page-hero--short page-hero--receipt">
   <div class="container container--narrow">
     <p class="page-hero__label">Thank you</p>
+    {% if delivery_outcome == "saved-only" %}
+    <h1 class="page-hero__title">Your enquiry has been received and saved.</h1>
+    <p class="page-hero__subtitle">Email notification for the practice is currently unavailable, so reply times may be longer than usual.</p>
+    {% else %}
     <h1 class="page-hero__title">Your enquiry has been received.</h1>
-    <p class="page-hero__subtitle">The practice will be in touch within two working days.</p>
+    <p class="page-hero__subtitle">The practice usually replies within two working days.</p>
+    {% endif %}
   </div>
 </section>
 
@@ -25,7 +30,11 @@
   <div class="container container--narrow completion-strip__inner">
     <div class="completion-strip__copy">
       <p class="completion-strip__label">Next step</p>
+      {% if delivery_outcome == "saved-only" %}
+      <p id="completion-strip-title" class="completion-strip__text">Your message is safely stored. The practice can still review it, but response time may be longer while email notification is unavailable.</p>
+      {% else %}
       <p id="completion-strip-title" class="completion-strip__text">The practice reviews each note directly. While you wait, you can browse recent work or return to the main page.</p>
+      {% endif %}
     </div>
     <div class="completion-strip__actions">
       <a href="{% url 'projects:list' %}" class="btn btn--primary">Explore Projects</a>

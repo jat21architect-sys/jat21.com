@@ -12,7 +12,8 @@ def test_contact_page_get(client, site_settings):
     site_settings.save()
     response = client.get(reverse("contact:contact"))
     assert response.status_code == 200
-    assert b"Your details are used only to respond to your enquiry." in response.content
+    assert b"The practice reviews each enquiry directly." in response.content
+    assert b"Your details are used only to review and respond to your enquiry." in response.content
     assert b"For urgent matters, email directly." in response.content
 
 
@@ -21,10 +22,20 @@ def test_contact_success_page(client, site_settings):
     response = client.get(reverse("contact:success"))
     assert response.status_code == 200
     assert b"Your enquiry has been received." in response.content
-    assert b"The practice will be in touch within two working days." in response.content
+    assert b"The practice usually replies within two working days." in response.content
     assert b"Next step" in response.content
     assert b"Explore Projects" in response.content
     assert b"Back to Home" in response.content
+
+
+@pytest.mark.django_db
+def test_contact_success_page_saved_only_state(client, site_settings):
+    response = client.get(reverse("contact:success") + "?delivery=saved-only")
+
+    assert response.status_code == 200
+    assert b"Your enquiry has been received and saved." in response.content
+    assert b"Email notification for the practice is currently unavailable" in response.content
+    assert b"response time may be longer" in response.content
 
 
 @pytest.mark.django_db

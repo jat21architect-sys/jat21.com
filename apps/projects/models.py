@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -11,6 +12,24 @@ from django.utils.text import slugify
 # ---------------------------------------------------------------------------
 # Project
 # ---------------------------------------------------------------------------
+
+
+CONTACT_PROJECT_TYPE_MAP = {
+    "housing": "Housing",
+    "civic": "Civic",
+    "workplace": "Workplace",
+}
+
+
+def get_safe_image_dimensions(image) -> dict[str, int] | None:
+    if not image:
+        return None
+    with contextlib.suppress(Exception):
+        width = int(image.width)
+        height = int(image.height)
+        if width > 0 and height > 0:
+            return {"width": width, "height": height}
+    return None
 
 
 class ProjectQuerySet(models.QuerySet):
@@ -125,6 +144,10 @@ class Project(models.Model):
     def get_seo_description(self):
         return self.seo_description or self.short_description
 
+    @property
+    def contact_project_type(self) -> str:
+        return CONTACT_PROJECT_TYPE_MAP.get(self.category, "Other")
+
     @cached_property
     def preview_gallery_image(self):
         prefetched = getattr(self, "_preview_gallery_images", None)
@@ -145,6 +168,14 @@ class Project(models.Model):
             return self.title
         preview_gallery = self.preview_gallery_image
         return preview_gallery.get_alt_text() if preview_gallery else self.title
+
+    @cached_property
+    def cover_image_dimensions(self):
+        return get_safe_image_dimensions(self.cover_image)
+
+    @cached_property
+    def preview_image_dimensions(self):
+        return get_safe_image_dimensions(self.preview_image)
 
     if TYPE_CHECKING:
         from django.db.models import Manager
@@ -191,6 +222,10 @@ class ProjectImage(models.Model):
     def get_alt_text(self):
         """Return alt_text if set, falling back to caption, then project title."""
         return self.alt_text or self.caption or self.project.title
+
+    @cached_property
+    def dimensions(self):
+        return get_safe_image_dimensions(self.image)
 
 
 # ---------------------------------------------------------------------------

@@ -8,6 +8,9 @@
 {% block meta_description %}{{ site_settings.projects_meta_description|default:site_settings.meta_description }}{% endblock %}
 {% block og_description %}{{ site_settings.projects_meta_description|default:site_settings.meta_description }}{% endblock %}
 {% block twitter_description %}{{ site_settings.projects_meta_description|default:site_settings.meta_description }}{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/project-cards.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -41,7 +44,7 @@
         <a href="{{ project.get_absolute_url }}" class="project-card__link">
           <div class="project-card__media">
             {% if project.preview_image %}
-              <img src="{{ project.preview_image.url }}" alt="{{ project.preview_image_alt }}" loading="lazy">
+              <img src="{{ project.preview_image.url }}" alt="{{ project.preview_image_alt }}" loading="lazy" decoding="async"{% if project.preview_image_dimensions %} width="{{ project.preview_image_dimensions.width }}" height="{{ project.preview_image_dimensions.height }}"{% endif %}>
             {% else %}
               <div class="project-card__placeholder"></div>
             {% endif %}

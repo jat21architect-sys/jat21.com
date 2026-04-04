@@ -1,3 +1,5 @@
+from typing import Any, TypedDict
+
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
@@ -77,6 +79,31 @@ class ProjectListView(ListView):
 # ---------------------------------------------------------------------------
 
 
+class DetailMedia(TypedDict):
+    image: Any | None
+    alt: str
+    dimensions: Any | None
+
+
+def _resolve_detail_media(project: Project, gallery: list[Any]) -> DetailMedia:
+    if project.cover_image:
+        return {
+            "image": project.cover_image,
+            "alt": project.title,
+            "dimensions": project.cover_image_dimensions,
+        }
+
+    first_gallery = gallery[0] if gallery else None
+    if first_gallery:
+        return {
+            "image": first_gallery.image,
+            "alt": first_gallery.get_alt_text(),
+            "dimensions": first_gallery.dimensions,
+        }
+
+    return {"image": None, "alt": project.title, "dimensions": None}
+
+
 class ProjectDetailView(DetailView):
     model = Project
     template_name = "projects/detail.html"
@@ -85,8 +112,13 @@ class ProjectDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         project = self.object
-        ctx["gallery"] = project.images.filter(image_type="gallery")
-        ctx["drawings"] = project.images.exclude(image_type="gallery")
+        gallery = list(project.images.filter(image_type="gallery"))
+        drawings = list(project.images.exclude(image_type="gallery"))
+        detail_media = _resolve_detail_media(project, gallery)
+
+        ctx["gallery"] = gallery
+        ctx["drawings"] = drawings
+        ctx["detail_media"] = detail_media
         ctx["related"] = (
             Project.objects.with_preview_media()
             .filter(category=project.category)
@@ -94,6 +126,6 @@ class ProjectDetailView(DetailView):
             .order_by("order")[:3]
         )
         ctx["testimonials"] = project.testimonials.filter(active=True)
-        if project.cover_image:
-            ctx["og_image"] = project.cover_image.url
+        if detail_media["image"]:
+            ctx["og_image"] = detail_media["image"].url
         return ctx

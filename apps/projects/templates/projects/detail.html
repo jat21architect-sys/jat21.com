@@ -8,14 +8,18 @@
 {% block twitter_description %}{{ project.get_seo_description }}{% endblock %}
 {% block og_url %}{{ request.build_absolute_uri }}{% endblock %}
 {% block og_type %}article{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/project-cards.css' %}">
+  <link rel="stylesheet" href="{% static 'css/project-detail.css' %}">
+{% endblock %}
 
 {% block content %}
 
 <!-- Project hero -->
-<section class="project-hero{% if not project.cover_image %} project-hero--no-image{% endif %}">
-  {% if project.cover_image %}
+<section class="project-hero{% if not detail_media.image %} project-hero--no-image{% endif %}">
+  {% if detail_media.image %}
   <div class="project-hero__media">
-    <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="project-hero__img" loading="eager">
+    <img src="{{ detail_media.image.url }}" alt="{{ detail_media.alt }}" class="project-hero__img" loading="eager" fetchpriority="high"{% if detail_media.dimensions %} width="{{ detail_media.dimensions.width }}" height="{{ detail_media.dimensions.height }}"{% endif %}>
     <div class="project-hero__overlay"></div>
   </div>
   {% endif %}
@@ -93,7 +97,7 @@
   <div class="gallery gallery--3col">
     {% for img in first_gallery %}
     <figure class="gallery__item">
-      <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy">
+      <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy" decoding="async"{% if img.dimensions %} width="{{ img.dimensions.width }}" height="{{ img.dimensions.height }}"{% endif %}>
       {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
     </figure>
     {% endfor %}
@@ -125,7 +129,7 @@
   <div class="gallery gallery--2col">
     {% for img in main_gallery %}
     <figure class="gallery__item">
-      <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy">
+      <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy" decoding="async"{% if img.dimensions %} width="{{ img.dimensions.width }}" height="{{ img.dimensions.height }}"{% endif %}>
       {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
     </figure>
     {% endfor %}
@@ -154,11 +158,11 @@
   <!-- Technical drawings -->
   {% if drawings %}
   <section class="project-section">
-    <h2 class="project-section__title">Drawings & Plans</h2>
+    <h2 class="project-section__title">Drawings & Supporting Visuals</h2>
     <div class="gallery gallery--drawings">
       {% for img in drawings %}
       <figure class="gallery__item">
-        <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy">
+        <img src="{{ img.image.url }}" alt="{{ img.get_alt_text }}" loading="lazy" decoding="async"{% if img.dimensions %} width="{{ img.dimensions.width }}" height="{{ img.dimensions.height }}"{% endif %}>
         {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% elif img.image_type != 'gallery' %}<figcaption>{{ img.get_image_type_display }}</figcaption>{% endif %}
       </figure>
       {% endfor %}
@@ -194,7 +198,7 @@
 <!-- Project navigation -->
 <div class="project-nav container">
   <a href="{% url 'projects:list' %}" class="project-nav__back">← All Projects</a>
-  <a href="{% url 'contact:contact' %}" class="btn btn--primary">Discuss a Similar Project</a>
+  <a href="{% url 'contact:contact' %}?project_type={{ project.contact_project_type|urlencode }}" class="btn btn--primary">Discuss a Similar Project</a>
 </div>
 
 <!-- Related projects -->
@@ -208,7 +212,7 @@
         <a href="{{ p.get_absolute_url }}" class="project-card__link">
           <div class="project-card__media">
             {% if p.preview_image %}
-              <img src="{{ p.preview_image.url }}" alt="{{ p.preview_image_alt }}" loading="lazy">
+              <img src="{{ p.preview_image.url }}" alt="{{ p.preview_image_alt }}" loading="lazy" decoding="async"{% if p.preview_image_dimensions %} width="{{ p.preview_image_dimensions.width }}" height="{{ p.preview_image_dimensions.height }}"{% endif %}>
             {% else %}
               <div class="project-card__placeholder"></div>
             {% endif %}

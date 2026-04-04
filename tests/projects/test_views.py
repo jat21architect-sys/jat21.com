@@ -49,6 +49,34 @@ def test_project_list_cards_fall_back_to_first_gallery_image(client, site_settin
 
 
 @pytest.mark.django_db
+def test_project_list_preview_images_emit_real_dimensions_when_available(
+    client, site_settings, make_uploaded_image
+):
+    project = Project.objects.create(
+        title="Sized Preview Project",
+        slug="sized-preview-project",
+        short_description="Uses gallery preview.",
+        category="housing",
+        status="completed",
+    )
+    gallery_image = ProjectImage.objects.create(
+        project=project,
+        image=make_uploaded_image("list-preview.jpg", size=(1200, 800)),
+        alt_text="List preview image",
+        order=1,
+        image_type="gallery",
+    )
+
+    response = client.get(reverse("projects:list"))
+
+    assert response.status_code == 200
+    assert gallery_image.image.url.encode() in response.content
+    assert b'decoding="async"' in response.content
+    assert b'width="1200"' in response.content
+    assert b'height="800"' in response.content
+
+
+@pytest.mark.django_db
 def test_project_list_only_shows_populated_sector_filters(client, site_settings, project):
     Project.objects.create(
         title="Civic Hall",
@@ -150,6 +178,63 @@ def test_project_detail_page(client, site_settings, project):
 
 
 @pytest.mark.django_db
+def test_project_detail_uses_first_gallery_image_for_hero_and_og_when_cover_missing(
+    client, site_settings, project, make_uploaded_image
+):
+    gallery_image = ProjectImage.objects.create(
+        project=project,
+        image=make_uploaded_image("detail-hero.jpg", size=(1600, 900)),
+        alt_text="Detail hero fallback",
+        order=1,
+        image_type="gallery",
+    )
+
+    response = client.get(reverse("projects:detail", kwargs={"slug": project.slug}))
+
+    assert response.status_code == 200
+    assert response.context["detail_media"]["image"].url == gallery_image.image.url
+    assert response.context["detail_media"]["alt"] == "Detail hero fallback"
+    assert response.context["detail_media"]["dimensions"] == {"width": 1600, "height": 900}
+    assert response.context["og_image"] == gallery_image.image.url
+    assert b"project-hero--no-image" not in response.content
+    assert b'fetchpriority="high"' in response.content
+    assert b'width="1600"' in response.content
+    assert b'height="900"' in response.content
+
+
+@pytest.mark.django_db
+def test_project_detail_labels_non_gallery_media_with_truthful_section_heading(
+    client, site_settings, project, make_uploaded_image
+):
+    ProjectImage.objects.create(
+        project=project,
+        image=make_uploaded_image("render.jpg", size=(900, 1200)),
+        order=1,
+        image_type="render",
+    )
+
+    response = client.get(reverse("projects:detail", kwargs={"slug": project.slug}))
+
+    assert response.status_code == 200
+    assert b"Drawings & Supporting Visuals" in response.content
+    assert b"Drawings & Plans" not in response.content
+    assert b"Render" in response.content
+    assert b'decoding="async"' in response.content
+    assert b'width="900"' in response.content
+    assert b'height="1200"' in response.content
+
+
+@pytest.mark.django_db
+def test_project_detail_cta_prefills_contact_project_type_from_category(
+    client, site_settings, project
+):
+    response = client.get(reverse("projects:detail", kwargs={"slug": project.slug}))
+
+    assert response.status_code == 200
+    assert b'href="/contact/?project_type=Housing"' in response.content
+
+
+@pytest.mark.django_db
 def test_project_detail_related_cards_fall_back_to_first_gallery_image(client, site_settings, project):
     related = Project.objects.create(
         title="Related Housing",
@@ -172,6 +257,34 @@ def test_project_detail_related_cards_fall_back_to_first_gallery_image(client, s
     assert response.status_code == 200
     assert gallery_image.image.url.encode() in response.content
     assert b"project-card__placeholder" not in response.content
+
+
+@pytest.mark.django_db
+def test_project_detail_related_preview_images_emit_real_dimensions_when_available(
+    client, site_settings, project, make_uploaded_image
+):
+    related = Project.objects.create(
+        title="Related Sized Housing",
+        slug="related-sized-housing",
+        short_description="Related housing project.",
+        category=project.category,
+        status="completed",
+    )
+    gallery_image = ProjectImage.objects.create(
+        project=related,
+        image=make_uploaded_image("related-preview.jpg", size=(1200, 800)),
+        alt_text="Related preview image",
+        order=1,
+        image_type="gallery",
+    )
+
+    response = client.get(reverse("projects:detail", kwargs={"slug": project.slug}))
+
+    assert response.status_code == 200
+    assert gallery_image.image.url.encode() in response.content
+    assert b'decoding="async"' in response.content
+    assert b'width="1200"' in response.content
+    assert b'height="800"' in response.content
 
 
 @pytest.mark.django_db
@@ -234,16 +347,15 @@ def test_project_detail_query_count(client, site_settings, project, django_asser
 
     Expected queries for a project with no cover_image, no gallery/drawings,
     no testimonials, no related projects:
-      1. session load
-      2. SiteSettings (context_processor)
-      3. Project.objects.get(slug=...)
-      4. gallery images (select_related)
-      5. drawings images (select_related)
-      6. related projects
-      7. testimonials
+      1. SiteSettings (context_processor)
+      2. Project.objects.get(slug=...)
+      3. gallery images
+      4. drawings images
+      5. related projects
+      6. testimonials
     """
     url = reverse("projects:detail", kwargs={"slug": project.slug})
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(6):
         client.get(url)
 
 
@@ -255,12 +367,9 @@ def test_project_detail_query_count(client, site_settings, project, django_asser
 @pytest.mark.django_db
 def test_project_detail_og_image_falls_back_to_site_settings(client, site_settings, project):
     """
-    When a project has no cover_image, og_image in context should come from
-    SiteSettings.og_image if one is set. When neither is set, og_image should
-    not be in the context at all.
+    When a project has no cover image and no gallery image, og_image should
+    stay absent from context so the shared site-level fallback can apply.
     """
-    # No cover image on the project fixture, no og_image on site_settings:
-    # og_image key should be absent from context.
     url = reverse("projects:detail", kwargs={"slug": project.slug})
     response = client.get(url)
     assert response.status_code == 200

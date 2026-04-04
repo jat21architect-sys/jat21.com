@@ -25,7 +25,7 @@ def test_services_page_uses_seeded_services_and_prefills_contact_form(
         housing_service.get_by_text("Housing projects shaped by site conditions")
     ).to_be_visible()
 
-    housing_service.get_by_role("link", name="Enquire about this service").click()
+    housing_service.get_by_role("link", name=re.compile(r"Discuss this service")).click()
 
     expect(page).to_have_url(re.compile(r"/contact/\?project_type=Housing$"))
     expect(page.get_by_label("Project type")).to_have_value("Housing")
