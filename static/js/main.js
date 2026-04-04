@@ -131,6 +131,11 @@
       link.addEventListener('click', closeMenu);
     });
 
+    // Close when tapping the overlay background (not a link or its container)
+    navLinks.addEventListener('pointerdown', e => {
+      if (e.target === navLinks) closeMenu();
+    });
+
     // Close when viewport crosses into desktop — prevents stuck scroll lock
     // on device rotation or DevTools breakpoint crossing
     const mq = window.matchMedia('(max-width: 767px)');
