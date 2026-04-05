@@ -12,6 +12,14 @@ from ..management.commands.check_content_readiness import collect_readiness_issu
 from ..models import AboutProfile, SiteSettings
 
 # ---------------------------------------------------------------------------
+# Admin site identity
+# ---------------------------------------------------------------------------
+
+admin.site.site_header = "Site Admin"
+admin.site.site_title = "Site Admin"
+admin.site.index_title = "Start here: Site Settings → About Profile → Services → Projects"
+
+# ---------------------------------------------------------------------------
 # SiteSettings
 # ---------------------------------------------------------------------------
 

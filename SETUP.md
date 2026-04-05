@@ -34,7 +34,7 @@ uv run python manage.py migrate
 # 4. Create your admin account
 uv run python manage.py createsuperuser
 
-# 5. Load starter content so the site renders on first visit
+# 5. Load starter/demo content so the site renders on first visit
 uv run python manage.py seed_demo
 
 # 6. Start the dev server
@@ -43,6 +43,10 @@ uv run python manage.py runserver
 
 Visit **<http://127.0.0.1:8000>** and confirm the site loads.
 Visit **<http://127.0.0.1:8000/admin>** and log in with the credentials you just created.
+
+`seed_demo` loads the shipped demo dataset: `Site Settings`, `About Profile`,
+three active services, eleven example projects (seven featured), testimonials,
+and the tracked demo-media bundle when available.
 
 ---
 
@@ -55,12 +59,15 @@ Replace every placeholder with your real information.
 | Field | What to enter | Notes |
 | --- | --- | --- |
 | `site_name` | Your practice name | e.g. "Studio Rossi Architecture" |
-| `tagline` | One-line positioning statement | Shown in header and meta |
+| `tagline` | One-line positioning statement | Shown in the homepage hero and footer |
+| `hero_label` | Optional short descriptor above the homepage title | e.g. "Architecture & Urbanism" |
+| `nav_name` | Optional short navbar brand override | Use if the full `site_name` is too long or the automatic monogram is weak |
+| `logo` | Upload your logo | Replaces text branding in the navbar |
 | `contact_email` | Public email shown on the site | Shown in the footer and contact page. Contact-form notifications are configured separately via `CONTACT_EMAIL` |
 | `phone` | Your contact number | Optional — leave blank to hide |
 | `location` | City, Country | Displayed in footer and contact page |
-| `address` | Full postal address | Optional — for footer or contact use |
-| `logo` | Upload your logo | Replaces the text site name in the nav |
+| `address` | Full postal address | Stored in admin only in the current implementation |
+| `contact_response_time` | Public response-time wording | Used on the Contact page and success state, e.g. "two working days" |
 | `og_image` | Default social share image | Used when no project cover image exists — 1200 × 630 px recommended |
 | `meta_description` | Homepage SEO description | Keep under 160 characters |
 
@@ -71,6 +78,10 @@ page appears in search results):
 - `services_meta_description`
 - `projects_meta_description`
 - `contact_meta_description`
+
+If you do set a page-specific meta description, make sure it matches the current
+studio identity. The launch-readiness check now flags stale per-page metadata
+that still names an old demo studio.
 
 **Social links** (all optional — leave blank to hide the icon):
 
@@ -90,17 +101,41 @@ page appears in search results):
 
 ### Admin → About Profile
 
+Start with the fields that shape the public identity of the practice:
+
 | Field | What to enter | Notes |
 | --- | --- | --- |
-| `headline` | Your name or practice headline | Shown as the page heading |
-| `intro` | 2–4 sentence intro | Shown at the top of the About page |
-| `biography` | Full biographical text | Supports multiple paragraphs |
-| `philosophy` | Design philosophy statement | Optional section |
-| `credentials` | Education, memberships, certifications | One entry per line |
-| `experience_years` | Your actual years of practice | **Replace 0 — this renders publicly** |
-| `location` | Where you are based | Optional |
-| `portrait` | Upload a portrait photo | Recommended minimum: 800 × 800 px |
-| `cv_file` | Upload a PDF CV | Optional — enables a CV download link |
+| `identity_mode` | `studio` or `person` | Choose whether the page introduces the studio or a named principal |
+| `principal_name` | Public principal name | Required only for person-led mode |
+| `principal_title` | Public role/title | Used in the hero meta line for person-led mode |
+| `practice_structure` | Truthful short descriptor | e.g. "Solo practice" or "Small studio" |
+| `one_line_practice_description` | Short public one-liner | Shown in the About hero |
+
+Then complete the main narrative:
+
+| Field | What to enter | Notes |
+| --- | --- | --- |
+| `practice_summary` | What the practice does and what kind of work it takes on | Main opening prose block |
+| `project_leadership` | How projects are led and where collaborators fit | Secondary narrative block |
+| `approach` | Short practical approach statement | 2–3 sentences is ideal |
+| `closing_invitation` | Short closing CTA copy | If kept under 80 characters it becomes the CTA heading |
+
+Then fill the credibility block:
+
+| Field | What to enter | Notes |
+| --- | --- | --- |
+| `professional_standing` | Registration or professional standing | Publicly shown when complete |
+| `education` | One fact per line | e.g. degrees, formal training |
+| `supporting_facts` | One factual proof point per line | e.g. sectors worked in, delivery scope, awards if real |
+| `experience_years` | Your actual years of practice | This renders publicly as `N+ years in practice` |
+
+Portrait and file options:
+
+| Field | What to enter | Notes |
+| --- | --- | --- |
+| `portrait_mode` | `text_only` or `portrait` | Use text-only until you have a real portrait ready |
+| `portrait` | Upload a real portrait | Required for the portrait column to render |
+| `cv_file` | Optional PDF profile/CV | Only appears when the portrait column is visible |
 
 ---
 
@@ -108,20 +143,20 @@ page appears in search results):
 
 ### Admin → Services
 
-Six placeholder service records are loaded by `seed_demo`. Edit them to match your
+Three starter service records are loaded by `seed_demo`. Edit them to match your
 actual offering, or delete and create your own.
 
 For each service:
 
 | Field | What to enter |
 | --- | --- |
-| `title` | Service name, e.g. "Residential Design" |
+| `title` | Service name, e.g. "Housing" or "Feasibility Studies" |
 | `summary` | One-sentence description shown on cards (under 250 characters) |
 | `description` | Full explanation of the service |
 | `who_for` | Who this is best suited to, e.g. "Homeowners planning a new build" |
 | `value_proposition` | What the client gains |
 | `deliverables` | One deliverable per line, e.g. "Concept drawings", "Planning submission" |
-| `icon_name` | Optional — icon identifier from your chosen icon library |
+| `slug` | Usually leave the prepopulated slug alone | The Services page uses it for section anchors and contact-form prefill mapping |
 | `order` | Controls display order; lower numbers appear first |
 | `active` | Uncheck to hide a service without deleting it |
 
@@ -131,8 +166,9 @@ For each service:
 
 ### Admin → Projects
 
-Four placeholder projects are loaded by `seed_demo`. Delete them and add your real work,
-or add a project directly via admin.
+`seed_demo` loads eleven example projects, seven of them featured. Replace the
+demo records with your real work before launch, or add your own projects directly
+in admin.
 
 For each project:
 
@@ -142,7 +178,7 @@ For each project:
 | --- | --- |
 | `title` | Project name |
 | `short_description` | 1–2 sentences for cards and search results (under 160 characters ideal) |
-| `category` | Residential / Commercial / Cultural / Interiors / Renovation |
+| `category` | `Housing` / `Civic` / `Workplace` |
 | `status` | Completed / In Progress / Concept / Competition Entry |
 
 ### Metadata
@@ -188,7 +224,8 @@ For each project:
 
 **Testimonials** (optional — added inline on the project record)
 
-Each project can have testimonials attached. Add author, role, text, and optionally a photo.
+Each project can have testimonials attached inline. Add the author name, role, company,
+quote, order, and active state.
 
 ### Adding many projects from local files
 
@@ -215,10 +252,13 @@ uv run python manage.py import_project_images \
 
 ## Phase 6 — Email
 
-Contact form submissions are always saved to the database. To also receive email
-notifications, configure an SMTP backend before going live.
+Contact form submissions are always saved to the database and visible in Admin → Contact
+Inquiries, regardless of whether email is configured. **If you skip this phase or leave
+`CONTACT_EMAIL` unset, submissions will be saved but no notification email will be sent to
+you.** Configure `CONTACT_EMAIL` before launch to enable delivery notifications.
 
-There are three separate email roles in this template:
+To also set up email notifications, configure an SMTP backend and set the following
+variables. There are three separate email roles in this template:
 
 - `Site Settings.contact_email`: the public email shown on the site
 - `CONTACT_EMAIL`: the inbox that receives contact-form notification emails
@@ -255,8 +295,25 @@ or still set to starter/demo values:
 uv run python manage.py check_content_readiness
 ```
 
-Fix every warning it reports. The command exits with code 1 if any warnings remain,
-so it can be added to a deployment gate if needed.
+The command uses two output levels:
+
+| Output | Meaning | Action |
+| --- | --- | --- |
+| `✗` (blocker) | Must be fixed before launch — site will look broken or still contain demo values | Fix before deploying |
+| `⚠` (warning) | Does not block launch but degrades quality or trust | Fix if time allows |
+| All clear | No issues found | Proceed to Phase 8 |
+
+The command exits with code `1` if any blocker is present (CI-friendly).
+
+**Common first-run blockers and where to fix them:**
+
+| Blocker message | Where to fix |
+| --- | --- |
+| `site_name` is still the demo value | Admin → Site Settings → Identity |
+| `contact_email` is still the demo value | Admin → Site Settings → Contact |
+| `one_line_practice_description` is blank or demo copy | Admin → About Profile → Identity |
+| `practice_summary` is blank or demo copy | Admin → About Profile → Content |
+| Demo project titles detected | Admin → Projects — replace or delete the seeded examples |
 
 ---
 
@@ -324,8 +381,8 @@ This confirms the main pages return HTTP 200 and no obvious errors appear.
 
 | Command | When to use |
 | --- | --- |
-| `seed_demo` | Fresh install — loads generic starter content |
-| `check_content_readiness` | Before launch — flags missing or placeholder content |
+| `seed_demo` | Fresh install — loads the starter/demo dataset |
+| `check_content_readiness` | Before launch — flags blocking launch issues, demo values, and stale page metadata |
 | `bootstrap_project` | Add a project from local files |
 | `import_project_images` | Attach a batch of images to an existing project |
 | `seed_about` | Optionally fill blank AboutProfile fields incrementally |
