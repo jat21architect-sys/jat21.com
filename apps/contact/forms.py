@@ -88,7 +88,7 @@ class ContactForm(forms.ModelForm):
                 attrs={
                     "rows": 6,
                     "placeholder": "Describe your project…",
-                    "aria-describedby": "id_message_error",
+                    "aria-describedby": "id_message_hint id_message_error",
                 }
             ),
         }

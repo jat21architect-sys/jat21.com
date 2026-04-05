@@ -43,7 +43,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (
             "Contact",
             {
-                "fields": ("contact_email", "phone", "location", "address"),
+                "fields": ("contact_email", "phone", "location", "address", "contact_response_time"),
                 "description": (
                     "These details are public-facing. The public email shown on the site is separate from the inbox "
                     "that receives form notifications, which is configured with the CONTACT_EMAIL environment variable."

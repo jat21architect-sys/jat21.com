@@ -21,7 +21,7 @@
     <p class="page-hero__subtitle">Email notification for the practice is currently unavailable, so reply times may be longer than usual.</p>
     {% else %}
     <h1 class="page-hero__title">Your enquiry has been received.</h1>
-    <p class="page-hero__subtitle">The practice usually replies within two working days.</p>
+    <p class="page-hero__subtitle">The practice usually replies within {{ site_settings.contact_response_time|default:"two working days" }}.</p>
     {% endif %}
   </div>
 </section>

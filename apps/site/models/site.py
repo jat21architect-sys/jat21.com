@@ -66,6 +66,16 @@ class SiteSettings(SingletonModel):
     phone = models.CharField(max_length=40, blank=True)
     location = models.CharField(max_length=120, blank=True)
     address = models.TextField(blank=True)
+    contact_response_time = models.CharField(
+        max_length=60,
+        blank=True,
+        default="two working days",
+        help_text=(
+            "Response time shown to enquirers on the contact page and confirmation. "
+            "E.g. 'two working days', '24 hours', 'one week'. "
+            "Appears as: 'Enquiries reviewed within …'"
+        ),
+    )
 
     # Social links
     linkedin_url = models.URLField(blank=True)

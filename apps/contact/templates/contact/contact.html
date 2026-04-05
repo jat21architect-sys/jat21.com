@@ -94,12 +94,12 @@
             <div class="form-field {% if form.name.errors %}has-error{% endif %}">
               <label for="{{ form.name.id_for_label }}">Name <span class="required">*</span></label>
               {{ form.name }}
-              {% if form.name.errors %}<span id="id_name_error" class="form-error">{{ form.name.errors.0 }}</span>{% endif %}
+              <span id="id_name_error" class="form-error"{% if not form.name.errors %} hidden{% endif %}>{{ form.name.errors.0 }}</span>
             </div>
             <div class="form-field {% if form.email.errors %}has-error{% endif %}">
               <label for="{{ form.email.id_for_label }}">Email <span class="required">*</span></label>
               {{ form.email }}
-              {% if form.email.errors %}<span id="id_email_error" class="form-error">{{ form.email.errors.0 }}</span>{% endif %}
+              <span id="id_email_error" class="form-error"{% if not form.email.errors %} hidden{% endif %}>{{ form.email.errors.0 }}</span>
             </div>
           </div>
 
@@ -137,9 +137,9 @@
           <div class="form-row">
             <div class="form-field {% if form.message.errors %}has-error{% endif %}">
               <label for="{{ form.message.id_for_label }}">Message <span class="required">*</span></label>
-              <small class="form-hint">Tell me what you have in mind, where you are in the process, and what kind of architectural support you&#8217;re looking for.</small>
+              <small id="id_message_hint" class="form-hint">Tell me what you have in mind, where you are in the process, and what kind of professional support you&#8217;re looking for.</small>
               {{ form.message }}
-              {% if form.message.errors %}<span id="id_message_error" class="form-error">{{ form.message.errors.0 }}</span>{% endif %}
+              <span id="id_message_error" class="form-error"{% if not form.message.errors %} hidden{% endif %}>{{ form.message.errors.0 }}</span>
             </div>
           </div>
 
@@ -156,7 +156,7 @@
 
 <section class="contact-close-strip">
   <div class="container">
-    <p class="contact-close-strip__note">{% if site_settings.location %}{{ site_settings.location }} · {% endif %}Enquiries reviewed within two working days</p>
+    <p class="contact-close-strip__note">{% if site_settings.location %}{{ site_settings.location }} · {% endif %}Enquiries reviewed within {{ site_settings.contact_response_time|default:"two working days" }}</p>
   </div>
 </section>
 

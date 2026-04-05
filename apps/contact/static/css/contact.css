@@ -283,6 +283,10 @@
   color: var(--color-text-secondary);
 }
 
+@media (max-width: 1100px) {
+  .form-row--2 { flex-direction: column; }
+}
+
 @media (max-width: 900px) {
   .completion-strip__inner {
     flex-direction: column;
@@ -291,10 +295,10 @@
 
   .contact-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
-  .contact-form-col { order: unset; }
-  .contact-info-col  { order: unset; position: static; }
-  .form-row--2 { flex-direction: column; }
+  .contact-form-col { order: 1; }
+  .contact-info-col  { order: 2; position: static; }
   .contact-form button[type="submit"] { width: 100%; justify-content: center; }
 }
 
