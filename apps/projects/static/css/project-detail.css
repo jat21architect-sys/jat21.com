@@ -276,6 +276,8 @@
 .testimonial-card__meta {
   font-size: 0.78rem;
   color: var(--color-text-secondary);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .breadcrumb a      { transition: color var(--duration-sm); }
   .gallery__item img { transition: transform var(--duration-md) var(--easing-standard); }

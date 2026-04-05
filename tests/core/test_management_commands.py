@@ -21,6 +21,7 @@ from apps.site.management.commands.check_content_readiness import (
     collect_readiness_issues,
     collect_warnings,
 )
+from apps.site.management.commands.seed_demo import _discover_demo_media_dir
 from apps.site.models import AboutProfile, SiteSettings
 
 # ---------------------------------------------------------------------------
@@ -407,6 +408,39 @@ def test_readiness_warns_when_current_homepage_hero_project_has_no_cover_image(s
 
     assert not blockers
     assert any("homepage hero project ('Featured Without Cover') has no cover image" in warning for warning in warnings)
+
+
+def test_seed_demo_auto_discovers_tracked_bundled_media(tmp_path):
+    media_dir = _discover_demo_media_dir(tmp_path)
+
+    assert media_dir is not None
+    assert media_dir.name == "strand-architecture"
+    assert (media_dir / "covers").is_dir()
+    assert (media_dir / "gallery").is_dir()
+
+
+@pytest.mark.django_db
+def test_seed_demo_populates_signed_off_project_preview_states_from_tracked_bundle(settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+
+    call_command("seed_demo")
+
+    expected_cover_slugs = [
+        "community-library-pavilion",
+        "commercial-office-conversion",
+        "civic-waterfront-square",
+        "housing-block-north-quarter",
+        "school-extension-timber-frame",
+        "urban-apartment-retrofit",
+    ]
+    for slug in expected_cover_slugs:
+        project = Project.objects.get(slug=slug)
+        assert project.cover_image
+
+    assert Project.objects.get(slug="coastline-civic-centre").images.count() == 4
+    assert Project.objects.get(slug="harbour-court-apartments").images.count() == 5
+    assert Project.objects.get(slug="ridgeline-housing").images.count() == 7
+    assert Project.objects.get(slug="house-on-the-hillside").images.count() == 4
 
 
 @pytest.mark.django_db

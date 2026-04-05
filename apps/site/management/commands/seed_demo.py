@@ -72,6 +72,64 @@ def _list_images(directory: Path) -> list[Path]:
     )
     return found
 
+
+def _discover_demo_media_dir(media_root: Path) -> Path | None:
+    """Return the first bundled demo-media directory that exists."""
+    candidates = [
+        Path(__file__).resolve().parents[2] / "demo_seed" / "strand-architecture",
+        media_root / "demo_seed" / "strand-architecture",
+    ]
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return None
+
+
+DEMO_COVER_SOURCES = {
+    "coastline-civic-centre": "covers/coastline-civic-centre.jpg",
+    "harbour-court-apartments": "covers/harbour-court-apartments.jpg",
+    "harbour-glass-offices": "covers/harbour-glass-offices.jpg",
+    "ridgeline-housing": "covers/ridgeline-housing.jpg",
+    "school-extension-timber-frame": "covers/school-extension-timber-frame.jpg",
+    "urban-apartment-retrofit": "covers/urban-apartment-retrofit.jpg",
+    "house-on-the-hillside": "gallery/ridgeline-housing/01.jpg",
+    "community-library-pavilion": "gallery/coastline-civic-centre/01.jpg",
+    "commercial-office-conversion": "covers/harbour-glass-offices.jpg",
+    "civic-waterfront-square": "gallery/coastline-civic-centre/02.jpg",
+    "housing-block-north-quarter": "gallery/harbour-court-apartments/01.jpg",
+}
+
+DEMO_GALLERY_SOURCES = {
+    "coastline-civic-centre": [
+        "gallery/coastline-civic-centre/01.jpg",
+        "gallery/coastline-civic-centre/02.jpg",
+        "gallery/coastline-civic-centre/03.jpg",
+        "gallery/coastline-civic-centre/04.jpg",
+    ],
+    "harbour-court-apartments": [
+        "gallery/harbour-court-apartments/01.jpg",
+        "gallery/harbour-court-apartments/02.jpg",
+        "gallery/harbour-court-apartments/03.jpg",
+        "gallery/harbour-court-apartments/04.jpg",
+        "gallery/harbour-court-apartments/05.jpg",
+    ],
+    "ridgeline-housing": [
+        "gallery/ridgeline-housing/01.jpg",
+        "gallery/ridgeline-housing/02.jpg",
+        "gallery/ridgeline-housing/03.jpg",
+        "gallery/ridgeline-housing/04.jpg",
+        "gallery/ridgeline-housing/05.jpg",
+        "gallery/ridgeline-housing/06.jpg",
+        "gallery/ridgeline-housing/07.jpg",
+    ],
+    "house-on-the-hillside": [
+        "gallery/ridgeline-housing/02.jpg",
+        "gallery/ridgeline-housing/03.jpg",
+        "gallery/ridgeline-housing/04.jpg",
+        "gallery/ridgeline-housing/05.jpg",
+    ],
+}
+
 SERVICES = [
     {
         "title": "Housing",
@@ -462,8 +520,8 @@ class Command(BaseCommand):
         else:
             # Auto-discover bundled demo media when --media-dir is not given
             from django.conf import settings
-            _candidate = settings.MEDIA_ROOT / "demo_seed" / "strand-architecture"
-            if _candidate.is_dir():
+            _candidate = _discover_demo_media_dir(settings.MEDIA_ROOT)
+            if _candidate:
                 media_dir = _candidate
                 self.stdout.write(f"Auto-discovered demo media: {media_dir}")
 
@@ -641,18 +699,14 @@ class Command(BaseCommand):
     def _attach_covers(self, media_dir: Path) -> tuple[int, int]:
         """Attach covers for the projects that should have one.
         Returns (count_attached_or_skipped, warning_count)."""
-        covers_dir = media_dir / "covers"
         attached = 0
         warnings = 0
 
-        if not covers_dir.is_dir():
-            return attached, warnings
-
-        # Attach any cover file whose stem matches a project slug
-        for cover_file in sorted(covers_dir.iterdir()):
-            if cover_file.suffix.lower() not in (".jpg", ".jpeg", ".png", ".webp"):
+        for slug, relative_source in DEMO_COVER_SOURCES.items():
+            cover_file = media_dir / relative_source
+            if not cover_file.is_file():
+                warnings += self._warn(f"cover source not found for '{slug}': {cover_file}")
                 continue
-            slug = _stem_clean(cover_file.name)
             try:
                 project = Project.objects.get(slug=slug)
             except Project.DoesNotExist:
@@ -660,16 +714,14 @@ class Command(BaseCommand):
                 continue
 
             # Skip if same file already attached
-            if (
-                project.cover_image
-                and _stem_clean(project.cover_image.name) == _stem_clean(cover_file.name)
-            ):
+            if project.cover_image and _stem_clean(project.cover_image.name) == slug:
                 self.stdout.write(f"  SKIP cover for '{slug}' (already attached): {cover_file.name}")
                 attached += 1
                 continue
 
+            destination_name = f"{slug}{cover_file.suffix.lower()}"
             with cover_file.open("rb") as fh:
-                project.cover_image.save(cover_file.name, File(fh), save=True)
+                project.cover_image.save(destination_name, File(fh), save=True)
             self.stdout.write(f"  Attached cover for '{slug}' → {project.cover_image.name}")
             attached += 1
 
@@ -678,26 +730,20 @@ class Command(BaseCommand):
     def _attach_galleries(self, media_dir: Path) -> tuple[int, int]:
         """Attach gallery images for the projects that should have them.
         Returns (count_new_images_added, warning_count)."""
-        gallery_dir = media_dir / "gallery"
         total_added = 0
         warnings = 0
-        gallery_slugs = ["ridgeline-housing", "community-library-pavilion", "commercial-office-conversion"]
 
-        for slug in gallery_slugs:
-            project_gallery_dir = gallery_dir / slug if gallery_dir.is_dir() else Path("/nonexistent")
-            if not project_gallery_dir.is_dir():
-                warnings += self._warn(f"gallery directory not found: {project_gallery_dir}")
-                continue
-
-            image_files = _list_images(project_gallery_dir)
-            if not image_files:
-                warnings += self._warn(f"no images found in {project_gallery_dir}")
-                continue
-
+        for slug, relative_sources in DEMO_GALLERY_SOURCES.items():
             try:
                 project = Project.objects.get(slug=slug)
             except Project.DoesNotExist:
                 warnings += self._warn(f"Project with slug '{slug}' not found — skipping gallery")
+                continue
+
+            image_files = [media_dir / rel for rel in relative_sources]
+            missing = [path for path in image_files if not path.is_file()]
+            if missing:
+                warnings += self._warn(f"gallery source missing for '{slug}': {missing[0]}")
                 continue
 
             # Build set of already-stored stems for duplicate detection
