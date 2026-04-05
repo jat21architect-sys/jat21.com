@@ -54,7 +54,7 @@
 
 .hero__title {
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-size: clamp(3rem, 7vw, 3.5rem);
   font-weight: 300;
   line-height: 1.02;
   letter-spacing: -0.02em;
@@ -153,7 +153,7 @@
 
 /* Compact modifier — reduces title scale ceiling for long names or taglines */
 .hero--compact .hero__title {
-  font-size: clamp(3rem, 5.5vw, 4.5rem);
+  font-size: clamp(2.75rem, 5.5vw, 3rem);
 }
 
 /* Tablet typographic state — designed step, not clamp interpolation.
