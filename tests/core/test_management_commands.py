@@ -171,6 +171,20 @@ def test_readiness_warns_when_page_specific_meta_descriptions_are_blank(service,
 
 
 @pytest.mark.django_db
+def test_readiness_blocks_when_nonblank_page_meta_references_a_different_studio_identity(
+    service, project
+):
+    site, _ = _populate_minimum_ready_site_and_about()
+    site.about_meta_description = "About Demo Architecture Studio, the practice approach, experience, and professional profile."
+    site.save()
+
+    blockers, warnings = collect_readiness_issues()
+
+    assert any("about_meta_description still references 'Demo Architecture Studio'" in blocker for blocker in blockers)
+    assert not any("about_meta_description is blank" in warning for warning in warnings)
+
+
+@pytest.mark.django_db
 def test_readiness_warns_when_custom_og_image_is_missing_but_no_longer_blocks(service, project):
     site, _ = _populate_minimum_ready_site_and_about()
     site.og_image.delete(save=True)

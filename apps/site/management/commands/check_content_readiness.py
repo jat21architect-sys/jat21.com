@@ -5,7 +5,7 @@ Checks that the site has been customised from template defaults and has the
 minimum content needed for a public launch.
 
 Exit code 0 — all checks pass.
-Exit code 1 — at least one warning was reported.
+Exit code 1 — at least one blocking launch issue was reported.
 
 Usage:
     uv run python manage.py check_content_readiness
@@ -44,6 +44,10 @@ _DEMO_META_DESCRIPTION = (
     "purpose, and lasting value."
 )
 _DEMO_SITE_LOCATION = "Your City, Your Country"
+_META_BRAND_NAMES = {
+    "Demo Architecture Studio",
+    "Rossi Meyer Studio",
+}
 _DEMO_ABOUT_ONE_LINE = "Architecture shaped by context, use, and urban climate."
 _DEMO_ABOUT_PRACTICE_SUMMARY = (
     "Demo Architecture Studio is a practice working across housing, civic buildings, "
@@ -72,6 +76,13 @@ def _contains_placeholder_marker(*values: str) -> bool:
 
 def _concrete_lines(value: str) -> list[str]:
     return public_lines(value)
+
+
+def _stale_meta_brand(value: str, current_site_name: str) -> str:
+    for brand in _META_BRAND_NAMES:
+        if brand in value and brand != current_site_name:
+            return brand
+    return ""
 
 
 def collect_readiness_issues() -> tuple[list[str], list[str]]:
@@ -165,11 +176,23 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "SiteSettings.about_meta_description is blank. "
             "The About page will fall back to the homepage meta description."
         )
+    elif stale_brand := _stale_meta_brand(site.about_meta_description, site.site_name):
+        blockers.append(
+            f"SiteSettings.about_meta_description still references '{stale_brand}', "
+            f"which does not match the current site name ('{site.site_name}'). "
+            "Update it or clear the field to fall back to the homepage meta description."
+        )
 
     if not site.services_meta_description:
         warnings.append(
             "SiteSettings.services_meta_description is blank. "
             "The Services page will fall back to the homepage meta description."
+        )
+    elif stale_brand := _stale_meta_brand(site.services_meta_description, site.site_name):
+        blockers.append(
+            f"SiteSettings.services_meta_description still references '{stale_brand}', "
+            f"which does not match the current site name ('{site.site_name}'). "
+            "Update it or clear the field to fall back to the homepage meta description."
         )
 
     if not site.projects_meta_description:
@@ -177,11 +200,23 @@ def collect_readiness_issues() -> tuple[list[str], list[str]]:
             "SiteSettings.projects_meta_description is blank. "
             "The Projects page will fall back to the homepage meta description."
         )
+    elif stale_brand := _stale_meta_brand(site.projects_meta_description, site.site_name):
+        blockers.append(
+            f"SiteSettings.projects_meta_description still references '{stale_brand}', "
+            f"which does not match the current site name ('{site.site_name}'). "
+            "Update it or clear the field to fall back to the homepage meta description."
+        )
 
     if not site.contact_meta_description:
         warnings.append(
             "SiteSettings.contact_meta_description is blank. "
             "The Contact page will fall back to the homepage meta description."
+        )
+    elif stale_brand := _stale_meta_brand(site.contact_meta_description, site.site_name):
+        blockers.append(
+            f"SiteSettings.contact_meta_description still references '{stale_brand}', "
+            f"which does not match the current site name ('{site.site_name}'). "
+            "Update it or clear the field to fall back to the homepage meta description."
         )
 
     if not site.location:
@@ -381,7 +416,7 @@ def collect_warnings() -> list[str]:
 class Command(BaseCommand):
     help = (
         "Check that the site has been properly customised from template defaults "
-        "before launch. Exits with code 1 if any warnings are reported."
+        "before launch. Exits with code 1 if any blocking launch issues are reported."
     )
 
     def handle(self, *args, **options):
