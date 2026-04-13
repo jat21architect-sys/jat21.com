@@ -37,12 +37,9 @@ Then verify a running prod-like instance:
 make smoke
 ```
 
-`make check-content` is a buyer pre-launch gate, not a template release-tag gate. Run it against the customized deployment database before any real site goes live:
-
-```bash
-make check-content
-DEPLOY_URL=https://your-domain.com make smoke-prod
-```
+`make check-content` and buyer launch verification live outside the template
+release-tag gate. They belong to the buyer onboarding and launch path in
+[SETUP.md](SETUP.md).
 
 Use `make smoke` against staging or another prod-like verification instance. A plain local dev server running with `DEBUG=True` will not prove the branded 404 path used in the smoke check.
 

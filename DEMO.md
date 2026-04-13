@@ -7,25 +7,12 @@ locally or on a public URL — so you can evaluate it before customising.
 
 ## Option A — Local preview (fastest)
 
-```bash
-git clone <repo-url>
-cd <project-directory>
-uv sync --group dev
-cp .env.example .env
-```
+Use [SETUP.md](SETUP.md) Phase 1 for the canonical first-run path:
 
-Generate and set a `SECRET_KEY` in `.env`:
-
-```bash
-uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-```
-
-```bash
-uv run python manage.py migrate
-uv run python manage.py createsuperuser
-uv run python manage.py seed_demo
-uv run python manage.py runserver
-```
+- clone the repo and install dependencies
+- create `.env` and set `SECRET_KEY`
+- run `migrate`, `createsuperuser`, and `seed_demo`
+- start the dev server
 
 Open **<http://127.0.0.1:8000>**.
 
@@ -41,52 +28,27 @@ to explore the content management interface.
 
 ## Option B — Docker (no Python on the host)
 
-```bash
-git clone <repo-url>
-cd <project-directory>
-cp .env.example .env      # set SECRET_KEY in .env
-docker compose up --build
-```
+For the full Docker reference — including setup, one-off commands, volume behaviour,
+and the dev-vs-production distinction — use
+[README.md §Run locally with Docker](README.md#run-locally-with-docker).
 
-In a second terminal:
-
-```bash
-docker compose exec web python manage.py createsuperuser
-docker compose exec web python manage.py seed_demo
-```
+For demo purposes, the important part is still the same: bring the stack up,
+create an admin user, and load `seed_demo` so the preview site renders with the
+starter dataset on first visit.
 
 Open **<http://localhost:8000>**.
-
-For the full Docker reference — including one-off commands, volume behaviour, and notes on the dev vs production distinction — see [README.md §Run locally with Docker](README.md#run-locally-with-docker).
 
 ---
 
 ## Option C — Public preview URL (share with others)
 
-The easiest way to share a live preview is to deploy to Railway using the
-included configuration. The repo has a `Procfile` and `railway.toml` ready.
+To share a live preview, deploy a prod-like instance using the canonical
+deployment reference in [README.md](README.md). After the preview instance is
+running, load the demo dataset with `seed_demo` so the public URL shows the
+starter projects, services, and About content immediately.
 
-1. Push the repo to your GitHub account
-2. Create a new Railway project from the repo
-3. Set these environment variables in Railway:
-
-```dotenv
-SECRET_KEY=<generate one>
-DEBUG=False
-DJANGO_SETTINGS_MODULE=config.settings.prod
-ALLOWED_HOSTS=<your-railway-domain>
-CSRF_TRUSTED_ORIGINS=https://<your-railway-domain>
-DATABASE_URL=<Railway will inject this automatically with a Postgres plugin>
-CONTACT_EMAIL=hello@yourdomain.com
-```
-
-4. After the first deploy, open a shell and run:
-
-```bash
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py seed_demo
-```
+This path is for evaluation and review only. For real setup and launch, use
+[SETUP.md](SETUP.md).
 
 > **Note on media uploads in demo mode:** Production uses Cloudinary for
 > media storage. For a demo without Cloudinary, uploaded media will not persist
@@ -139,7 +101,7 @@ After running `seed_demo`, the site contains:
 - **Demo/example content:** practice name, About copy, services, projects, testimonials, and other starter text/media loaded by `seed_demo`
 - **System/config:** navigation structure, page layouts, contact-delivery plumbing, environment variables, and the shared styling system
 - **What to edit first:** `Site Settings`, then `About Profile`, then `Services`, then `Projects`
-- **Before launch:** run `uv run python manage.py check_content_readiness` to catch demo values, missing launch facts, and stale page-specific metadata
+- **For real setup and launch:** continue in [SETUP.md](SETUP.md)
 
 ---
 

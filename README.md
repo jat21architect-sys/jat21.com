@@ -760,6 +760,10 @@ Then log in to `/admin/` to configure Site Settings, upload images, and replace 
 
 ### 7. Pre-launch verification
 
+This section is the deploy-reference view of verification commands.
+For the ordered buyer launch path, use [SETUP.md](SETUP.md).
+For the maintainer release-tag procedure and command truth, use [RELEASE.md](RELEASE.md).
+
 ```bash
 # Repo health gate
 make health
@@ -777,22 +781,11 @@ from the local shell. If it warns, fix the underlying production setting.
 
 ### 8. Deployment checklist
 
-- [ ] `DJANGO_SETTINGS_MODULE=config.settings.prod`
-- [ ] Long unique `SECRET_KEY`
-- [ ] `ALLOWED_HOSTS` set to live domain(s)
-- [ ] `DATABASE_URL` pointing to PostgreSQL
-- [ ] `CSRF_TRUSTED_ORIGINS` set
-- [ ] SMTP email backend configured and tested
-- [ ] `CONTACT_EMAIL` set to a monitored inbox
-- [ ] Cloudinary credentials set for production media uploads
-- [ ] `SENTRY_DSN` set for production exception visibility
-- [ ] `collectstatic` and `migrate` run
-- [ ] Admin superuser created
-- [ ] Real portrait and OG image uploaded in admin
-- [ ] Site Settings completed (email, phone, location, social links)
-- [ ] Demo testimonials replaced with real client quotes (or clearly marked)
-- [ ] `make check-deploy` passes cleanly
-- [ ] `SMOKE_BASE_URL=https://yourdomain.com make smoke` passes after deploy
+Use the root guides that own these workflows instead of maintaining a second
+process checklist here:
+
+- Buyer onboarding and launch path: [SETUP.md](SETUP.md)
+- Maintainer release-tag procedure and command truth: [RELEASE.md](RELEASE.md)
 
 ---
 
