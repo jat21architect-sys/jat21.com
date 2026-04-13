@@ -12,7 +12,7 @@ All must be set in Railway → Service → Variables before deploying.
 
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
-| `SECRET_KEY` | **Yes** | Django secret key — generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
+| `SECRET_KEY` | **Yes** | Django secret key — generate with `uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
 | `DJANGO_SETTINGS_MODULE` | **Yes** | `config.settings.prod` |
 | `ALLOWED_HOSTS` | **Yes** | Comma-separated, e.g. `jeannote.up.railway.app,yourdomain.com` |
 | `CSRF_TRUSTED_ORIGINS` | **Yes** | Comma-separated with scheme, e.g. `https://yourdomain.com` |

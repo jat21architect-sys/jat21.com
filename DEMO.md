@@ -17,7 +17,7 @@ cp .env.example .env
 Generate and set a `SECRET_KEY` in `.env`:
 
 ```bash
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
 ```bash

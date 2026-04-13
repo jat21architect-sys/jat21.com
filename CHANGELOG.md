@@ -6,6 +6,36 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.2] — 2026-04-12
+
+### Fixed
+
+- **Onboarding docs — secret key command:** All five buyer-facing files (`SETUP.md`, `DEMO.md`,
+  `README.md`, `.env.example`, `docs/recovery-runbook.md`) instructed buyers to run
+  `python -c "from django.core.management.utils import get_random_secret_key; ..."`. This
+  command fails with `ModuleNotFoundError` on any machine where Django is not globally
+  installed — the common state after `uv sync`. All occurrences corrected to
+  `uv run python -c "..."`, consistent with every other command in these files.
+- **Onboarding docs — `seed_demo` framing:** README.md Step 5 labelled `seed_demo` as
+  "optional". Without it the site renders blank on first load. Label changed to
+  "recommended for first run" with an explicit clarification that skipping it leaves the
+  site mostly blank.
+- **Onboarding docs — `check_content_readiness` after seed:** SETUP.md Phase 1 gave no
+  indication that running `make check-content` immediately after `seed_demo` would show
+  nine blockers — all expected, as the starter content is intentionally placeholder.
+  A note added making this behaviour explicit and directing buyers to complete Phases 2–6
+  before running the check.
+
+### Notes
+
+- No runtime code changes.
+- No migration changes.
+- No change to the locked `1.0.1` baseline other than documentation corrections.
+- Fresh-install drill (`clone → uv sync → .env → migrate → seed_demo → runserver`)
+  confirmed all routes return HTTP 200 with no errors on a clean machine.
+
+---
+
 ## [1.0.1] — 2026-03-24
 
 ### Fixed

@@ -4,7 +4,7 @@ A professional, content-driven portfolio platform for architecture practices, bu
 
 > **New here?** See [SETUP.md](SETUP.md) for the buyer-facing setup and customisation checklist.
 >
-> **Current stable version:** `v1.0.1`\
+> **Current stable version:** `v1.0.2`\
 > **Status:** Stable\
 > **Stack:** Python `3.13` · Django `5.2 LTS`\
 > **Docs:** [SETUP.md](SETUP.md) · [DEMO.md](DEMO.md) · [CHANGELOG.md](CHANGELOG.md) · [LICENSE.md](LICENSE.md)\
@@ -187,7 +187,7 @@ cp .env.example .env
 Open `.env` and set at minimum:
 
 ```dotenv
-SECRET_KEY=<generate with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())">
+SECRET_KEY=<generate with: uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())">
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 ```
@@ -207,7 +207,7 @@ uv run python manage.py createsuperuser
 Enter your chosen username, email, and a strong password at the prompts.
 There are no default credentials anywhere in this codebase.
 
-### 5. Seed starter/demo content (optional)
+### 5. Seed starter/demo content (recommended for first run)
 
 ```bash
 uv run python manage.py seed_demo
@@ -215,9 +215,10 @@ uv run python manage.py seed_demo
 
 Seeds a complete starter/demo dataset — `SiteSettings`, `AboutProfile`, three
 active services, eleven example projects (seven featured), and testimonials —
-so the site renders fully on first load. The repo ships a tracked demo-media
-bundle that `seed_demo` auto-discovers and attaches when available. Use this as
-your starting point and replace content via admin. Safe to re-run
+so the site renders fully on first load. Without this step the site will be
+mostly blank. The repo ships a tracked demo-media bundle that `seed_demo`
+auto-discovers and attaches when available. Use this as your starting point
+and replace content via admin. Safe to re-run
 (idempotent). Does not create any user accounts.
 
 ### 6. Start the dev server

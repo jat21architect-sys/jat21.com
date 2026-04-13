@@ -22,7 +22,7 @@ cp .env.example .env
 Open `.env` and set `SECRET_KEY`:
 
 ```bash
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
 Paste the output as the value. Leave everything else as-is for now.
@@ -47,6 +47,11 @@ Visit **<http://127.0.0.1:8000/admin>** and log in with the credentials you just
 `seed_demo` loads the shipped demo dataset: `Site Settings`, `About Profile`,
 three active services, eleven example projects (seven featured), testimonials,
 and the tracked demo-media bundle when available.
+
+> **Note:** If you run `make check-content` now, you will see several blockers
+> — that is expected. The starter/demo content is intentionally placeholder; the
+> blockers are your checklist for Phase 7. Work through Phases 2–6 first, then
+> run the check.
 
 ---
 
