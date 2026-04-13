@@ -25,13 +25,19 @@
   ],
   // .trunk/ contains vendored linter test fixtures, many intentionally invalid.
   // Exclude from file watching, search, and explorer to prevent editor noise.
+  // The first three entries restore VS Code's default excludes so they are not
+  // lost when this object overrides the built-in defaults.
   "files.exclude": {
+    "**/.*": true,
+    "**/__pycache__": true,
+    "**/node_modules": true,
     ".trunk": true
   },
   "search.exclude": {
-    ".trunk/**": true,
-    "**/__pycache__/**": true,
-    "**/node_modules/**": true
+    "**/.*": true,
+    "**/__pycache__": true,
+    "**/node_modules": true,
+    ".trunk/**": true
   },
   "files.watcherExclude": {
     "**/.trunk/**": true,
@@ -49,8 +55,6 @@
     "reportMissingTypeArgument": "none",
     "reportMissingParameterType": "none",
     "reportConstantRedefinition": "none",
-    // Suppress "Unused type: ignore" — Pylance flips this on/off depending on
-    // whether django-stubs is hot in cache. The ignores are load-bearing.
     "reportUnnecessaryTypeIgnoreComment": "none"
   }
 }

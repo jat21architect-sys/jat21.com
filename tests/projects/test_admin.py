@@ -50,5 +50,5 @@ def test_project_image_inline_help_text_highlights_direct_delivery_and_ordering(
     request.user.has_perm.return_value = True
     formset = inline.get_formset(request, obj=project)
 
-    assert "served directly on the public site" in formset.form.base_fields["image"].help_text  # type: ignore[misc]
-    assert "first gallery image becomes the detail hero/share fallback" in formset.form.base_fields["order"].help_text  # type: ignore[misc]
+    assert "served directly on the public site" in formset.form.base_fields["image"].help_text  # pyright: ignore[reportGeneralTypeIssues]
+    assert "first gallery image becomes the detail hero/share fallback" in formset.form.base_fields["order"].help_text  # pyright: ignore[reportGeneralTypeIssues]
