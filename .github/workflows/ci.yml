@@ -14,6 +14,10 @@ jobs:
 
     env:
       # Required by base.py — value is irrelevant for tests
+      # VS Code Trunk extension flags this as a high-entropy string; it is not.
+      # The trunk-ignore comment suppresses it in the Trunk CLI. No .trunk/
+      # config is shipped with this template, so the VS Code extension cannot
+      # honour the suppression — the warning is a known false positive.
       SECRET_KEY: ci-only-not-a-real-secret  # trunk-ignore(trufflehog)
       # dev settings: DEBUG=True, SQLite, console email — no extra env needed
       DJANGO_SETTINGS_MODULE: config.settings.dev
@@ -75,6 +79,11 @@ jobs:
     # Only run on push to main; the smoke step itself is skipped when DEPLOY_URL is not set.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     env:
+      # User-defined repository secrets are invisible to the GitHub Actions
+      # VS Code extension. It will warn "Context access might be invalid" for
+      # any secret not in GitHub's built-in list. This is a known extension
+      # limitation — the secret resolves correctly at runtime when configured
+      # under Settings → Secrets and variables → Actions.
       DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
 
     steps:
