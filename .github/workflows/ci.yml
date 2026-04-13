@@ -15,10 +15,7 @@ jobs:
     env:
       # Required by base.py — value is irrelevant for tests
       # VS Code Trunk extension flags this as a high-entropy string; it is not.
-      # The trunk-ignore comment suppresses it in the Trunk CLI. No .trunk/
-      # config is shipped with this template, so the VS Code extension cannot
-      # honour the suppression — the warning is a known false positive.
-      SECRET_KEY: ci-only-not-a-real-secret  # trunk-ignore(trufflehog)
+      SECRET_KEY: ci-only-not-a-real-secret  # trunk-ignore(checkov/CKV_SECRET_6)
       # dev settings: DEBUG=True, SQLite, console email — no extra env needed
       DJANGO_SETTINGS_MODULE: config.settings.dev
 
