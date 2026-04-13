@@ -142,23 +142,6 @@
   .projects-grid--featured .project-card--large { grid-column: span 1; }
 }
 
-@media (max-width: 480px) {
-  .filter-bar__nav {
-    gap: 0;
-    padding-block: 0.1rem;
-    overflow-x: visible;
-  }
-
-  .filter-btn {
-    flex: 1 1 0;
-    min-width: 0;
-    text-align: center;
-    font-size: 0.6rem;
-    letter-spacing: 0.02em;
-    padding: 0.72rem 0.18rem;
-  }
-}
-
 /* ------------------------------------------------------------------
    Homepage per-breakpoint project count limits (set via SiteSettings)
    CSS custom properties cannot be used inside :nth-child() selectors,
@@ -222,6 +205,13 @@
 .filter-btn--active {
   color: var(--color-text-primary);
   border-block-end-color: var(--accent-primary);
+}
+
+/* Narrow mobile: reduce inline padding so all 4 tabs fit at 360px */
+@media (max-width: 480px) {
+  .filter-btn {
+    padding: 0.8rem 0.75rem;
+  }
 }
 
 
