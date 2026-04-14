@@ -1,9 +1,9 @@
 # Railway deployment configuration for jat21.com
 # https://docs.railway.com/reference/config-as-code
 #
-# Build:      Railpack (Railway default) auto-installs from requirements.txt,
-#             then bakes static files into the image via buildCommand.
-#             builder is omitted — Railway defaults to Railpack.
+# Build:      Railpack — explicitly forced so Railway ignores the repo's
+#             dev-only Dockerfile. Installs from requirements.txt, then bakes
+#             static files into the image via buildCommand.
 # Pre-deploy: migrations run once before the new container goes live.
 # Start:      gunicorn only — no collectstatic or migrate at boot.
 #
@@ -11,6 +11,7 @@
 # for filesystem-persistent tasks (collectstatic belongs in buildCommand).
 
 [build]
+builder = "RAILPACK"
 buildCommand = "python manage.py collectstatic --noinput"
 
 [deploy]
