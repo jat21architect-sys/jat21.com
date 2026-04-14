@@ -126,12 +126,15 @@ smoke-prod:
 # Django deployment security check — always runs against production settings.
 # Uses explicit dummy values for all production-only env vars so the check can
 # pass cleanly and only fail on real misconfigurations in prod.py or custom checks.
+# --fail-level WARNING ensures the command exits non-zero when any Warning fires,
+# not just on Errors. This makes check-deploy an actual gating step.
 check-deploy:
 	@echo "Running manage.py check --deploy against config.settings.prod..."
 	DJANGO_SETTINGS_MODULE=config.settings.prod \
 	  SECRET_KEY=deploy-check-secret-ThisIsLongEnough1234567890!@#ABCDEF \
 	  ALLOWED_HOSTS=example.com \
 	  CSRF_TRUSTED_ORIGINS=https://example.com \
+	  DATABASE_URL=postgres://dummy:dummy@localhost:5432/dummy \
 	  EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
 	  EMAIL_HOST=smtp.example.com \
 	  EMAIL_PORT=587 \
@@ -144,7 +147,7 @@ check-deploy:
 	  CLOUDINARY_API_SECRET=dummy-secret \
 	  SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0 \
 	  SENTRY_ENVIRONMENT=production \
-	  uv run python manage.py check --deploy
+	  uv run python manage.py check --deploy --fail-level WARNING
 
 # ---------------------------------------------------------------------------
 # Clean targets
