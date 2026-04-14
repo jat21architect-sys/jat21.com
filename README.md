@@ -3,11 +3,12 @@
 A professional, content-driven portfolio platform for architecture practices, built with Django.
 
 > **New here?** See [SETUP.md](SETUP.md) for the buyer-facing setup and customisation checklist.
+> See [docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md) for the canonical customization matrix and the exact split between `admin-managed`, `env/config-managed — required for launch`, `env/config-managed — optional integration`, `code-only (simple editorial change)`, `code-only (behavior-coupled / risky)`, and `intentionally opinionated` surfaces.
 >
 > **Current stable version:** `v1.0.2`\
 > **Status:** Stable\
 > **Stack:** Python `3.13` · Django `5.2 LTS`\
-> **Docs:** [SETUP.md](SETUP.md) · [DEMO.md](DEMO.md) · [CHANGELOG.md](CHANGELOG.md) · [LICENSE.md](LICENSE.md)\
+> **Docs:** [SETUP.md](SETUP.md) · [DEMO.md](DEMO.md) · [docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md) · [CHANGELOG.md](CHANGELOG.md) · [LICENSE.md](LICENSE.md)\
 > **Theme guide:** [docs/specs/TOKENS.md](docs/specs/TOKENS.md)\
 > **Maintainers:** [RELEASE.md](RELEASE.md)
 
@@ -15,14 +16,33 @@ A professional, content-driven portfolio platform for architecture practices, bu
 
 ## What this is
 
-A production-ready Django template for architecture practices who want a content-managed
+A Django template for architecture practices who want a content-managed
 portfolio site — not a generic website builder, not a theme on top of a CMS, but a
 properly engineered Django application built specifically for this domain.
 
-**Buy it. Clone it. Fill in your content. Ship it.**
+Jeannote is an opinionated architecture portfolio template, not a no-code site builder.
+Its core public content is managed through Django admin, but launch-critical delivery and
+media behavior still require environment configuration, and some visible copy and
+structural surfaces still require code edits.
 
-Everything needed to take a practice from no web presence to a live, professional site
-is already built and tested. You own the code outright — customise anything.
+You own the code outright. That means you can customize anything, but not everything is
+currently buyer-editable without touching code or deployment settings.
+
+## Customization Truth
+
+- `admin-managed`: brand basics, homepage closing copy, About content, services, projects,
+  project media, per-page SEO descriptions, and GA4 measurement ID.
+- `env/config-managed — required for launch`: contact delivery, SMTP settings, production
+  media storage, and standard production Django settings.
+- `env/config-managed — optional integration`: infrastructure tooling such as Sentry.
+- `code-only (simple editorial change)`: some CTA labels, page-hero copy, privacy copy,
+  footer legal text, and other fixed editorial strings.
+- `code-only (behavior-coupled / risky)`: contact form structure, metadata selection
+  logic, service slug mapping, and other logic-tied surfaces.
+- `intentionally opinionated`: core navigation, public taxonomy, route structure, and the
+  design system.
+
+The canonical source of truth is [docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md).
 
 ---
 
@@ -32,9 +52,45 @@ is already built and tested. You own the code outright — customise anything.
 - Graduates establishing an independent practice
 - Established practices replacing a dated or off-brand site
 - Developers or agencies building portfolio sites for architecture clients
+- Buyers who want an opinionated architecture portfolio template with a strong admin
+  content model, not a drag-and-drop or fully no-code builder
 
 Not a good fit if you need multi-tenant, e-commerce, or blog publishing — this is a
 focused tool for a specific purpose.
+
+---
+
+## Launch-Critical Configuration
+
+Before launch, plan for more than admin content entry. Jeannote requires environment and
+deployment configuration for:
+
+- contact-form delivery (`CONTACT_EMAIL`, SMTP backend, sender settings)
+- production media storage for uploaded images
+- production Django settings such as `DATABASE_URL`, `ALLOWED_HOSTS`, and
+  `CSRF_TRUSTED_ORIGINS`
+
+Sentry and similar tooling are optional integrations, not launch blockers.
+
+## What Still Requires Code
+
+Some buyer-visible surfaces are not yet `admin-managed`:
+
+- nav labels and footer nav labels
+- project taxonomy and filter behavior
+- contact form structure and dropdown choices
+- some CTA labels and editorial strings across home, services, projects, contact, and privacy
+- share-image precedence and metadata logic
+
+See [docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md) for the detailed matrix.
+
+> **Common assumptions to avoid**
+>
+> - Nav labels and routes are not `admin-managed`.
+> - Project categories are fixed in code.
+> - Contact form structure and dropdown choices are code-defined.
+> - Some CTA and editorial strings still require template edits.
+> - Production media and contact delivery require config, not admin content.
 
 ---
 

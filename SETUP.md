@@ -1,7 +1,10 @@
 # Buyer Setup Guide
 
 A step-by-step checklist for taking this template from fresh install to live site.
-Work through each phase in order. Everything after Phase 1 happens in the Django admin.
+Work through each phase in order. Jeannote is an opinionated architecture portfolio
+template, not a no-code site builder, so the full setup path includes admin content,
+launch-critical environment configuration, optional integrations, and some code-level
+customization.
 
 ---
 
@@ -52,6 +55,58 @@ and the tracked demo-media bundle when available.
 > — that is expected. The starter/demo content is intentionally placeholder; the
 > blockers are your checklist for Phase 7. Work through Phases 2–6 first, then
 > run the check.
+
+---
+
+## Before You Customize
+
+Before replacing demo content, read the canonical customization reference:
+[docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md).
+
+That document is the single source of truth for which surfaces are:
+
+- `admin-managed`
+- `env/config-managed — required for launch`
+- `env/config-managed — optional integration`
+- `code-only (simple editorial change)`
+- `code-only (behavior-coupled / risky)`
+- `intentionally opinionated`
+
+## Three Customization Tracks
+
+- `admin-managed`: the core public content workflow in Django admin
+- `env/config-managed — required for launch`: contact delivery, production media storage,
+  and production Django settings
+- `env/config-managed — optional integration`: tooling such as Sentry
+- `code-only (simple editorial change)` and `code-only (behavior-coupled / risky)`:
+  visible copy, assets, structure, and logic that still require code edits; see the
+  canonical matrix for the exact split
+
+> **Common assumptions to avoid**
+>
+> - Nav labels and routes are not `admin-managed`.
+> - Project categories are fixed in code.
+> - Contact form structure and dropdown choices are code-defined.
+> - Some CTA and editorial strings still require template edits.
+> - Production media and contact delivery require config, not admin content.
+
+## Launch-Critical Configuration Checklist
+
+Before launch, confirm all of the following:
+
+- public content has replaced the starter/demo content in admin
+- `CONTACT_EMAIL` and SMTP settings are configured so enquiries reach a monitored inbox
+- production media storage credentials are configured before accepting real uploads
+- production Django settings such as `DATABASE_URL`, `ALLOWED_HOSTS`, and
+  `CSRF_TRUSTED_ORIGINS` are set for the live domain
+- `make check-deploy` and `check_content_readiness` pass against the intended environment
+
+## Optional Integrations
+
+These do not block launch:
+
+- `google_analytics_id` in `Site Settings`
+- `SENTRY_DSN` and related Sentry settings
 
 ---
 
@@ -260,7 +315,8 @@ uv run python manage.py import_project_images \
 Contact form submissions are always saved to the database and visible in Admin → Contact
 Inquiries, regardless of whether email is configured. **If you skip this phase or leave
 `CONTACT_EMAIL` unset, submissions will be saved but no notification email will be sent to
-you.** Configure `CONTACT_EMAIL` before launch to enable delivery notifications.
+you.** Configure `CONTACT_EMAIL` before launch to enable delivery notifications. This is
+`env/config-managed — required for launch`.
 
 To also set up email notifications, configure an SMTP backend and set the following
 variables. There are three separate email roles in this template:
@@ -288,6 +344,26 @@ CONTACT_EMAIL=hello@yourdomain.com
 ```
 
 Verify by submitting the contact form locally and checking that you receive the email.
+
+---
+
+## Phase 6.5 — Media storage for launch
+
+Production uploads require Cloudinary-backed media storage before launch. This is
+`env/config-managed — required for launch`.
+
+Set these three variables in the production environment before accepting any uploaded
+content:
+
+```dotenv
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
+
+Without them, uploaded media in production will not be launch-ready. Run `make check-deploy`
+after setting the variables; the production checks validate that the required credentials
+are present.
 
 ---
 
@@ -328,9 +404,9 @@ Set these variables in your hosting environment (e.g. Railway → Variables). Se
 
 The minimum required production variables are: `SECRET_KEY`, `DEBUG=False`, `DJANGO_SETTINGS_MODULE=config.settings.prod`, `ALLOWED_HOSTS`, `DATABASE_URL`, `CSRF_TRUSTED_ORIGINS`, `CONTACT_EMAIL`, and the SMTP email settings.
 
-**Media storage (required for uploads):** The production settings module unconditionally routes all uploaded media through Cloudinary. Set `CLOUDINARY_URL` (format: `cloudinary://api_key:api_secret@cloud_name`) before accepting any uploaded content. Without it, all image uploads — project covers, gallery images, the About portrait — will fail silently. Run `make check-deploy` after setting variables; system check W003 confirms the credential is present.
+**Media storage (required for uploads):** The production settings module routes uploaded media through Cloudinary. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` before accepting any uploaded content. Without them, all image uploads — project covers, gallery images, and the About portrait — are not launch-ready. Run `make check-deploy` after setting variables; the production checks confirm the required credentials are present.
 
-**Truly optional:** `SENTRY_DSN` (error tracking) and `google_analytics_id` in Site Settings (analytics) can be added at any time after launch without affecting core functionality.
+**Optional integrations:** `SENTRY_DSN` (error tracking) and `google_analytics_id` in Site Settings (analytics) can be added at any time after launch without affecting core functionality.
 
 After setting variables and deploying, verify production Django settings:
 

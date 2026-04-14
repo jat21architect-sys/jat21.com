@@ -3,6 +3,10 @@
 How to stand up a working preview of this template in under five minutes —
 locally or on a public URL — so you can evaluate it before customising.
 
+Jeannote is an opinionated architecture portfolio template, not a no-code site builder.
+The demo proves the content model and admin workflow. It does not prove that every
+visible surface is editable without code or deployment configuration.
+
 ---
 
 ## Option A — Local preview (fastest)
@@ -94,13 +98,46 @@ After running `seed_demo`, the site contains:
 ### Admin
 
 - Log in at `/admin/` to see the full content management interface
-- All content visible on the site is managed entirely through admin — no template editing required
+- Core public content is managed through admin, but not every visible surface is admin-editable
+
+## What The Demo Actually Proves
+
+- the public content model is real and usable
+- the admin workflow for site identity, About, services, projects, and project media is real
+- the template renders credibly with seeded architecture-focused content
+- the site is not just a static mockup; the content and inquiry workflows are wired into Django
+
+## What The Demo Does Not Change
+
+The demo does **not** prove full no-code customization.
+
+- nav labels and routes are still fixed in code
+- project categories are fixed in code
+- contact form structure and dropdown choices are code-defined
+- some CTA and editorial strings still require template edits
+- production media and contact delivery still require config outside admin
+
+For the exact split between `admin-managed`, `env/config-managed — required for launch`,
+`env/config-managed — optional integration`, `code-only (simple editorial change)`,
+`code-only (behavior-coupled / risky)`, and `intentionally opinionated`, see
+[docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md).
+
+## Configuration Still Required For Launch
+
+Even if the demo looks complete, a real launch still requires:
+
+- `CONTACT_EMAIL` and SMTP settings so form submissions reach you
+- production media storage credentials before accepting real uploads
+- production Django settings for the target domain
+
+Optional integrations such as analytics and Sentry can be added later.
 
 ## What is demo content vs system configuration?
 
 - **Demo/example content:** practice name, About copy, services, projects, testimonials, and other starter text/media loaded by `seed_demo`
 - **System/config:** navigation structure, page layouts, contact-delivery plumbing, environment variables, and the shared styling system
 - **What to edit first:** `Site Settings`, then `About Profile`, then `Services`, then `Projects`
+- **For customization boundaries:** continue in [docs/admin/CUSTOMIZATION.md](docs/admin/CUSTOMIZATION.md)
 - **For real setup and launch:** continue in [SETUP.md](SETUP.md)
 
 ---
