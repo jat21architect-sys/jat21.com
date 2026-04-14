@@ -192,3 +192,37 @@ def check_contact_email_default(app_configs, **kwargs):
             )
         )
     return errors
+
+
+@register()
+def check_production_database_engine(app_configs, **kwargs):
+    """
+    Warn when SQLite is the active database engine in a production-like environment.
+
+    SQLite is unsuitable for production on ephemeral-filesystem platforms (Railway,
+    Heroku, Render, Fly.io): the database file resides on a non-persistent volume
+    and is wiped on every deploy, causing silent data loss.
+
+    Fix: provision a managed PostgreSQL database and set DATABASE_URL in the
+    production environment.
+    """
+    errors: list[Warning] = []
+    if settings.DEBUG:
+        return errors
+
+    db_engine = settings.DATABASES.get("default", {}).get("ENGINE", "")
+    if "sqlite" in db_engine:
+        errors.append(
+            Warning(
+                "DEBUG=False (production mode) but the database engine is SQLite.",
+                hint=(
+                    "SQLite is not suitable for production on platforms with ephemeral "
+                    "filesystems (Railway, Heroku, Render, Fly.io): the database file is "
+                    "wiped on every deploy, causing silent data loss. "
+                    "Provision a PostgreSQL database and set DATABASE_URL in your "
+                    "production environment."
+                ),
+                id="core.W008",
+            )
+        )
+    return errors

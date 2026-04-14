@@ -8,6 +8,7 @@ from django.test import override_settings
 from apps.core.checks import (
     check_contact_email_default,
     check_production_csrf_trusted_origins,
+    check_production_database_engine,
     check_production_email_backend,
     check_production_media_storage_credentials,
     check_production_sentry_dsn,
@@ -142,4 +143,35 @@ def test_check_silent_when_contact_email_is_custom():
 def test_check_contact_email_silent_in_dev_mode():
     """W006 is suppressed in dev — blank CONTACT_EMAIL is expected during local setup."""
     errors = check_contact_email_default(None)
+    assert errors == []
+
+
+# ---------------------------------------------------------------------------
+# core.W008 — SQLite active in production
+# ---------------------------------------------------------------------------
+
+_SQLITE = "django.db.backends.sqlite3"
+_POSTGRES = "django.db.backends.postgresql"
+
+
+@override_settings(DEBUG=False, DATABASES={"default": {"ENGINE": _SQLITE}})
+def test_check_warns_when_sqlite_in_production():
+    """W008 fires when DEBUG=False and SQLite is the active database engine."""
+    errors = check_production_database_engine(None)
+    assert len(errors) == 1
+    assert errors[0].id == "core.W008"
+    assert "SQLite" in errors[0].msg
+
+
+@override_settings(DEBUG=False, DATABASES={"default": {"ENGINE": _POSTGRES}})
+def test_check_silent_when_postgres_in_production():
+    """W008 is silent when a non-SQLite engine is configured."""
+    errors = check_production_database_engine(None)
+    assert errors == []
+
+
+@override_settings(DEBUG=True, DATABASES={"default": {"ENGINE": _SQLITE}})
+def test_check_sqlite_silent_in_dev_mode():
+    """W008 is suppressed in dev — SQLite is the expected local default."""
+    errors = check_production_database_engine(None)
     assert errors == []
