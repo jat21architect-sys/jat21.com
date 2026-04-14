@@ -46,7 +46,8 @@
   flex-shrink: 0;
 }
 
-.section__header-link:hover { text-decoration: underline; }
+.section__header-link:hover,
+.section__header-link:focus-visible { text-decoration: underline; }
 
 .section__label {
   font-family: var(--font-sans);

@@ -50,7 +50,7 @@
       {% endfor %}
     </ul>
     <div class="homepage-services__footer">
-      <a href="{% url 'services:list' %}" class="homepage-services__link">All Services →</a>
+      <a href="{% url 'services:list' %}" class="homepage-services__link">All Services</a>
     </div>
   </div>
 </section>
@@ -62,7 +62,7 @@
   <div class="container">
     <div class="section__header section__header--inline">
       <h2 class="section__title">Featured Projects</h2>
-      <a href="{% url 'projects:list' %}" class="section__header-link">View All →</a>
+      <a href="{% url 'projects:list' %}" class="section__header-link">All Projects</a>
     </div>
     <div class="projects-grid projects-grid--home projects-grid--home-n{{ homepage_projects_count }} hp-mob-{{ hp_mobile }} hp-tab-{{ hp_tablet }}">
       {% for project in homepage_projects %}
@@ -79,7 +79,7 @@
             <span class="project-card__meta">{{ project.get_category_display }} {% if project.year %}· {{ project.year }}{% endif %} {% if project.location %}· {{ project.location }}{% endif %}</span>
             <h3 class="project-card__title">{{ project.title }}</h3>
             <p class="project-card__desc">{{ project.short_description }}</p>
-            <span class="project-card__cta">View Project <span aria-hidden="true">→</span></span>
+            <span class="project-card__cta">View Project</span>
           </div>
         </a>
       </article>

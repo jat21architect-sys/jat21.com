@@ -47,7 +47,9 @@
 }
 
 .homepage-services__footer {
-  margin-block-start: 2rem;
+  /* 2.75rem > the 2rem item gap — distinguishes the section-level CTA
+     from inter-item spacing so it reads as an outcome link, not a separator. */
+  margin-block-start: 2.75rem;
   display: flex;
   justify-content: flex-end;
 }
@@ -60,7 +62,8 @@
   text-decoration: none;
 }
 
-.homepage-services__link:hover {
+.homepage-services__link:hover,
+.homepage-services__link:focus-visible {
   text-decoration: underline;
 }
 
@@ -115,65 +118,44 @@
   -webkit-line-clamp: 3;
 }
 
-/* Homepage cards should disclose their action at rest; hover can still enhance
-   the image/title, but it must not be the first moment the navigation cue appears. */
-.projects-grid--home .project-card__cta {
-  opacity: 1;
+/* On quiet desktop cards the CTA may stay hidden at rest, but keyboard focus
+   must disclose the same affordance that hover users get. */
+.projects-grid--home .project-card__link:focus-visible .project-card__cta {
+  opacity: 1 !important;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .projects-grid--home .project-card__info {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "meta meta"
-      "title cue"
-      "desc desc";
-    column-gap: 0.6rem;
-    row-gap: 0.5rem;
-    align-items: end;
-  }
-
-  .projects-grid--home .project-card__meta {
-    grid-area: meta;
-    margin-block-end: 0;
-  }
-
-  .projects-grid--home .project-card__title {
-    grid-area: title;
-    margin-block-end: 0;
-  }
-
-  .projects-grid--home .project-card__desc {
-    grid-area: desc;
-    margin-block-end: 0;
-  }
-
-  .projects-grid--home .project-card__cta {
-    grid-area: cue;
-    font-size: 0;
-    letter-spacing: 0;
-    line-height: 1;
-    align-self: center;
-    white-space: nowrap;
-  }
-
-  .projects-grid--home .project-card__cta > span {
-    display: inline-block;
-    font-size: 1rem;
-    line-height: 1;
-    transform: translateX(0);
-  }
-
-  .projects-grid--home .project-card__link:hover .project-card__cta > span {
-    transform: translateX(0.22rem);
-  }
+.projects-grid--home .project-card__link:focus-visible .project-card__title {
+  color: var(--accent-primary) !important;
 }
 
 
 /* ---------------------------------------------------------
    14. Homepage desktop composition
    --------------------------------------------------------- */
+@media (max-width: 639px) {
+  .home .homepage-projects .section__header--inline {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    margin-block-end: 1.75rem;
+  }
+
+  /* h2 browser-default margin-block-end (≈0.83em) was making the gap
+     above the CTA larger than the gap below it, so the CTA visually
+     attached to card 1 rather than to the section title. Reset it here
+     so the title + CTA read as a single grouped header unit. */
+  .home .homepage-projects .section__header--inline .section__title {
+    margin-block-end: 0;
+  }
+
+  .home .homepage-projects .section__header-link {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+}
+
 @media (min-width: 960px) {
   .home .homepage-projects {
     padding-block: 5.5rem 4.75rem;

@@ -357,8 +357,7 @@ def test_homepage_uses_featured_projects_strip_and_updated_cta(client, site_sett
 
     assert response.status_code == 200
     assert b"Featured Projects" in response.content
-    assert b"View All" in response.content
-    assert b"All Projects" not in response.content
+    assert b"All Projects" in response.content
     assert b"Housing, civic, and workplace projects from the studio" not in response.content
     assert b"More Work" not in response.content
     assert b"Design Services" not in response.content
