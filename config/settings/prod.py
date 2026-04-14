@@ -13,7 +13,7 @@ from .base import env  # explicit re-import for clarity
 
 DEBUG = False
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # must be set in environment
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS") + ["healthcheck.railway.app"]  # must be set in environment
 SENTRY_DSN = env.str("SENTRY_DSN", default="")
 
 # ---------------------------------------------------------------------------
