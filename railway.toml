@@ -1,9 +1,10 @@
 # Railway deployment configuration for jat21.com
 # https://docs.railway.com/reference/config-as-code
 #
-# Build:      Railpack — explicitly forced so Railway ignores the repo's
-#             dev-only Dockerfile. Installs from requirements.txt, then bakes
-#             static files into the image via buildCommand.
+# Build:      Railpack — Dockerfile renamed to Dockerfile.dev so Railway cannot
+#             auto-detect it. builder = "RAILPACK" is explicit for clarity.
+#             Installs from requirements.txt, then bakes static files into the
+#             image via buildCommand.
 # Pre-deploy: migrations run once before the new container goes live.
 # Start:      gunicorn only — no collectstatic or migrate at boot.
 #
