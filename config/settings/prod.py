@@ -41,15 +41,23 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # pyright: 
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 # ---------------------------------------------------------------------------
-# Media storage — Cloudinary
+# Media + static storage
 # ---------------------------------------------------------------------------
-# Overrides the local-filesystem default from base.py.
-# Requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
-# to be set in the environment.
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-# cloudinary_storage uses MEDIA_URL as a prefix when building .url() output.
-# Setting it to "" lets the library generate full res.cloudinary.com URLs.
-MEDIA_URL = ""
+# Django 5.x requires STORAGES dict (DEFAULT_FILE_STORAGE is ignored).
+# Staticfiles: WhiteNoise (same as base.py STATICFILES_STORAGE).
+# Default (media): Cloudinary — requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY,
+# CLOUDINARY_API_SECRET to be set in the environment.
+# MEDIA_URL is intentionally inherited from base.py ("/media/") so that
+# cloudinary_storage uses it as the folder prefix when building public_ids,
+# matching the stable IDs uploaded via the migration script.
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Error visibility — Sentry (optional but strongly recommended)
