@@ -47,6 +47,9 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 # Requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 # to be set in the environment.
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# cloudinary_storage uses MEDIA_URL as a prefix when building .url() output.
+# Setting it to "" lets the library generate full res.cloudinary.com URLs.
+MEDIA_URL = ""
 
 # ---------------------------------------------------------------------------
 # Error visibility — Sentry (optional but strongly recommended)

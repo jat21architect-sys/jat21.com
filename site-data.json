@@ -1,0 +1,808 @@
+[
+{
+  "model": "core.sitesettings",
+  "pk": 1,
+  "fields": {
+    "site_name": "Demo Architecture Studio",
+    "tagline": "Architectural design shaped by context, clarity, and identity.",
+    "hero_label": "",
+    "hero_compact": false,
+    "nav_name": "",
+    "logo": "",
+    "contact_email": "hello@demo-architecture.example",
+    "phone": "",
+    "location": "Reykjavik, Iceland",
+    "address": "",
+    "contact_response_time": "two working days",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "facebook_url": "",
+    "behance_url": "",
+    "issuu_url": "",
+    "og_image": "site/site-og.jpg",
+    "meta_description": "An architecture practice whose work combines spatial clarity, contextual sensitivity, and thoughtful design to create places with identity and purpose.",
+    "about_meta_description": "About Demo Architecture Studio, the practice approach, experience, and professional profile.",
+    "services_meta_description": "Architectural services for housing, civic, and workplace projects.",
+    "projects_meta_description": "Selected housing, civic, and workplace work by Rossi Meyer Studio.",
+    "contact_meta_description": "Start a conversation with Rossi Meyer Studio about a project or early-stage enquiry.",
+    "google_analytics_id": "",
+    "homepage_closing_text": "Ready to discuss a project? Bring a brief, a question, or an early idea.",
+    "homepage_projects_mobile_count": 3,
+    "homepage_projects_tablet_count": 4,
+    "homepage_projects_desktop_count": 6
+  }
+},
+{
+  "model": "core.aboutprofile",
+  "pk": 1,
+  "fields": {
+    "identity_mode": "studio",
+    "principal_name": "",
+    "principal_title": "",
+    "practice_structure": "Independent architecture studio",
+    "one_line_practice_description": "Architecture shaped by context, use, and urban climate.",
+    "practice_summary": "Demo Architecture Studio is a practice working across housing, civic buildings, and workplace projects in northern urban settings. The work is defined by clear massing, durable materials, careful daylighting, and legible circulation.\n\nThe studio works on projects that sit between everyday infrastructure and long-term city-making: housing blocks, public buildings, workplaces, and mixed-use urban sites. Rather than treating architecture as image-making, the emphasis is on performance, clarity, and how buildings hold up over time.",
+    "project_leadership": "Projects are led by a compact studio team, with specialist consultants involved as needed for structure, building services, and planning coordination.",
+    "professional_standing": "Registered architectural practice",
+    "education": "Bachelor of Architecture (Professional)\nMaster of Architecture",
+    "supporting_facts": "Housing, civic, and workplace project experience\nPlanning, technical design, and consultant coordination\nNew-build and urban infill commissions",
+    "approach": "Buildings in northern settings need to manage weather, frame daylight carefully, and make circulation feel intuitive in difficult conditions.\n\nThe work focuses on fit rather than spectacle: how a building sits in context, how structure and envelope reinforce one another, and how public or shared spaces are made legible through proportion and movement.",
+    "experience_years": 12,
+    "closing_invitation": "Get in touch with a short outline of your project, whether the brief is developed or still taking shape.",
+    "portrait_mode": "text_only",
+    "portrait": "about/portrait_gkEOXXC.jpg",
+    "cv_file": ""
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 9,
+  "fields": {
+    "title": "Coastline Civic Centre",
+    "slug": "coastline-civic-centre",
+    "short_description": "A public building on an exposed waterfront site, organised around clear circulation, sheltered thresholds, and durable civic presence.",
+    "category": "civic",
+    "status": "completed",
+    "location": "Coastal City",
+    "year": 2023,
+    "client": "Coastline Municipal Council",
+    "area": "2 150 m²",
+    "services_provided": "Public brief development\nConcept design\nTechnical package\nConsultant coordination",
+    "overview": "Coastline Civic Centre was commissioned as a compact public building serving community events, reading rooms, and neighbourhood services on a prominent coastal site. The project combines a durable outer shell with a calm internal circulation sequence, giving the building a public identity that feels welcoming rather than ceremonial.",
+    "challenge": "The site was highly exposed to wind and shifting weather, and the brief combined different public uses that needed to coexist without the building feeling over-programmed. The project also needed to read clearly from a distance in a sparse waterfront setting.",
+    "concept": "The building is organised around a sheltered public threshold and a clear internal route that links the main civic rooms. Rather than relying on formal complexity, the project uses proportion, depth, and daylight to make movement through the building intuitive.",
+    "process": "Design development focused on refining the relationship between enclosure, public access, and the long elevations facing the coast. The final scheme was coordinated closely with engineers and specialist consultants to simplify the envelope and keep the interior sequence legible.",
+    "outcome": "The completed building functions as a stable civic anchor: visible from the waterfront, easy to enter, and flexible enough to support different kinds of public use across the week.",
+    "cover_image": "projects/covers/coastline-civic-centre.jpg",
+    "featured": true,
+    "order": 1,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-25T00:44:33.030Z",
+    "updated_at": "2026-04-05T19:03:29.760Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 10,
+  "fields": {
+    "title": "Harbour Court Apartments",
+    "slug": "harbour-court-apartments",
+    "short_description": "A multi-unit housing project that balances exposed urban-edge conditions with clear circulation, durable materials, and sheltered shared space.",
+    "category": "housing",
+    "status": "completed",
+    "location": "Harbour District",
+    "year": 2024,
+    "client": "North Quay Housing",
+    "area": "4 200 m²",
+    "services_provided": "Massing studies\nPlanning package\nDeveloped design\nTechnical coordination",
+    "overview": "Harbour Court Apartments is a housing project on a newly developed urban-edge site close to the waterfront. The brief called for robust apartment buildings with clear access, practical layouts, and a strong street presence without resorting to a singular formal gesture.",
+    "challenge": "The exposed site required a durable envelope and carefully considered entrances, while the housing layouts needed to feel generous despite tight efficiency targets. The project also had to contribute positively to a district still taking shape.",
+    "concept": "The design is based on a simple, legible building form with repeated housing bays, deep openings, and sheltered shared edges. Material decisions were kept restrained so the building could feel settled within a changing urban context.",
+    "process": "The scheme developed through iterative massing and facade studies focused on daylight, wind exposure, and how residents would move from street to stair to home. Coordination with consultants concentrated on making the envelope robust without adding unnecessary detail or maintenance risk.",
+    "outcome": "The completed apartments provide efficient housing within a calm and durable shell. The building has helped establish a stronger residential edge to the district while maintaining a clear, understated architectural language.",
+    "cover_image": "projects/covers/harbour-court-apartments.jpg",
+    "featured": true,
+    "order": 3,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-25T00:44:33.032Z",
+    "updated_at": "2026-04-05T19:03:29.761Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 11,
+  "fields": {
+    "title": "Harbour Glass Offices",
+    "slug": "harbour-glass-offices",
+    "short_description": "A contemporary workplace building designed around clear frontage, efficient floorplates, and a restrained commercial identity.",
+    "category": "workplace",
+    "status": "completed",
+    "location": "Harbour District",
+    "year": 2022,
+    "client": "Harbour Quarter Developments",
+    "area": "2 800 m²",
+    "services_provided": "Concept design\nFacade development\nTechnical documentation\nConsultant coordination",
+    "overview": "Harbour Glass Offices is a mid-scale workplace project in a new commercial quarter close to the harbour. The brief called for a building that could project a clear professional identity while remaining efficient, adaptable, and durable in an exposed setting.",
+    "challenge": "The client needed a building with commercial presence but not excessive branding. The facade had to carry the project's identity while supporting practical floorplates, daylight access, and straightforward servicing.",
+    "concept": "The project uses a simple glazed volume with a disciplined structural rhythm and a clear ground-level threshold. Rather than relying on elaborate formal moves, the design focuses on proportion, transparency, and the relationship between the building and the street.",
+    "process": "Design development concentrated on facade studies, access, and how the building would read within the wider commercial district. Consultant coordination focused on keeping the external expression concise while ensuring the shell could support different tenant layouts.",
+    "outcome": "The resulting building feels precise and commercially legible without becoming generic. Its strongest quality is the clarity with which structure, frontage, and use align.",
+    "cover_image": "projects/covers/harbour-glass-offices.jpg",
+    "featured": true,
+    "order": 5,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-25T00:44:33.033Z",
+    "updated_at": "2026-04-05T19:03:29.762Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 12,
+  "fields": {
+    "title": "Ridgeline Housing",
+    "slug": "ridgeline-housing",
+    "short_description": "Medium-density housing on an exposed hillside — four blocks stepping with the topography, oriented to maximise solar gain while managing weather exposure and communal access.",
+    "category": "housing",
+    "status": "completed",
+    "location": "Hillside District",
+    "year": 2023,
+    "client": "Ridgeline Housing Cooperative",
+    "area": "1 650 m²",
+    "services_provided": "Housing strategy\nDeveloped design\nEnvelope coordination\nConstruction information",
+    "overview": "Four housing blocks arranged along a ridge were commissioned by a housing association seeking a robust, low-maintenance solution for a difficult site. The topography — a long south-facing slope with significant wind exposure — defined both the opportunity and the constraint.",
+    "challenge": "The site's orientation offered good solar access but also severe weather exposure. The challenge was to create housing that felt sheltered and domestic while meeting the passive solar and ventilation requirements of the brief.",
+    "concept": "Each block steps down the slope in section, creating a roofscape that breaks wind at the communal path level while allowing maximum solar penetration to south-facing living rooms. Shared access is organised along the upper contour, keeping vehicles and pedestrians clearly separated.",
+    "process": "The design was refined through studies of approach, shared access, facade rhythm, and how the building would be read across the site at different levels. Structural and envelope coordination centred on achieving robustness with a limited material palette.",
+    "outcome": "The development was delivered within programme and has performed well in post-occupancy monitoring. Residents report that the solar design makes the flats feel significantly warmer than comparable housing in the area, reducing heating demand noticeably in the first winter of occupancy.",
+    "cover_image": "projects/covers/ridgeline-housing.jpg",
+    "featured": true,
+    "order": 4,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-25T00:44:33.034Z",
+    "updated_at": "2026-04-05T19:03:29.761Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 13,
+  "fields": {
+    "title": "House on the Hillside",
+    "slug": "house-on-the-hillside",
+    "short_description": "A private residence that uses the natural topography of its sloping site to create a sequence of connected levels, each framing a distinct view of the landscape.",
+    "category": "housing",
+    "status": "completed",
+    "location": "Hillside Region",
+    "year": 2023,
+    "client": "",
+    "area": "320 m²",
+    "services_provided": "",
+    "overview": "Set on a steeply sloping site at the edge of a small town, this private house uses the natural fall of the land to organise a sequence of living levels — each with its own relationship to the landscape and light. The brief called for a family home that would feel rooted in its place, generous without excess, and quietly contemporary in character.",
+    "challenge": "The site presented both an opportunity and a constraint. The slope made conventional construction expensive, but it also offered the possibility of layering the programme vertically — allowing each space to find its own horizon. The challenge was to use this sectional complexity architecturally rather than treating it as a problem to overcome.",
+    "concept": "The design concept resolves around a single spine wall that runs parallel to the contours and anchors the building to the hillside. From this wall, a series of platforms step down the slope — living above, sleeping below, landscape everywhere. Each level is connected by a continuous internal stair that also functions as the organisational core of the house.",
+    "process": "",
+    "outcome": "The completed house feels both specific to its site and quietly universal in its spatial logic. The clients describe it as a home that feels larger than its footprint because every room opens directly to the outside.",
+    "cover_image": "projects/covers/house-on-the-hillside_FzXIwTb.jpg",
+    "featured": false,
+    "order": 9,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.132Z",
+    "updated_at": "2026-04-05T19:03:29.759Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 14,
+  "fields": {
+    "title": "Community Library Pavilion",
+    "slug": "community-library-pavilion",
+    "short_description": "A lightweight civic pavilion housing a branch library, reading rooms, and flexible community space — designed to be both a landmark and a welcoming public threshold.",
+    "category": "civic",
+    "status": "completed",
+    "location": "Coastal City",
+    "year": 2022,
+    "client": "",
+    "area": "480 m²",
+    "services_provided": "",
+    "overview": "This community library pavilion was commissioned by a local municipality as part of a small civic precinct development. The brief asked for a building that would serve the neighbourhood as a library, study space, and informal gathering place — one that would feel welcoming even to those who had never entered a library before.",
+    "challenge": "Public libraries often fail because they are over-designed as monuments or under-designed as pragmatic sheds. The challenge here was to make a building that was distinct enough to be a destination while remaining genuinely open and non-intimidating — a threshold between the street and a place of quiet.",
+    "concept": "The pavilion is organised around a central covered courtyard — an in-between space that is neither inside nor outside — from which all other rooms are reached. The roof structure is a lightweight timber frame that filters light without enclosing it. The building makes no grand gestures; its civic presence comes from its quality of light, material, and the generosity of its threshold.",
+    "process": "",
+    "outcome": "The pavilion has become a well-used public space. Usage data from the first year showed significantly higher visitor numbers than comparable libraries in the region. The courtyard has been informally adopted as an after-school gathering space.",
+    "cover_image": "projects/covers/community-library-pavilion.jpg",
+    "featured": true,
+    "order": 2,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.134Z",
+    "updated_at": "2026-04-05T19:03:29.760Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 15,
+  "fields": {
+    "title": "Urban Apartment Retrofit",
+    "slug": "urban-apartment-retrofit",
+    "short_description": "The interior transformation of a 1970s apartment block unit — stripping back decades of poor alterations to reveal strong bones and reorganise the plan for contemporary urban living.",
+    "category": "housing",
+    "status": "completed",
+    "location": "City Centre",
+    "year": 2024,
+    "client": "",
+    "area": "95 m²",
+    "services_provided": "",
+    "overview": "A compact city apartment — the kind that had been subdivided and re-divided over five decades — was stripped back to its structure and completely reimagined. The starting point was a question: what is actually here, and what should be here?",
+    "challenge": "Years of minor alterations had obscured the apartment's original logic and left it a sequence of poorly proportioned, poorly lit rooms. The challenge was to recover the spatial potential within a fixed building envelope — and to do so on a limited renovation budget.",
+    "concept": "The design consolidates circulation to free up living, creates a contained kitchen core that frees the main space entirely, and uses a consistent material language — white plaster, dark-stained timber, exposed concrete — to give the apartment coherence and a sense of deliberateness it had never had.",
+    "process": "",
+    "outcome": "The apartment now reads as a confident, well-proportioned urban dwelling. The living area, which previously felt fragmented, now functions as a single continuous room with direct daylight from two aspects.",
+    "cover_image": "projects/covers/urban-apartment-retrofit.jpg",
+    "featured": false,
+    "order": 7,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.137Z",
+    "updated_at": "2026-04-05T19:03:29.762Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 16,
+  "fields": {
+    "title": "Commercial Office Conversion",
+    "slug": "commercial-office-conversion",
+    "short_description": "The transformation of a decommissioned warehouse into a flexible co-working campus — preserving industrial character while introducing contemporary amenity and environmental performance.",
+    "category": "workplace",
+    "status": "completed",
+    "location": "City District",
+    "year": 2023,
+    "client": "Undisclosed Property Developer",
+    "area": "1 850 m²",
+    "services_provided": "",
+    "overview": "A former textile warehouse in the inner city was acquired for conversion into a mixed-tenancy workspace. The brief asked for a building that would appeal to creative businesses and technology companies while generating a viable return for the developer across a range of unit sizes.",
+    "challenge": "The warehouse structure — heavy masonry walls, timber roof frames, concrete floors — was both an asset and a constraint. The existing grid did not map neatly onto contemporary workspace metrics, and the building's deep plan made natural daylighting across all zones a genuine challenge.",
+    "concept": "The design introduces a central atrium carved from the building's footprint — a void that brings daylight to the plan's interior and becomes the social spine of the building. Tenancies are arranged as a series of gallery-style units around this atrium, each with a mezzanine level that doubles usable floor area without increasing the building's footprint or height.",
+    "process": "The project proceeded in two phases: shell-and-core works completed under a single contract, with fitout elements designed and delivered tenant-by-tenant as the building filled. This phased approach allowed the design to respond to occupants' specific needs while maintaining the coherence of the overall architectural language.",
+    "outcome": "The building reached full occupancy within fourteen months of completion — faster than comparable conversions in the area. The atrium has become an informal event space used regularly by tenants and has been featured in regional architecture and property media.",
+    "cover_image": "projects/covers/commercial-office-conversion_GOstozT.jpg",
+    "featured": false,
+    "order": 10,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.139Z",
+    "updated_at": "2026-04-05T19:03:29.763Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 17,
+  "fields": {
+    "title": "Civic Waterfront Square",
+    "slug": "civic-waterfront-square",
+    "short_description": "A reclaimed post-industrial waterfront remade as a public square — hard-landscaped, weather-ready, and designed to be used year-round by the full range of the city's population.",
+    "category": "civic",
+    "status": "completed",
+    "location": "Harbour District",
+    "year": 2022,
+    "client": "",
+    "area": "3 200 m²",
+    "services_provided": "",
+    "overview": "A redundant cargo terminal apron was handed back to the city for public use. The brief was open: create a square that would work for daily life, not just events — somewhere residents would actually cross, sit in, and return to.",
+    "challenge": "Post-industrial waterfronts often become windswept trophy spaces — impressive in photographs and empty in practice. The challenge was to design a public realm that acknowledged the scale and exposure of the site while creating sheltered pockets of use that would function in all seasons.",
+    "concept": "The square is organised around a series of low stone walls that run parallel to the water's edge — defining seating zones, breaking the wind, and providing informal edges for gathering. A single covered canopy at the inland end marks the entrance from the city and provides weather protection for the market stalls and events programme.",
+    "process": "",
+    "outcome": "Within the first summer, the square was used continuously from morning to late evening. The low walls have become informal seating, skateboard features, and lunchtime berths in equal measure. The covered canopy hosts a weekly market and has been adopted for informal performances.",
+    "cover_image": "projects/covers/civic-waterfront-square.jpg",
+    "featured": true,
+    "order": 6,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.142Z",
+    "updated_at": "2026-04-05T19:03:29.763Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 18,
+  "fields": {
+    "title": "Housing Block, North Quarter",
+    "slug": "housing-block-north-quarter",
+    "short_description": "A mid-rise housing block on a tight urban infill site — compact flats arranged around a shared courtyard, with robust envelope design and clear wayfinding throughout.",
+    "category": "housing",
+    "status": "completed",
+    "location": "North Quarter",
+    "year": 2024,
+    "client": "",
+    "area": "2 100 m²",
+    "services_provided": "",
+    "overview": "A corner site in a dense residential neighbourhood was redeveloped as a thirty-flat housing block for a housing association. The brief required a mix of one- and two-bedroom flats, shared amenity space, and robust materials suited to a high-traffic urban context.",
+    "challenge": "The site geometry — a shallow corner plot with a significant level change — made it difficult to achieve good daylighting across all units while meeting the density required by the brief. The design had to resolve both the planning massing constraints and the internal organisation simultaneously.",
+    "concept": "The block steps down with the site, creating a roofscape that reduces bulk in key views while allowing south-facing terraces for upper-floor units. A shared courtyard at ground level is accessed from two points on the street grid, giving the block legible thresholds without requiring a staffed entrance.",
+    "process": "",
+    "outcome": "The block achieved planning consent on first submission and was delivered within programme. Post-occupancy feedback from the housing association noted that residents valued the courtyard as a key amenity — particularly families with children and older residents.",
+    "cover_image": "projects/covers/housing-block-north-quarter.jpg",
+    "featured": true,
+    "order": 7,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.145Z",
+    "updated_at": "2026-04-05T19:03:29.764Z"
+  }
+},
+{
+  "model": "projects.project",
+  "pk": 19,
+  "fields": {
+    "title": "School Extension, Timber Frame",
+    "slug": "school-extension-timber-frame",
+    "short_description": "A single-storey timber-frame extension to a primary school — adding four classrooms, a shared learning corridor, and direct access to the school garden.",
+    "category": "civic",
+    "status": "completed",
+    "location": "Suburban District",
+    "year": 2021,
+    "client": "",
+    "area": "420 m²",
+    "services_provided": "",
+    "overview": "A primary school with insufficient classroom capacity required a permanent extension to replace long-standing temporary buildings. The brief asked for four new classrooms, improved circulation between the existing school and the extension, and better access to the school's outdoor spaces.",
+    "challenge": "The site was constrained on three sides by the existing school building, outdoor play areas, and a protected tree line. The extension had to fit within these constraints while maintaining fire separation from the main building and meeting current educational space standards.",
+    "concept": "A single-storey pavilion organised as a shared learning corridor with classrooms on the south side and a continuous covered outdoor teaching terrace linking to the garden. The timber structure is left exposed internally, providing a warm, legible ceiling that contributes to the acoustic performance of the rooms.",
+    "process": "",
+    "outcome": "The extension opened ahead of the autumn term and was adopted immediately as the school's preferred teaching space. The outdoor terrace is used daily for science lessons and informal outdoor learning in all but the coldest weather.",
+    "cover_image": "projects/covers/school-extension-timber-frame.jpg",
+    "featured": false,
+    "order": 8,
+    "seo_title": "",
+    "seo_description": "",
+    "created_at": "2026-03-29T02:59:42.148Z",
+    "updated_at": "2026-04-05T19:03:29.765Z"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 7,
+  "fields": {
+    "project": 10,
+    "image": "projects/gallery/01_0JVkEFw.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 1,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 8,
+  "fields": {
+    "project": 10,
+    "image": "projects/gallery/02_w4NMHIf.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 2,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 9,
+  "fields": {
+    "project": 10,
+    "image": "projects/gallery/03_LmuVW3R.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 3,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 10,
+  "fields": {
+    "project": 10,
+    "image": "projects/gallery/04.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 4,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 11,
+  "fields": {
+    "project": 10,
+    "image": "projects/gallery/05.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 5,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 12,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/01.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 1,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 13,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/02_DsOUjHq.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 2,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 14,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/03_hTELxGO.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 3,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 15,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/04_zmg5BmQ.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 4,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 16,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/05_s114UCR.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 5,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 17,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/06.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 6,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 18,
+  "fields": {
+    "project": 12,
+    "image": "projects/gallery/07.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 7,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 19,
+  "fields": {
+    "project": 9,
+    "image": "projects/gallery/01_6U06fP1.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 1,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 20,
+  "fields": {
+    "project": 9,
+    "image": "projects/gallery/02_A7UlgZJ.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 2,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 21,
+  "fields": {
+    "project": 9,
+    "image": "projects/gallery/03_5h2qJgF.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 3,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 22,
+  "fields": {
+    "project": 9,
+    "image": "projects/gallery/04_BLUfHLL.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 4,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 23,
+  "fields": {
+    "project": 13,
+    "image": "projects/gallery/house-on-the-hillside/01.jpg",
+    "caption": "",
+    "alt_text": "House on the Hillside",
+    "order": 1,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 24,
+  "fields": {
+    "project": 13,
+    "image": "projects/gallery/house-on-the-hillside/02.jpg",
+    "caption": "",
+    "alt_text": "House on the Hillside",
+    "order": 2,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 25,
+  "fields": {
+    "project": 13,
+    "image": "projects/gallery/house-on-the-hillside/03.jpg",
+    "caption": "",
+    "alt_text": "House on the Hillside",
+    "order": 3,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 26,
+  "fields": {
+    "project": 13,
+    "image": "projects/gallery/house-on-the-hillside/04.jpg",
+    "caption": "",
+    "alt_text": "House on the Hillside",
+    "order": 4,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.projectimage",
+  "pk": 27,
+  "fields": {
+    "project": 13,
+    "image": "projects/gallery/05_QoY08Rt.jpg",
+    "caption": "",
+    "alt_text": "",
+    "order": 5,
+    "image_type": "gallery"
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 4,
+  "fields": {
+    "project": 13,
+    "name": "Elena & Marco R.",
+    "role": "Private Clients",
+    "company": "",
+    "quote": "Working with the studio was the best decision we made on this project. They listened carefully from the very first meeting, never tried to impose a signature style, and kept us informed at every stage. The house exceeded what we thought was possible on our budget and timeline.",
+    "order": 1,
+    "active": true
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 5,
+  "fields": {
+    "project": 14,
+    "name": "Ines Navarro",
+    "role": "Municipal Library Director",
+    "company": "City District Municipality",
+    "quote": "The pavilion has transformed how the community uses the library. We were worried a striking building might feel intimidating — the opposite happened. The quality of the space seems to put people at ease. Usage numbers in the first year were double our projections.",
+    "order": 2,
+    "active": true
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 6,
+  "fields": {
+    "project": 16,
+    "name": "Clare Brennan",
+    "role": "Director of Acquisitions",
+    "company": "Urban Property Group",
+    "quote": "The studio delivered a technically complex project on time and within budget, which alone would make them stand out. But the commercial outcome — full occupancy inside fourteen months — reflects design quality as much as market conditions. We will work with them again.",
+    "order": 3,
+    "active": true
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 7,
+  "fields": {
+    "project": 13,
+    "name": "Sarah & Mark L.",
+    "role": "Private Clients",
+    "company": "",
+    "quote": "Working with the studio was the best decision we made on this project. They listened carefully from the very first meeting, never tried to impose a signature style, and kept us informed at every stage. The house exceeded what we thought was possible on our budget and timeline.",
+    "order": 1,
+    "active": true
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 8,
+  "fields": {
+    "project": 14,
+    "name": "A. Navarro",
+    "role": "Municipal Library Director",
+    "company": "City District Municipality",
+    "quote": "The pavilion has transformed how the community uses the library. We were worried a striking building might feel intimidating — the opposite happened. The quality of the space seems to put people at ease. Usage numbers in the first year were double our projections.",
+    "order": 2,
+    "active": true
+  }
+},
+{
+  "model": "projects.testimonial",
+  "pk": 9,
+  "fields": {
+    "project": 16,
+    "name": "C. Brennan",
+    "role": "Director of Acquisitions",
+    "company": "Urban Property Group",
+    "quote": "The studio delivered a technically complex project on time and within budget, which alone would make them stand out. But the commercial outcome — full occupancy inside fourteen months — reflects design quality as much as market conditions. We will work with them again.",
+    "order": 3,
+    "active": true
+  }
+},
+{
+  "model": "contact.contactinquiry",
+  "pk": 1,
+  "fields": {
+    "name": "Alice Architect",
+    "email": "alice@example.com",
+    "company": "",
+    "project_type": "Residential Design",
+    "location": "",
+    "budget_range": "",
+    "timeline": "",
+    "message": "I would like to discuss a residential project in more detail.",
+    "created_at": "2026-03-26T18:24:17.770Z",
+    "status": "new",
+    "notes": ""
+  }
+},
+{
+  "model": "contact.contactinquiry",
+  "pk": 2,
+  "fields": {
+    "name": "Fast User",
+    "email": "fast@example.com",
+    "company": "",
+    "project_type": "",
+    "location": "",
+    "budget_range": "",
+    "timeline": "",
+    "message": "I would like to discuss a project and move fairly quickly on next steps.",
+    "created_at": "2026-03-26T18:25:12.717Z",
+    "status": "new",
+    "notes": ""
+  }
+},
+{
+  "model": "contact.contactinquiry",
+  "pk": 3,
+  "fields": {
+    "name": "Alice Architect",
+    "email": "alice@example.com",
+    "company": "",
+    "project_type": "Housing",
+    "location": "",
+    "budget_range": "",
+    "timeline": "",
+    "message": "I would like to discuss a housing project in more detail.",
+    "created_at": "2026-03-26T18:38:01.689Z",
+    "status": "new",
+    "notes": ""
+  }
+},
+{
+  "model": "contact.contactinquiry",
+  "pk": 4,
+  "fields": {
+    "name": "Alice Architect",
+    "email": "alice@example.com",
+    "company": "",
+    "project_type": "",
+    "location": "",
+    "budget_range": "",
+    "timeline": "",
+    "message": "I would like to discuss a project in more detail and understand the next step.",
+    "created_at": "2026-03-26T22:32:49.491Z",
+    "status": "new",
+    "notes": ""
+  }
+},
+{
+  "model": "services.service",
+  "pk": 19,
+  "fields": {
+    "title": "Housing",
+    "slug": "housing",
+    "summary": "Apartment buildings, housing blocks, and residential projects designed for clear planning, durable use, and long-term liveability.",
+    "description": "",
+    "who_for": "Developers, housing associations, institutions, and private clients delivering apartment buildings, infill housing, or residential work.",
+    "value_proposition": "Clear housing design that balances site conditions, planning constraints, and day-to-day use without overstatement.",
+    "deliverables": "Site and massing studies\nPlanning package\nDeveloped design\nTechnical coordination\nConstruction information",
+    "order": 1,
+    "active": true
+  }
+},
+{
+  "model": "services.service",
+  "pk": 20,
+  "fields": {
+    "title": "Civic",
+    "slug": "civic",
+    "summary": "Public-facing buildings shaped by threshold, circulation, durability, and a clear relationship between civic use and context.",
+    "description": "",
+    "who_for": "Municipal bodies, trusts, cultural organisations, and public-sector clients commissioning libraries, community facilities, and civic buildings.",
+    "value_proposition": "Buildings that support everyday public use with clarity, resilience, and a calm architectural presence.",
+    "deliverables": "Brief development\nConcept design\nPublic consultation support\nTechnical package\nConsultant coordination",
+    "order": 2,
+    "active": true
+  }
+},
+{
+  "model": "services.service",
+  "pk": 21,
+  "fields": {
+    "title": "Workplace",
+    "slug": "workplace",
+    "summary": "Workplace projects where frontage, efficiency, envelope performance, and spatial legibility need to work together.",
+    "description": "",
+    "who_for": "Commercial clients and development teams delivering office buildings, service buildings, or mixed-use workplace environments.",
+    "value_proposition": "A design process that keeps the building useful, robust, and recognisable without forcing an unnecessary brand layer onto the architecture.",
+    "deliverables": "Feasibility and frontage studies\nDeveloped design\nEnvelope coordination\nTechnical documentation",
+    "order": 3,
+    "active": true
+  }
+}
+]
