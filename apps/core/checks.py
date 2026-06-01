@@ -16,6 +16,7 @@ _DEV_EMAIL_BACKENDS = {
 }
 _SMTP_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 _CLOUDINARY_STORAGE_BACKEND = "cloudinary_storage.storage.MediaCloudinaryStorage"
+_S3_STORAGE_BACKEND = "storages.backends.s3.S3Storage"
 
 
 @register()
@@ -110,40 +111,76 @@ def check_production_csrf_trusted_origins(app_configs, **kwargs):
 
 @register()
 def check_production_media_storage_credentials(app_configs, **kwargs):
-    """Warn when production media storage is enabled without Cloudinary credentials."""
+    """Warn when production media storage is enabled without required credentials."""
     errors: list[Warning] = []
     if settings.DEBUG:
         return errors
 
+    media_storage_backend = getattr(settings, "MEDIA_STORAGE_BACKEND", "")
     storages = getattr(settings, "STORAGES", {})
     storage_backend = storages.get("default", {}).get(
         "BACKEND",
         getattr(settings, "DEFAULT_FILE_STORAGE", ""),
     )
-    if storage_backend != _CLOUDINARY_STORAGE_BACKEND:
+
+    if storage_backend == _CLOUDINARY_STORAGE_BACKEND:
+        cloudinary_settings = getattr(settings, "CLOUDINARY_STORAGE", {})
+        missing = [
+            env_name
+            for env_name, key in (
+                ("CLOUDINARY_CLOUD_NAME", "CLOUD_NAME"),
+                ("CLOUDINARY_API_KEY", "API_KEY"),
+                ("CLOUDINARY_API_SECRET", "API_SECRET"),
+            )
+            if not cloudinary_settings.get(key)
+        ]
+        if missing:
+            errors.append(
+                Warning(
+                    "Production media storage is set to Cloudinary, but Cloudinary credentials are missing: "
+                    + ", ".join(missing),
+                    hint=(
+                        "Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and "
+                        "CLOUDINARY_API_SECRET in the production environment. Without them, "
+                        "admin-managed uploads will fail at runtime."
+                    ),
+                    id="core.W003",
+                )
+            )
         return errors
 
-    cloudinary_settings = getattr(settings, "CLOUDINARY_STORAGE", {})
-    missing = [
-        env_name
-        for env_name, key in (
-            ("CLOUDINARY_CLOUD_NAME", "CLOUD_NAME"),
-            ("CLOUDINARY_API_KEY", "API_KEY"),
-            ("CLOUDINARY_API_SECRET", "API_SECRET"),
-        )
-        if not cloudinary_settings.get(key)
-    ]
-    if missing:
+    if storage_backend == _S3_STORAGE_BACKEND:
+        missing = [
+            env_name
+            for env_name, setting_name in (
+                ("AWS_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID"),
+                ("AWS_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"),
+                ("AWS_STORAGE_BUCKET_NAME", "AWS_STORAGE_BUCKET_NAME"),
+                ("AWS_S3_ENDPOINT_URL", "AWS_S3_ENDPOINT_URL"),
+            )
+            if not getattr(settings, setting_name, "")
+        ]
+        if missing:
+            errors.append(
+                Warning(
+                    "Production media storage is set to S3-compatible storage, but required "
+                    "credentials/settings are missing: " + ", ".join(missing),
+                    hint=(
+                        "For Cloudflare R2, set MEDIA_STORAGE_BACKEND=s3 plus "
+                        "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME, "
+                        "AWS_S3_ENDPOINT_URL, and AWS_S3_REGION_NAME in production."
+                    ),
+                    id="core.W009",
+                )
+            )
+        return errors
+
+    if media_storage_backend not in {"cloudinary", "s3", "r2", "local"}:
         errors.append(
             Warning(
-                "Production media storage is set to Cloudinary, but Cloudinary credentials are missing: "
-                + ", ".join(missing),
-                hint=(
-                    "Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and "
-                    "CLOUDINARY_API_SECRET in the production environment. Without them, "
-                    "admin-managed uploads will fail at runtime."
-                ),
-                id="core.W003",
+                f"MEDIA_STORAGE_BACKEND is set to unsupported value '{media_storage_backend}'.",
+                hint="Use one of: cloudinary, s3, r2, local.",
+                id="core.W010",
             )
         )
     return errors

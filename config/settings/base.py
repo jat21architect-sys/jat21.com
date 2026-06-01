@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "cloudinary_storage",
     "cloudinary",
+    "storages",
     "apps.core.apps.CoreConfig",
     "apps.site.apps.SiteConfigApp",
     "apps.pages.apps.PagesConfig",
@@ -132,15 +133,18 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ---------------------------------------------------------------------------
-# Cloudinary — persistent media storage for production
+# Media storage credentials
 # ---------------------------------------------------------------------------
 # Credentials are read from the environment; left empty here so dev continues
-# to use the local filesystem. Set DEFAULT_FILE_STORAGE in prod.py to activate.
+# to use the local filesystem. Production chooses the active storage backend in
+# prod.py via MEDIA_STORAGE_BACKEND.
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": env.str("CLOUDINARY_CLOUD_NAME", default=""),
     "API_KEY": env.str("CLOUDINARY_API_KEY", default=""),
     "API_SECRET": env.str("CLOUDINARY_API_SECRET", default=""),
 }
+
+MEDIA_STORAGE_BACKEND = env.str("MEDIA_STORAGE_BACKEND", default="local").lower()
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

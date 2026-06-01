@@ -13,7 +13,9 @@ from .base import env  # explicit re-import for clarity
 
 DEBUG = False
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS") + ["healthcheck.railway.app"]  # must be set in environment
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS") + [
+    "healthcheck.railway.app"
+]  # must be set in environment
 SENTRY_DSN = env.str("SENTRY_DSN", default="")
 
 # ---------------------------------------------------------------------------
@@ -24,7 +26,9 @@ SECURE_HSTS_SECONDS = 31_536_000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_SSL_REDIRECT = True
-SECURE_REDIRECT_EXEMPT = [r"^health/$"]  # Railway healthcheck hits HTTP directly; must not be redirected
+SECURE_REDIRECT_EXEMPT = [
+    r"^health/$"
+]  # Railway healthcheck hits HTTP directly; must not be redirected
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 SESSION_COOKIE_SECURE = True
@@ -45,19 +49,48 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 # ---------------------------------------------------------------------------
 # Django 5.x requires STORAGES dict (DEFAULT_FILE_STORAGE is ignored).
 # Staticfiles: WhiteNoise (same as base.py STATICFILES_STORAGE).
-# Default (media): Cloudinary — requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY,
-# CLOUDINARY_API_SECRET to be set in the environment.
-# MEDIA_URL is intentionally inherited from base.py ("/media/") so that
-# cloudinary_storage uses it as the folder prefix when building public_ids,
-# matching the stable IDs uploaded via the migration script.
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
+# Media defaults to Cloudinary for backward compatibility. Set
+# MEDIA_STORAGE_BACKEND=s3 to use Cloudflare R2 or another S3-compatible store.
+MEDIA_STORAGE_BACKEND = env.str("MEDIA_STORAGE_BACKEND", default="cloudinary").lower()
+
+_STATICFILES_STORAGE = {
+    "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
 }
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": _STATICFILES_STORAGE,
+}
+
+if MEDIA_STORAGE_BACKEND == "cloudinary":
+    # MEDIA_URL is intentionally inherited from base.py ("/media/") so that
+    # cloudinary_storage uses it as the folder prefix when building public_ids,
+    # matching the stable IDs uploaded via the migration script.
+    STORAGES["default"] = {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    }
+elif MEDIA_STORAGE_BACKEND in {"s3", "r2"}:
+    AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
+    AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
+    AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", default="")
+    AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default="")
+    AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="auto")
+    AWS_S3_CUSTOM_DOMAIN = env.str("AWS_S3_CUSTOM_DOMAIN", default="")
+    AWS_S3_ADDRESSING_STYLE = env.str("AWS_S3_ADDRESSING_STYLE", default="path")
+    AWS_S3_SIGNATURE_VERSION = env.str("AWS_S3_SIGNATURE_VERSION", default="s3v4")
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = env.bool("AWS_QUERYSTRING_AUTH", default=False)
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": env.str("AWS_S3_CACHE_CONTROL", default="max-age=86400"),
+    }
+
+    if AWS_S3_CUSTOM_DOMAIN:
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN.rstrip('/')}/"
+
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    }
 
 # ---------------------------------------------------------------------------
 # Error visibility — Sentry (optional but strongly recommended)

@@ -2,6 +2,12 @@
 #    uv export --no-dev --no-hashes -o requirements.txt
 asgiref==3.11.1
     # via django
+boto3==1.43.18
+    # via django-storages
+botocore==1.43.18
+    # via
+    #   boto3
+    #   s3transfer
 certifi==2026.2.25
     # via
     #   cloudinary
@@ -14,15 +20,23 @@ cloudinary==1.44.1
     #   architecture-portfolio
     #   django-cloudinary-storage
 django==5.2.12
-    # via architecture-portfolio
+    # via
+    #   architecture-portfolio
+    #   django-storages
 django-cloudinary-storage==0.3.0
     # via architecture-portfolio
 django-environ==0.13.0
+    # via architecture-portfolio
+django-storages==1.14.6
     # via architecture-portfolio
 gunicorn==25.1.0
     # via architecture-portfolio
 idna==3.11
     # via requests
+jmespath==1.1.0
+    # via
+    #   boto3
+    #   botocore
 packaging==26.0
     # via gunicorn
 pillow==12.1.1
@@ -31,12 +45,18 @@ psycopg==3.3.3
     # via architecture-portfolio
 psycopg-binary==3.3.3 ; implementation_name != 'pypy'
     # via psycopg
+python-dateutil==2.9.0.post0
+    # via botocore
 requests==2.32.5
     # via django-cloudinary-storage
+s3transfer==0.18.0
+    # via boto3
 sentry-sdk==2.55.0
     # via architecture-portfolio
 six==1.17.0
-    # via cloudinary
+    # via
+    #   cloudinary
+    #   python-dateutil
 sqlparse==0.5.5
     # via django
 tzdata==2025.3 ; sys_platform == 'win32'
@@ -45,6 +65,7 @@ tzdata==2025.3 ; sys_platform == 'win32'
     #   psycopg
 urllib3==2.6.3
     # via
+    #   botocore
     #   cloudinary
     #   requests
     #   sentry-sdk

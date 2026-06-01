@@ -19,6 +19,7 @@ _DUMMY = "django.core.mail.backends.dummy.EmailBackend"
 _LOCMEM = "django.core.mail.backends.locmem.EmailBackend"
 _SMTP = "django.core.mail.backends.smtp.EmailBackend"
 _CLOUDINARY = "cloudinary_storage.storage.MediaCloudinaryStorage"
+_S3 = "storages.backends.s3.S3Storage"
 
 
 @override_settings(DEBUG=False, EMAIL_BACKEND=_CONSOLE)
@@ -117,6 +118,47 @@ def test_check_warns_when_legacy_cloudinary_storage_setting_is_used():
     errors = check_production_media_storage_credentials(None)
     assert len(errors) == 1
     assert errors[0].id == "core.W003"
+
+
+@override_settings(
+    DEBUG=False,
+    MEDIA_STORAGE_BACKEND="s3",
+    STORAGES={"default": {"BACKEND": _S3}},
+    AWS_ACCESS_KEY_ID="",
+    AWS_SECRET_ACCESS_KEY="",
+    AWS_STORAGE_BUCKET_NAME="",
+    AWS_S3_ENDPOINT_URL="",
+)
+def test_check_warns_when_s3_media_credentials_missing():
+    errors = check_production_media_storage_credentials(None)
+    assert len(errors) == 1
+    assert errors[0].id == "core.W009"
+    assert "AWS_ACCESS_KEY_ID" in errors[0].msg
+
+
+@override_settings(
+    DEBUG=False,
+    MEDIA_STORAGE_BACKEND="s3",
+    STORAGES={"default": {"BACKEND": _S3}},
+    AWS_ACCESS_KEY_ID="key",
+    AWS_SECRET_ACCESS_KEY="secret",
+    AWS_STORAGE_BUCKET_NAME="bucket",
+    AWS_S3_ENDPOINT_URL="https://example.r2.cloudflarestorage.com",
+)
+def test_check_silent_when_s3_media_credentials_present():
+    errors = check_production_media_storage_credentials(None)
+    assert errors == []
+
+
+@override_settings(
+    DEBUG=False,
+    MEDIA_STORAGE_BACKEND="unsupported",
+    STORAGES={"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}},
+)
+def test_check_warns_when_media_storage_backend_is_unknown():
+    errors = check_production_media_storage_credentials(None)
+    assert len(errors) == 1
+    assert errors[0].id == "core.W010"
 
 
 @override_settings(DEBUG=False, SENTRY_DSN="")

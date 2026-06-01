@@ -13,6 +13,7 @@ dependencies = [
     "cloudinary>=1.44.1",
     "django-cloudinary-storage>=0.3.0",
     "sentry-sdk>=2.0",
+    "django-storages[boto3]>=1.14",
 ]
 
 [dependency-groups]
