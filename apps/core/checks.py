@@ -97,8 +97,7 @@ def check_production_csrf_trusted_origins(app_configs, **kwargs):
     if invalid_origins:
         errors.append(
             Warning(
-                "CSRF_TRUSTED_ORIGINS contains non-HTTPS origin(s): "
-                + ", ".join(invalid_origins),
+                "CSRF_TRUSTED_ORIGINS contains non-HTTPS origin(s): " + ", ".join(invalid_origins),
                 hint=(
                     "Production CSRF trusted origins should use HTTPS origins only, e.g. "
                     "https://yourdomain.com."
@@ -116,7 +115,11 @@ def check_production_media_storage_credentials(app_configs, **kwargs):
     if settings.DEBUG:
         return errors
 
-    storage_backend = getattr(settings, "DEFAULT_FILE_STORAGE", "")
+    storages = getattr(settings, "STORAGES", {})
+    storage_backend = storages.get("default", {}).get(
+        "BACKEND",
+        getattr(settings, "DEFAULT_FILE_STORAGE", ""),
+    )
     if storage_backend != _CLOUDINARY_STORAGE_BACKEND:
         return errors
 

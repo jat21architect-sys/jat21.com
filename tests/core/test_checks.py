@@ -88,7 +88,7 @@ def test_check_silent_when_csrf_trusted_origins_valid():
 
 @override_settings(
     DEBUG=False,
-    DEFAULT_FILE_STORAGE=_CLOUDINARY,
+    STORAGES={"default": {"BACKEND": _CLOUDINARY}},
     CLOUDINARY_STORAGE={"CLOUD_NAME": "", "API_KEY": "", "API_SECRET": ""},
 )
 def test_check_warns_when_cloudinary_credentials_missing():
@@ -99,12 +99,24 @@ def test_check_warns_when_cloudinary_credentials_missing():
 
 @override_settings(
     DEBUG=False,
-    DEFAULT_FILE_STORAGE=_CLOUDINARY,
+    STORAGES={"default": {"BACKEND": _CLOUDINARY}},
     CLOUDINARY_STORAGE={"CLOUD_NAME": "demo", "API_KEY": "key", "API_SECRET": "secret"},
 )
 def test_check_silent_when_cloudinary_credentials_present():
     errors = check_production_media_storage_credentials(None)
     assert errors == []
+
+
+@override_settings(
+    DEBUG=False,
+    STORAGES={},
+    DEFAULT_FILE_STORAGE=_CLOUDINARY,
+    CLOUDINARY_STORAGE={"CLOUD_NAME": "", "API_KEY": "", "API_SECRET": ""},
+)
+def test_check_warns_when_legacy_cloudinary_storage_setting_is_used():
+    errors = check_production_media_storage_credentials(None)
+    assert len(errors) == 1
+    assert errors[0].id == "core.W003"
 
 
 @override_settings(DEBUG=False, SENTRY_DSN="")
